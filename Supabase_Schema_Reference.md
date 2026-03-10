@@ -42,39 +42,71 @@ CREATE TABLE moods (
 
 ## 2. Todo 模块 (Fusion Todo)
 
-Todo 模块分为 任务卡片、看板状态(Status) 和 看板上下文(Context)。
+Todo 模块分为 任务卡片、看板状态(Status) 和 看板上下文(Context)。在这里，**表之间的联动尤为重要**。Fusion-todo 允许自定义 Status 和 Context 列，并且支持卡片在这些列之间拖拽，以及列本身的拖拽重排和折叠。
+
+### 核心联动规则 (Interlocking Rules)
+*   **状态与上下文的独立生命周期**: 任务 (`Task`) 必须归属于一个状态 (`Status`) 和一个上下文 (`Context`)。
+*   **外键约束**: `todo_tasks.status_id` 和 `todo_tasks.context_id` 必须作为外键，分别指向 `todo_statuses.id` 和 `todo_contexts.id`。
+*   **级联删除预防**: 如果删除了一个 Status 或 Context，必须妥善处理关联的任务（例如，禁止删除有任务的列，或者将任务转移到默认列，或者级联软删除）。在 fusion-todo 的设计中，通常不允许直接删除非空的列。
+*   **排序联动**: 卡片的纵向排序（`todo_tasks.order_index`）和列的横向排序（`todo_statuses.order_index`, `todo_contexts.order_index`）需要在客户端严格维护，并在同步时保证最终一致性。
 
 ```sql
--- 表名: todo_tasks
-CREATE TABLE todo_tasks (
-  id UUID PRIMARY KEY,                   -- 客户端生成的 UUID
+-- 表名: todo_statuses (状态/进度列配置)
+CREATE TABLE todo_statuses (
+  id TEXT PRIMARY KEY,                   -- 明确的主键 (如 'todo', 'doing', 'done')
   user_id UUID REFERENCES auth.users(id) NOT NULL,
   
-  title TEXT NOT NULL,                   -- 任务描述/标题
-  status_id TEXT NOT NULL,               -- 关联的状态列 ID (如 'todo', 'doing')
-  context_id TEXT NOT NULL,              -- 关联的上下文/清单 ID (如 'c1', 'c2')
-  
-  color TEXT,                            -- 卡片优先级颜色 (如 '#ff5252')
-  tags TEXT[],                           -- 标签数组
-  
-  order_index REAL,                      -- 客户端双向链表/分数排序用的权重字段，处理拖拽重排
+  title TEXT NOT NULL,                   -- 列标题
+  collapsed BOOLEAN DEFAULT FALSE,       -- 用户个人的列折叠状态
+  below_of TEXT,                         -- 暂时保留兼容可能的设计，通常用 order_index
+  order_index REAL,                      -- 横向排序权重
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  is_deleted BOOLEAN DEFAULT FALSE
+  
+  UNIQUE(user_id, id)                    -- 确保用户空间内 ID 唯一
 );
 
--- 注意：如果 Status 和 Context 允许用户完全自定义，可以建立独立的列配置表：
--- 表名: todo_boards (配置看板的列头排序和颜色等)
-CREATE TABLE todo_boards (
-  id TEXT PRIMARY KEY,                   -- 例如 'status_todo', 'context_work'
+-- 表名: todo_contexts (上下文/场景列配置)
+CREATE TABLE todo_contexts (
+  id TEXT PRIMARY KEY,                   -- (如 'c1', 'c2')
   user_id UUID REFERENCES auth.users(id) NOT NULL,
-  type VARCHAR(20) NOT NULL,             -- 'status' 或 'context'
+  
   title TEXT NOT NULL,
-  color TEXT,
-  order_index REAL,                      -- 列的左右拖拽重排
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  color TEXT,                            -- 该场景的标志色
+  collapsed BOOLEAN DEFAULT FALSE,
+  below_of TEXT,
+  order_index REAL,
+  
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  
+  UNIQUE(user_id, id)
 );
+
+-- 表名: todo_tasks
+CREATE TABLE todo_tasks (
+  id UUID PRIMARY KEY,                   -- 客户端 Dexie/Uuid 生成
+  user_id UUID REFERENCES auth.users(id) NOT NULL,
+  
+  title TEXT NOT NULL,                   -- 任务描述
+  status_id TEXT NOT NULL REFERENCES todo_statuses(id) ON DELETE RESTRICT,  -- 强关联：列不能随意删除
+  context_id TEXT NOT NULL REFERENCES todo_contexts(id) ON DELETE RESTRICT, -- 强关联
+  
+  color TEXT,                            -- 优先级颜色 (如 '#ff5252')
+  tags TEXT[],                           -- 标签数组
+  
+  order_index REAL,                      -- 卡片在列内的排序权重
+  
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ                 -- 软删除标记
+);
+
+-- 联动优化 (Indexes for Interlocking):
+-- 为了支持快速拉取单个列的所有任务，以及联表查询
+CREATE INDEX idx_todo_tasks_status ON todo_tasks(user_id, status_id);
+CREATE INDEX idx_todo_tasks_context ON todo_tasks(user_id, context_id);
 ```
 
 ---
