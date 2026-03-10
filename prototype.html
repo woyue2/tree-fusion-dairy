@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tree-Fusion-Diary · 原型</title>
+<!--
+  ★ 拖拽依赖：SortableJS (CDN)
+  ★ 真实实现会换用 @dnd-kit/core（fusion-todo 已在用）
+  ★ SortableJS API 和 @dnd-kit 的概念对照：
+      SortableJS group         ↔  @dnd-kit DndContext + closestCorners
+      Sortable onEnd           ↔  handleDragEnd
+      Sortable onAdd/onRemove  ↔  handleDragOver (跨列实时更新)
+      ghostClass / dragClass   ↔  DragOverlay
+-->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <style>
 /* ── Design Tokens (fusion-todo light palette) ── */
 :root {
@@ -195,7 +205,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 /* ════════════════════════════════
    TREE MODULE
 ════════════════════════════════ */
-#view-tree { }
+/* #view-tree 暂无额外样式，继承全局 .view 布局 */
 .tree-sidebar {
   width: 240px; min-width: 200px; height: 100%;
   background: #fff; border-right: 1px solid var(--sidebar-border);
@@ -242,7 +252,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .tree-help { font-size: 11px; color: var(--text-muted); background: #f1f8f4;
   border-radius: 4px; padding: 3px 8px; }
 .outline-area { flex: 1; overflow-y: auto; padding: 12px 16px; }
-.outline-node { }
+/* .outline-node 暂无额外样式，内部 .node-row 控制布局 */
 .node-row {
   display: flex; align-items: flex-start; gap: 4px; padding: 2px 6px;
   border-radius: 4px; cursor: default; transition: background var(--transition);
@@ -279,7 +289,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 /* ════════════════════════════════
    DIARY MODULE
 ════════════════════════════════ */
-#view-diary { }
+/* #view-diary 暂无额外样式，继承全局 .view 布局 */
 .diary-sidebar {
   width: 240px; min-width: 200px; height: 100%;
   background: #fff; border-right: 1px solid var(--sidebar-border);
@@ -478,6 +488,47 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #c1c7d0; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #97a0af; }
+
+/* ── Drag & Drop 视觉样式 (SortableJS) ──────────────────────────
+   对应真实实现中 @dnd-kit 的 DragOverlay + isDragging opacity
+   ──────────────────────────────────────────────────────────── */
+
+/* 列拖拽：被抓取的列 (dragClass) → 倾斜缩放，对应 isDragging ? 0.6 */
+.col-drag-active {
+  opacity: 0.5;
+  transform: rotate(1.5deg) scale(1.02);
+  box-shadow: 0 8px 24px rgba(9,30,66,.25);
+  cursor: grabbing;
+}
+
+/* 列拖拽：原位 ghost 占位 (ghostClass) → 蓝色描边 */
+.col-drag-ghost {
+  opacity: 0.35;
+  background: #e4f0f6 !important;
+  border: 2px dashed var(--accent) !important;
+}
+
+/* 卡片拖拽：被抓取的卡片 (dragClass) → 对应 DragOverlay TaskCard */
+.card-drag-active {
+  opacity: 0.45;
+  transform: rotate(1deg) scale(1.03);
+  box-shadow: 0 6px 20px rgba(9,30,66,.22);
+  cursor: grabbing;
+}
+
+/* 卡片拖拽：原位 ghost 占位 (ghostClass) → 虚线边框 */
+.card-drag-ghost {
+  opacity: 0.3;
+  background: #e4f0f6 !important;
+  border: 1.5px dashed var(--accent) !important;
+  border-left: 4px dashed var(--accent) !important;
+}
+
+/* col-header 作为列拖拽手柄的光标提示 */
+.col-header { cursor: grab; }
+.col-header:active { cursor: grabbing; }
+.col-title-input { cursor: pointer; }
+.col-title-input:focus { cursor: text; }
 
 /* ── Toast ── */
 .toast {
@@ -909,12 +960,12 @@ function strColor(str) {
 
 function changeStatus(taskId, newStatus) {
   const t = tasks.find(t=>t.id===taskId);
-  if (t) { t.status = newStatus; renderBoard(); showToast('状态已更新'); }
+  if (t) { t.status = newStatus; renderBoard(); initDragDrop(); showToast('状态已更新'); }
 }
 
 function toggleCol(colId) {
   collapseState[colId] = !collapseState[colId];
-  renderBoard();
+  renderBoard(); initDragDrop();
 }
 
 let activeActionCol = null;
@@ -943,7 +994,7 @@ function setTodoView(view, el) {
   currentTodoView = view;
   document.querySelectorAll('.view-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  renderBoard();
+  renderBoard(); initDragDrop();
 }
 
 function quickAdd(colId) {
@@ -1273,9 +1324,179 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
 
 // ════ Init ════
 renderBoard();
+initDragDrop(); // 初始渲染后立刻挂载拖拽
 renderDocList();
 renderOutline(OUTLINE_DATA);
 renderDiaryList();
+
+// ════════════════════════════════════════════════════════════
+//  DRAG & DROP  —  SortableJS 实现（原型演示用）
+//
+//  fusion-todo 真实实现使用 @dnd-kit/core，核心差异：
+//  1. @dnd-kit 更细粒度：每次 DragOver 都做 optimistic 乐观更新
+//     SortableJS 只在 onEnd/onAdd 时同步数据，中间状态由 DOM 临时处理
+//  2. @dnd-kit 支持键盘 Sensor（无障碍访问），SortableJS 不支持
+//  3. @dnd-kit 与 React 深度集成（useOptimistic / startTransition）
+//     SortableJS 操作真实 DOM，需在回调里手动同步 JS 数据层
+//  4. 列拖拽：@dnd-kit 通过 horizontalListSortingStrategy 实现
+//             SortableJS 通过对 .board-scroll 本身实例化来实现
+// ════════════════════════════════════════════════════════════
+function initDragDrop() {
+  // ── 防卫：SortableJS 未加载时跳过（离线/CDN 失败） ──
+  if (typeof Sortable === 'undefined') {
+    console.warn('[DnD] SortableJS 未加载，拖拽不可用');
+    return;
+  }
+
+  // ══════════════════════════════════════════
+  //  拖拽类型 1：列（Column）横向排序
+  //  对应 fusion-todo：Board.tsx SortableContext horizontalListSortingStrategy
+  //  触发条件：桌面端（pointer:fine），移动端禁用
+  //  拖拽手柄：列头区域（col-header），不含标题 input
+  // ══════════════════════════════════════════
+  const boardScroll = document.getElementById('board-scroll');
+  if (boardScroll && !boardScroll._sortable) {
+    boardScroll._sortable = new Sortable(boardScroll, {
+      // 只允许拖拽 .board-col 元素（排除 .board-add-col）
+      draggable: '.board-col',
+
+      // 拖拽手柄：col-header，防止误触卡片或标题输入框
+      // 对应 fusion-todo Column.tsx 的 isColumnDragEnabled && { ...attributes, ...listeners }
+      handle: '.col-header',
+
+      // 动画时长（ms）：DOM 重排时的过渡动画
+      animation: 150,
+
+      // 正在拖拽中的列的 ghost 样式（半透明占位）
+      // 对应 @dnd-kit DragOverlay 的 opacity: 0.5
+      ghostClass: 'col-drag-ghost',
+
+      // 拖拽时被抓取列的样式
+      dragClass: 'col-drag-active',
+
+      // 只允许桌面端（pointer:fine）拖拽列
+      // 对应 fusion-todo Board.tsx 的 isDesktopDragEnabled 判断
+      forceFallback: false,
+
+      onStart() {
+        // 列开始拖拽：关闭所有 action panel，防止遮挡
+        if (activeActionCol) {
+          const p = document.getElementById('action-panel-' + activeActionCol);
+          if (p) p.style.display = 'none';
+          activeActionCol = null;
+        }
+      },
+
+      onEnd(evt) {
+        // 列拖拽结束：同步 JS 数据层的列顺序
+        // 对应 fusion-todo handleDragEnd -> reorderStatuses / reorderContexts
+        const { oldIndex, newIndex } = evt;
+        if (oldIndex === newIndex) return;
+
+        if (currentTodoView === 'status') {
+          // Status 视图：重新排序 STATUSES 数组
+          const moved = STATUSES.splice(oldIndex, 1)[0];
+          STATUSES.splice(newIndex, 0, moved);
+        } else if (currentTodoView === 'context') {
+          // Context 视图：重新排序 CONTEXTS 数组
+          // NOTE：board-add-col 不是 .board-col，不会影响 index
+          const moved = CONTEXTS.splice(oldIndex, 1)[0];
+          CONTEXTS.splice(newIndex, 0, moved);
+        }
+        // Date 视图暂不处理（日期列顺序由日期决定）
+        showToast('列顺序已更新');
+        // 注意：列拖拽后不需要重新 renderBoard()，SortableJS 已直接操作 DOM
+        // 真实实现中，@dnd-kit handleDragEnd 会 setOptimisticStatuses 再调 Server Action
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════
+  //  拖拽类型 2：卡片（Task Card）纵向 + 跨列 排序
+  //  对应 fusion-todo：Column.tsx SortableContext verticalListSortingStrategy
+  //  + Board.tsx handleDragOver（跨列实时移动）
+  // ══════════════════════════════════════════
+  document.querySelectorAll('.col-body').forEach(colBody => {
+    if (colBody._sortable) {
+      // 已经初始化过的 col-body 先销毁，避免重复绑定
+      // （renderBoard 每次重建 DOM，所以每次都需要重新绑定）
+      colBody._sortable.destroy();
+    }
+
+    colBody._sortable = new Sortable(colBody, {
+      // group 是实现跨列拖拽的关键配置
+      // 所有 col-body 共享同一个 group name，SortableJS 才允许卡片互相移入
+      // 对应 fusion-todo：handleDragOver 中判断 activeContainer !== overContainer 时跨列移动
+      group: {
+        name: 'tasks',   // 相同 group name = 允许互相拖拽
+        pull: true,      // 允许从本列拖出卡片
+        put: true,       // 允许把其他列的卡片拖入本列
+      },
+
+      // 只拖拽 .task-card，不影响 .col-add-btn
+      draggable: '.task-card',
+
+      animation: 150,
+
+      // 拖拽中 ghost（原位占位）样式
+      ghostClass: 'card-drag-ghost',
+
+      // 被抓取卡片的样式（半透明）
+      // 对应 @dnd-kit DragOverlay activeTask 时卡片 opacity: 0.5
+      dragClass: 'card-drag-active',
+
+      // 列内上下排序结束
+      // 对应 fusion-todo handleDragEnd -> moveTask()
+      onEnd(evt) {
+        const cardEl = evt.item;
+        const taskId = cardEl.dataset.taskId;
+        const fromColEl = evt.from;
+        const toColEl = evt.to;
+        const toColId = toColEl.dataset.colId;
+
+        if (!taskId || !toColId) return;
+
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        if (fromColEl !== toColEl) {
+          // ── 跨列移动：更新任务的 status 或 context ──
+          // 对应 fusion-todo handleDragOver 中的 task.status = overContainer
+          if (currentTodoView === 'status') {
+            task.status = toColId;
+            // 同步卡片左侧 border 颜色（无需重渲染整个 board）
+            cardEl.className = cardEl.className.replace(/status-\S+/, '');
+            cardEl.classList.add('status-' + toColId);
+          } else if (currentTodoView === 'context') {
+            task.context = toColId;
+          }
+          showToast(`已移入: ${toColId}`);
+        }
+        // 同列内排序：DOM 已由 SortableJS 更新，JS 数组顺序可按需同步
+        // 真实实现：moveTask(newTasksArray) 发送到 Supabase
+      }
+    });
+  });
+
+  // ── 为每个 .col-body 和 .task-card 注入 data 属性，供 onEnd 读取 ──
+  // （renderBoard 用 innerHTML 生成，不含 data-task-id，这里补充）
+  document.querySelectorAll('.board-col').forEach(colEl => {
+    // 取列 ID：col-${id} 格式
+    const colId = colEl.id.replace('col-', '');
+    const colBody = colEl.querySelector('.col-body');
+    if (colBody) {
+      colBody.dataset.colId = colId;
+      colBody.querySelectorAll('.task-card').forEach((cardEl, idx) => {
+        // 根据列 ID 和位置从 tasks 数组反查 taskId
+        let relatedTasks;
+        if (currentTodoView === 'status')    relatedTasks = tasks.filter(t => t.status === colId);
+        else if (currentTodoView === 'context') relatedTasks = tasks.filter(t => t.context === colId);
+        else relatedTasks = tasks.filter((t, ti) => ti % 4 === ['2026-03-10','2026-03-11','2026-03-12','2026-03-13'].indexOf(colId));
+        if (relatedTasks[idx]) cardEl.dataset.taskId = relatedTasks[idx].id;
+      });
+    }
+  });
+}
 </script>
 </body>
 </html>
