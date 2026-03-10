@@ -14,9 +14,108 @@ export interface ApiResponse<T = unknown> {
 
 // ─── 业务类型（按项目需要在此扩展）────────────────────────
 
-// 示例：
-// export interface User {
-//   id:        string
-//   email:     string
-//   createdAt: string
-// }
+export type TodoStatusId = 'todo' | 'doing' | 'done' | 'when-free' | string
+
+export interface TodoStatus {
+  id: TodoStatusId
+  title: string
+  color?: string
+  collapsed?: boolean
+  orderIndex?: number
+}
+
+export interface TodoContext {
+  id: string
+  title: string
+  color?: string
+  collapsed?: boolean
+  orderIndex?: number
+}
+
+export interface TodoTask {
+  id: string
+  title: string
+  statusId: TodoStatusId
+  contextId: string
+  color?: string
+  tags?: string[]
+  orderIndex?: number
+  createdAt?: string
+  updatedAt?: string
+  deletedAt?: string | null
+}
+
+// ─── Tree Index ──────────────────────────────────────────
+
+export interface OutlineNode {
+  id: string
+  parentId: string | null
+  content: string
+  level: number
+  children: string[] // Array of child node IDs
+  images?: string[]
+  collapsed?: boolean
+  isHeader?: boolean
+  isSubHeader?: boolean
+  isItalic?: boolean
+  icon?: string
+  tags?: string[]
+}
+
+export interface TreeDocument {
+  id: string
+  title: string
+  icon?: string
+  nodes: Record<string, OutlineNode> // Flattened tree nodes
+  createdAt: string
+  updatedAt: string
+  deletedAt?: string | null
+}
+
+// ─── Diary App ───────────────────────────────────────────
+
+export interface DiaryEntry {
+  id: string
+  title: string
+  content: string
+  preview: string
+  date: string
+  originalContent?: string
+  structuredVersion?: string
+  finalVersion?: string
+  tags?: string[]
+  isSynced?: boolean
+  createdAt: string
+  updatedAt: string
+  aiAnalysis?: {
+    sentiment?: string
+    tags?: string[]
+    summary?: string
+  }
+  deletedAt?: string | null
+}
+
+export interface WeeklySummary {
+  id: string
+  startDate: string
+  endDate: string
+  title: string
+  summary: string
+  diaryIds: string[]
+  images?: string[]
+  footerImages?: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+// ─── Stat / Mood ──────────────────────────────────────────
+
+export interface Mood {
+  id: string
+  userId: string
+  date: string // YYYY-MM-DD
+  score: number // 1-10
+  note?: string
+  createdAt?: string
+  updatedAt?: string
+}

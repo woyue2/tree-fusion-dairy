@@ -4,24 +4,13 @@
 // DEPS: lib/supabase-server · app/actions/
 // [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
-import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
 
-// TODO: 替换为实际的 Server Actions 和 Client Components
 export const metadata = {
-  title: 'Anti-Huihuan | Home',
-  description: '...',
+  title: 'Tree-Fusion-Diary',
+  description: 'Integrated workspace for Todo, Knowledge Tree, and Diary',
 }
 
 export default async function Home() {
-  // 服务端直接取数（无 HTTP 开销）
-  // const data = await fetchFromSupabase()
-
-  return (
-    <Suspense fallback={<div>加载中...</div>}>
-      <main>
-        {/* TODO: 挂载 Client Components，将 data 作为 initialData 传入 */}
-        <h1>Anti-Huihuan</h1>
-      </main>
-    </Suspense>
-  )
+  redirect('/todo')
 }

@@ -11,14 +11,10 @@ export const metadata: Metadata = {
   description: '知识树索引 — 整理你的碎片化思考',
 }
 
+import TreeContainer from '@/components/tree/TreeContainer'
+
 export default async function TreePage() {
-  // TODO: 从 supabase-db.ts 取数后传给 Client Component
   return (
-    <div className="tree-theme p-6">
-      <h1 className="text-2xl font-bold">Knowledge Tree</h1>
-      <p className="mt-2 text-sm text-[var(--app-muted)]">
-        tree-index 模块迁移中 — 请在此实现 TreeContainer 组件
-      </p>
-    </div>
+    <TreeContainer />
   )
 }
