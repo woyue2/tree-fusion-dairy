@@ -823,6 +823,85 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
+<!-- Edit Task Modal（对应原版 TaskModal.tsx）
+     字段：TASK DESCRIPTION / STATUS / CONTEXT(LIST) / PRIORITY-COLOR / TAGS
+     按钮：Delete Task（红）/ Cancel / Save Changes（蓝） -->
+<div class="modal-overlay" id="modal-edit-task">
+  <div class="modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="modal-title" style="margin:0">✏️ Edit Task</div>
+      <button style="border:none;background:transparent;font-size:18px;color:var(--text-muted);cursor:pointer;line-height:1"
+        onclick="closeModal('modal-edit-task')">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- 1. TASK DESCRIPTION -->
+      <div class="form-group">
+        <label class="form-label">TASK DESCRIPTION</label>
+        <textarea class="form-input" id="edit-task-title" rows="3"
+          style="resize:vertical;font-family:inherit;line-height:1.6"
+          placeholder="Describe the task..."></textarea>
+      </div>
+      <!-- 2. STATUS + CONTEXT 并排 -->
+      <div style="display:flex;gap:12px">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">STATUS</label>
+          <select class="form-input" id="edit-task-status">
+            <option value="todo">To Do</option>
+            <option value="doing">In Progress</option>
+            <option value="done">Done</option>
+            <option value="when-free">When Free</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">CONTEXT (LIST)</label>
+          <select class="form-input" id="edit-task-context">
+            <option value="c1">💼 工作</option>
+            <option value="c2">🏠 个人</option>
+            <option value="c3">💡 想法</option>
+          </select>
+        </div>
+      </div>
+      <!-- 3. PRIORITY / COLOR 色块 -->
+      <div class="form-group">
+        <label class="form-label">PRIORITY / COLOR</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="color-swatch edit-swatch" data-color="#ffffff" style="background:#ffffff;border:2px solid #dfe1e6"
+            onclick="selectEditColor(this,'#ffffff')"></div>
+          <div class="color-swatch edit-swatch" data-color="#fff0f0" style="background:#fff0f0"
+            onclick="selectEditColor(this,'#fff0f0')" title="Red / Urgent"></div>
+          <div class="color-swatch edit-swatch" data-color="#fffacd" style="background:#fffacd"
+            onclick="selectEditColor(this,'#fffacd')" title="Yellow / Medium"></div>
+          <div class="color-swatch edit-swatch" data-color="#e0ffff" style="background:#e0ffff"
+            onclick="selectEditColor(this,'#e0ffff')" title="Cyan"></div>
+          <div class="color-swatch edit-swatch" data-color="#f0fff0" style="background:#f0fff0"
+            onclick="selectEditColor(this,'#f0fff0')" title="Green / Low"></div>
+          <div class="color-swatch edit-swatch" data-color="#e6e6fa" style="background:#e6e6fa"
+            onclick="selectEditColor(this,'#e6e6fa')" title="Purple / Optional"></div>
+        </div>
+      </div>
+      <!-- 4. TAGS -->
+      <div class="form-group">
+        <label class="form-label">TAGS</label>
+        <input class="form-input" id="edit-task-tags" type="text"
+          placeholder="e.g. Work, Urgent (comma separated)">
+      </div>
+    </div>
+    <!-- 底部：Delete（红）/ Cancel / Save Changes（蓝）—— 对应原版按钮顺序 -->
+    <div class="modal-footer" style="justify-content:space-between">
+      <button
+        style="padding:7px 14px;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;
+               background:rgba(235,90,70,.12);color:#eb5a46;border:none;transition:background .15s"
+        onmouseenter="this.style.background='rgba(235,90,70,.22)'"
+        onmouseleave="this.style.background='rgba(235,90,70,.12)'"
+        onclick="deleteEditTask()">Delete Task</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn-modal-ghost" onclick="closeModal('modal-edit-task')">Cancel</button>
+        <button class="btn-modal-primary" onclick="saveEditTask()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Weekly Diary Modal -->
 <div class="modal-overlay" id="modal-weekly">
   <div class="modal-box modal-lg">
@@ -1010,7 +1089,7 @@ function taskCardHTML(t) {
   return `
     <div class="task-card ${statusClass}"
       style="${bgColor ? 'background:'+bgColor : ''}"
-      onclick="showToast('打开任务: ${t.title.slice(0,10)}...')">
+      onclick="openEditTask('${t.id}')">
       ${isStatusView && ctx ? `<div class="task-card-context-bar" style="background:${ctx.color}"></div>` : ''}
       <div class="task-card-title" style="${t.status==='done'?'text-decoration:line-through;color:#888':''}"
         >${t.title}</div>
@@ -1122,6 +1201,77 @@ function addNewTask() {
   selectedTaskColor = '#ffffff';
   renderBoard(); initDragDrop();
   showToast('任务已创建 ✓');
+}
+
+// ════ Edit Task Modal ════
+// 当前正在编辑的任务 ID（对应原版 editedTask state）
+let currentEditTaskId = null;
+let editTaskColor = '#ffffff';
+
+/**
+ * openEditTask(id)
+ * 点击任务卡片触发，把任务数据填入 Edit Modal 各字段
+ * 对应原版 TaskModal：useState<Task>({ ...task })  初始化 editedTask
+ */
+function openEditTask(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  currentEditTaskId = id;
+
+  // 填充字段
+  document.getElementById('edit-task-title').value   = t.title;
+  document.getElementById('edit-task-status').value  = t.status;
+  document.getElementById('edit-task-context').value = t.context;
+  document.getElementById('edit-task-tags').value    = (t.tags || []).join(', ');
+
+  // 同步色块选中状态
+  editTaskColor = t.color || '#ffffff';
+  document.querySelectorAll('.edit-swatch').forEach(s => {
+    s.classList.toggle('selected', s.dataset.color === editTaskColor);
+  });
+
+  document.getElementById('modal-edit-task').classList.add('open');
+}
+
+/** 色块点击（edit modal 专用，与 new-task 色块分开管理） */
+function selectEditColor(el, color) {
+  document.querySelectorAll('.edit-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  editTaskColor = color;
+}
+
+/**
+ * saveEditTask()
+ * 对应原版 handleSave → onSave(editedTask)
+ * 把 Modal 内字段写回 tasks 数组，然后重渲染
+ */
+function saveEditTask() {
+  const idx = tasks.findIndex(t => t.id === currentEditTaskId);
+  if (idx === -1) return;
+  const tagsRaw = document.getElementById('edit-task-tags').value;
+  tasks[idx] = {
+    ...tasks[idx],
+    title:   document.getElementById('edit-task-title').value.trim() || tasks[idx].title,
+    status:  document.getElementById('edit-task-status').value,
+    context: document.getElementById('edit-task-context').value,
+    color:   editTaskColor,
+    tags:    tagsRaw.split(',').map(t => t.trim()).filter(Boolean),
+  };
+  closeModal('modal-edit-task');
+  renderBoard(); initDragDrop();
+  showToast('✅ 已保存');
+}
+
+/**
+ * deleteEditTask()
+ * 对应原版 onDelete(task.id)
+ * 从 tasks 数组中移除当前任务
+ */
+function deleteEditTask() {
+  tasks = tasks.filter(t => t.id !== currentEditTaskId);
+  closeModal('modal-edit-task');
+  renderBoard(); initDragDrop();
+  showToast('🗑️ 任务已删除');
 }
 
 // ════ TREE MODULE ════
