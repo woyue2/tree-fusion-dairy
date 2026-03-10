@@ -372,46 +372,87 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 }
 .mood-cell {
   background: #f4f5f7;
-  border-radius: 6px;
-  padding: 12px 8px;
+  border-radius: 8px;
+  padding: 14px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 4px;
   cursor: pointer;
-  transition: transform 0.1s;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.03);
 }
 .mood-cell:hover {
-  transform: scale(1.05);
-  background: #ebecf0;
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-.mood-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #d6d3d1;
+/* 当格有背景色时，自动切换文字为白色/深色 */
+.mood-cell.vivid-color .mood-val,
+.mood-cell.vivid-color .mood-date {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 .mood-val {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 800;
   color: var(--app-text);
+  line-height: 1;
 }
 .mood-date {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
+  font-weight: 500;
+  opacity: 0.8;
 }
 .mood-legend {
   display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 15px;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
   font-size: 12px;
   color: var(--text-muted);
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+}
+.legend-square {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+/* 现代化 Dropdown */
+.modern-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid var(--sidebar-border);
+  border-radius: 8px;
+  padding-right: 8px;
+  transition: border-color 0.2s;
+}
+.modern-select-wrapper:focus-within {
+  border-color: var(--accent);
+}
+.modern-select {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-text);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  width: 100%;
 }
 
 .diary-sidebar-tabs { display: flex; border-bottom: 1px solid var(--sidebar-border);
@@ -804,7 +845,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <div class="stats-card">
         <div class="mood-grid-header">
           <h2 style="margin:0">📈 情绪趋势 (红绿阶分布)</h2>
-          <div style="font-size: 13px; color: var(--text-muted);" id="stats-current-month">最近 28 天统计</div>
+          <div style="display:flex; align-items:center; gap:8px">
+            <div class="modern-select-wrapper">
+              <select id="stats-month-select" class="modern-select" onchange="renderMoodStats()">
+                <option value="2026-03">2026年3月</option>
+                <option value="2026-02">2026年2月</option>
+                <option value="2026-01">2026年1月</option>
+                <option value="2025-03">2025年3月</option>
+              </select>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); font-weight:600; padding:4px 8px; background:#f1f2f4; border-radius:4px" id="stats-current-month">ARCHIVE</div>
+          </div>
         </div>
 
         <div class="mood-grid-container">
@@ -814,10 +866,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           </div>
 
           <div class="mood-legend">
-            <div class="legend-item"><span class="mood-dot" style="background:#7f1d1d"></span> ≤2分</div>
-            <div class="legend-item"><span class="mood-dot" style="background:#ca8a04"></span> 5-6分</div>
-            <div class="legend-item"><span class="mood-dot" style="background:#15803d"></span> 7-8分</div>
-            <div class="legend-item"><span class="mood-dot" style="background:#166534"></span> ≥9分</div>
+            <div class="legend-item"><div class="legend-square" style="background:#ff4757"></div> ≤2分</div>
+            <div class="legend-item"><div class="legend-square" style="background:#ffa502"></div> 3-4分</div>
+            <div class="legend-item"><div class="legend-square" style="background:#eccc68"></div> 5-6分</div>
+            <div class="legend-item"><div class="legend-square" style="background:#2ed573"></div> 7-8分</div>
+            <div class="legend-item"><div class="legend-square" style="background:#10ac84"></div> ≥9分</div>
           </div>
         </div>
       </div>
@@ -1034,6 +1087,34 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
+<!-- Edit Mood Modal (New) -->
+<div class="modal-overlay" id="modal-edit-mood">
+  <div class="modal-box" style="max-width:360px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="modal-title" id="edit-mood-date-title" style="margin:0">2026-03-10</div>
+      <button style="border:none;background:transparent;font-size:18px;color:var(--text-muted);cursor:pointer"
+        onclick="closeModal('modal-edit-mood')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">情绪分数 (1-10)</label>
+        <div style="display:flex; align-items:center; gap:12px">
+          <input type="range" id="edit-mood-score" min="1" max="10" step="1" style="flex:1" oninput="document.getElementById('edit-mood-score-val').textContent = this.value">
+          <span id="edit-mood-score-val" style="font-size:18px; font-weight:700; min-width:24px">5</span>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:16px">
+        <label class="form-label">为什么是这个心情？(一句话记录)</label>
+        <input class="form-input" id="edit-mood-note" type="text" placeholder="例如：完成了重要里程碑！">
+      </div>
+    </div>
+    <div class="modal-footer" style="margin-top:20px; display:flex; gap:12px; border-top:none">
+      <button class="btn-modal-primary" style="flex:1" onclick="saveMood()">保存</button>
+      <button class="btn-modal-ghost" style="flex:1" onclick="closeModal('modal-edit-mood')">取消</button>
+    </div>
+  </div>
+</div>
+
 <!-- Weekly Diary Modal -->
 <div class="modal-overlay" id="modal-weekly">
   <div class="modal-box modal-lg">
@@ -1136,36 +1217,23 @@ let DIARY_DATA = [
   { id:'e6', date:'2026-03-05', title:'疲惫但充实的一天', preview:'今天事情太多了，但...', content:'今天有点累，但是完成了很多事情...' },
 ];
 
-/** Mock 情绪数据 (对齐 Life-Coach-AI 逻辑) */
+/** Mock 情绪数据 (增加 note 字段对齐设计) */
 const MOOD_DATA = [
-  { date: '2026-03-10', score: 9 },
-  { date: '2026-03-09', score: 7 },
-  { date: '2026-03-08', score: 5 },
-  { date: '2026-03-07', score: 8 },
-  { date: '2026-03-06', score: 2 },
-  { date: '2026-03-05', score: 6 },
-  { date: '2026-03-04', score: 10 },
-  { date: '2026-03-03', score: 4 },
-  { date: '2026-03-02', score: 7 },
-  { date: '2026-03-01', score: 8 },
-  { date: '2026-02-28', score: 3 },
-  { date: '2026-02-27', score: 9 },
+  { date: '2026-03-10', score: 9, note: '原型开发进展神速，爽！' },
+  { date: '2026-03-09', score: 7, note: '股票脚本终于跑通了' },
+  { date: '2026-03-08', score: 5, note: '天气有点闷，效率一般' },
+  { date: '2026-03-07', score: 8, note: '篮球赛赢了' },
+  { date: '2026-03-06', score: 2, note: 'Bug 调了一整天，心累' },
+  { date: '2026-03-05', score: 6, note: '平常的一天' },
+  { date: '2026-03-04', score: 10, note: '被导师表扬了，起飞！' },
+  { date: '2026-03-03', score: 4, note: '落枕了，脖子疼' },
+  { date: '2026-03-02', score: 7, note: '看了一本好书' },
+  { date: '2026-03-01', score: 8, note: '周末阳光明媚' },
+  { date: '2026-02-28', score: 3, note: '加班到半夜' },
+  { date: '2026-02-27', score: 9, note: '工资到账，火锅走起' },
   { date: '2026-02-26', score: 5 },
   { date: '2026-02-25', score: 6 },
-  { date: '2026-02-24', score: 1 },
-  { date: '2026-02-23', score: 7 },
-  { date: '2026-02-22', score: 8 },
-  { date: '2026-02-21', score: 5 },
-  { date: '2026-02-20', score: 9 },
-  { date: '2026-02-19', score: 4 },
-  { date: '2026-02-18', score: 6 },
-  { date: '2026-02-17', score: 10 },
-  { date: '2026-02-16', score: 8 },
-  { date: '2026-02-15', score: 7 },
-  { date: '2026-02-14', score: 2 },
-  { date: '2026-02-13', score: 5 },
-  { date: '2026-02-12', score: 8 },
-  { date: '2026-02-11', score: 9 },
+  { date: '2026-02-24', score: 1, note: '大跌，别提了' },
 ];
 
 // ════ State ════
@@ -1757,12 +1825,12 @@ renderDiaryList();
 
 /** ════ STATS LOGIC (Mood Stats) ════ */
 function getMoodColor(score) {
-  if (!score) return '#d6d3d1';
-  if (score <= 2) return '#7f1d1d';
-  if (score <= 4) return '#b45309';
-  if (score <= 6) return '#ca8a04';
-  if (score <= 8) return '#15803d';
-  return '#166534';
+  if (!score) return '#f1f2f6';
+  if (score <= 2) return '#ff4757'; // Vivid Red
+  if (score <= 4) return '#ffa502'; // Vivid Orange
+  if (score <= 6) return '#eccc68'; // Vivid Yellow
+  if (score <= 8) return '#2ed573'; // Vivid Green
+  return '#10ac84'; // Vivid Emerald
 }
 
 function renderMoodStats() {
@@ -1773,15 +1841,60 @@ function renderMoodStats() {
 function renderMoodHeatmap() {
   const grid = document.getElementById('mood-heatmap-grid');
   if (!grid) return;
-  // 渲染最近 28 天（7 * 4）
-  const displayedData = MOOD_DATA.slice(0, 28);
-  grid.innerHTML = displayedData.map(d => `
-    <div class="mood-cell" onclick="showToast('查看 ${d.date} 的情绪详情')">
-      <div class="mood-dot" style="background:${getMoodColor(d.score)}"></div>
-      <div class="mood-val">${d.score || '--'}</div>
-      <div class="mood-date">${d.date.slice(5)}</div>
-    </div>
-  `).join('');
+  
+  const selMonth = document.getElementById('stats-month-select').value;
+  const displayedData = MOOD_DATA.filter(d => d.date.startsWith(selMonth));
+  
+  if (displayedData.length === 0) {
+    grid.innerHTML = '<div style="grid-column: 1/8; padding:40px; text-align:center; color:var(--text-muted)">该月份暂无数据记录</div>';
+    return;
+  }
+
+  displayedData.sort((a,b) => a.date.localeCompare(b.date));
+
+  grid.innerHTML = displayedData.map(d => {
+    const bgColor = getMoodColor(d.score);
+    const isColored = d.score > 0;
+    return `
+      <div class="mood-cell ${isColored ? 'vivid-color' : ''}" 
+           onclick="openEditMood('${d.date}')" 
+           title="${d.note || '用一句话记录为什么是这个心情'}"
+           style="background:${bgColor}">
+        <div class="mood-val">${d.score || '--'}</div>
+        <div class="mood-date">${d.date.slice(5)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+let activeEditMoodDate = null;
+function openEditMood(dateStr) {
+  activeEditMoodDate = dateStr;
+  const entry = MOOD_DATA.find(d => d.date === dateStr) || { date: dateStr, score: 5, note: '' };
+  
+  document.getElementById('edit-mood-date-title').textContent = dateStr;
+  document.getElementById('edit-mood-score').value = entry.score;
+  document.getElementById('edit-mood-score-val').textContent = entry.score;
+  document.getElementById('edit-mood-note').value = entry.note || '';
+  
+  document.getElementById('modal-edit-mood').classList.add('open');
+}
+
+function saveMood() {
+  const score = parseInt(document.getElementById('edit-mood-score').value);
+  const note = document.getElementById('edit-mood-note').value;
+  
+  const idx = MOOD_DATA.findIndex(d => d.date === activeEditMoodDate);
+  if (idx > -1) {
+    MOOD_DATA[idx].score = score;
+    MOOD_DATA[idx].note = note;
+  } else {
+    MOOD_DATA.push({ date: activeEditMoodDate, score: score, note: note });
+  }
+  
+  closeModal('modal-edit-mood');
+  showToast(`已更新 ${activeEditMoodDate} 的心情记录`);
+  renderMoodStats();
 }
 
 function renderMoodDistribution() {
@@ -1797,13 +1910,13 @@ function renderMoodDistribution() {
     else bins[4]++;
   });
   const max = Math.max(...bins);
-  const colors = ['#7f1d1d','#b45309','#ca8a04','#15803d','#166534'];
+  const colors = ['#ff4757','#ffa502','#eccc68','#2ed573','#10ac84'];
   container.innerHTML = bins.map((count, i) => `
     <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px">
-      <div style="width:100%; background:${colors[i]}; height:${(count/max)*100}px; border-radius:3px; position:relative" title="${count}次">
-        <span style="position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:10px; color:var(--text-muted)">${count}</span>
+      <div style="width:100%; background:${colors[i]}; height:${(count/max)*100}px; border-radius:4px; position:relative" title="${count}次">
+        <span style="position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:10px; color:var(--text-muted); font-weight:700">${count}</span>
       </div>
-      <div style="font-size:10px; color:var(--text-muted)">${[2,4,6,8,10][i]}分</div>
+      <div style="font-size:10px; color:var(--text-muted); font-weight:600">${[2,4,6,8,10][i]}分</div>
     </div>
   `).join('');
 }
