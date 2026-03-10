@@ -118,21 +118,22 @@ CREATE INDEX idx_todo_tasks_context ON todo_tasks(user_id, context_id);
 ```sql
 -- 表名: diaries
 CREATE TABLE diaries (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY,                   -- 客户端生成的 UUID
   user_id UUID REFERENCES auth.users(id) NOT NULL,
   
   date DATE NOT NULL,                    -- 所属日期
   title TEXT NOT NULL,                   -- 日记标题
-  preview TEXT,                          -- 列表页展示的简介 (前几十个字)
+  preview TEXT,                          -- 列表页展示的简介 (可由 content 截取生成，或单独存储)
   
-  content TEXT,                          -- 用户手写的原始内容
+  content TEXT,                          -- 用户手写的原始内容 (对应 js 中的 content)
+  original_content TEXT,                 -- (可选) 在 AI 结构化之前保存的纯净原文备份
   structured_version TEXT,               -- AI 结构化优化后的内容
-  final_version TEXT,                    -- 用户最终确定的内容 (可能与 content 一样)
+  final_version TEXT,                    -- 用户最终确定的内容 (对应 js 中的 finalVersion)
   
   images TEXT[],                         -- 头图图片 URL 数组
   footer_images TEXT[],                  -- 尾注图片 URL 数组
   
-  ai_analysis JSONB,                     -- AI 给出的建议、标签或情感色彩分析
+  ai_analysis JSONB,                     -- 情感色彩分析、标签、一句话总结等 JSON 结构 (对应 js 中的 analysis)
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -141,16 +142,18 @@ CREATE TABLE diaries (
 
 -- 表名: weekly_summaries (周记模块)
 CREATE TABLE weekly_summaries (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY,                   -- (例如 'weekly_171...'，建议后续向 UUID 改造)
   user_id UUID REFERENCES auth.users(id) NOT NULL,
   
-  start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
+  start_date DATE NOT NULL,              -- 对应 startDate
+  end_date DATE NOT NULL,                -- 对应 endDate
   title TEXT NOT NULL,
-  summary TEXT NOT NULL,                 -- AI 生成的周记内容
+  summary TEXT NOT NULL,                 -- AI 生成的周记主体内容
   
-  diary_ids UUID[],                      -- 归档到该周记的基础日记 ID 列表
-  images TEXT[],
+  diary_ids UUID[],                      -- (建议) 归档到该周记的基础日记 ID 列表，源码暂未强依赖但推荐后续加入
+  images TEXT[],                         -- 周记头图
+  footer_images TEXT[],                  -- 周记尾图
+  regenerations INTEGER DEFAULT 0,       -- 对应源码中的 regenerations 计数
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -168,25 +171,38 @@ CREATE TABLE weekly_summaries (
 ```sql
 -- 表名: tree_documents (知识树主文档)
 CREATE TABLE tree_documents (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY,                   -- 对应 BaseOutlineNode 的 id
   user_id UUID REFERENCES auth.users(id) NOT NULL,
   
-  title TEXT NOT NULL,                   -- 侧边栏展示的文档名称
+  title TEXT NOT NULL,                   -- 文档名称 (对应 SidebarItem 的 title)
   icon TEXT,                             -- emoji 图标
   
-  nodes JSONB NOT NULL,                  -- [核心设计] 存放整棵大纲树的序列化数据 (Flattened Tree 或嵌套结构)
-                                         -- 取代原来分散的 OutlineNode 每行一条记录
+  nodes JSONB NOT NULL,                  -- [核心设计] 存放整棵大纲树的序列化数据 (Flattened Tree)
+                                         -- 取代原来分散的 OutlineNode 每行一条记录，解决 IndexedDB 与 Supabase 之间的同步黑洞。
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  deleted_at TIMESTAMPTZ                 -- 软删除（进入回收站）
+  deleted_at TIMESTAMPTZ                 -- 软删除（进入回收站，对应 metadata.deletedAt）
 );
 
 /* 
-  nodes 字段内 JSONB 结构参考 (Flatten 模式更利于拖拽同步):
+  nodes 字段内 JSONB 结构参考 (完全对齐 tree-index /types/index.ts 的 StoredOutlineNode):
   {
-    "root_id": { "id":"root_id", "content":"...", "parentId": null, "children":["n1", "n2"], "collapsed": false },
-    "n1": { "id":"n1", "content":"...", "parentId": "root_id", "children":[] }
+    "root_id": { 
+      "id": "root_id", 
+      "parentId": null, 
+      "content": "...", 
+      "level": 0,
+      "children": ["n1", "n2"], 
+      "images": [...], 
+      "collapsed": false,
+      "isHeader": false,
+      "isSubHeader": false,
+      "isItalic": false,
+      "tags": ["..."],
+      "icon": "..."
+    },
+    ...
   }
 */
 ```
