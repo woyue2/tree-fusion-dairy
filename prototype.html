@@ -877,9 +877,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
       <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px">
         <div class="stats-card" style="margin:0">
-          <h2>📊 评分分布</h2>
-          <div id="chart-distribution" style="height:120px; display:flex; align-items:flex-end; gap:8px; padding-top:10px">
-            <!-- 简易柱状图 -->
+          <h2>📊 情绪均值统计 (Rolling Averages)</h2>
+          <div id="chart-distribution" style="padding-top:10px">
+            <!-- JS 渲染均值卡片 -->
           </div>
         </div>
         <div class="stats-card" style="margin:0">
@@ -1217,7 +1217,7 @@ let DIARY_DATA = [
   { id:'e6', date:'2026-03-05', title:'疲惫但充实的一天', preview:'今天事情太多了，但...', content:'今天有点累，但是完成了很多事情...' },
 ];
 
-/** Mock 情绪数据 (增加 note 字段对齐设计) */
+/** Mock 情绪数据 (增加更多样本以支持 180 天均值展示) */
 const MOOD_DATA = [
   { date: '2026-03-10', score: 9, note: '原型开发进展神速，爽！' },
   { date: '2026-03-09', score: 7, note: '股票脚本终于跑通了' },
@@ -1231,9 +1231,13 @@ const MOOD_DATA = [
   { date: '2026-03-01', score: 8, note: '周末阳光明媚' },
   { date: '2026-02-28', score: 3, note: '加班到半夜' },
   { date: '2026-02-27', score: 9, note: '工资到账，火锅走起' },
-  { date: '2026-02-26', score: 5 },
-  { date: '2026-02-25', score: 6 },
-  { date: '2026-02-24', score: 1, note: '大跌，别提了' },
+  { date: '2026-02-15', score: 8 },
+  { date: '2026-02-10', score: 6 },
+  { date: '2026-01-20', score: 7 },
+  { date: '2026-01-05', score: 4 },
+  { date: '2025-12-15', score: 9 },
+  { date: '2025-11-10', score: 3 },
+  { date: '2025-10-05', score: 8 },
 ];
 
 // ════ State ════
@@ -1842,25 +1846,30 @@ function renderMoodHeatmap() {
   const grid = document.getElementById('mood-heatmap-grid');
   if (!grid) return;
   
-  const selMonth = document.getElementById('stats-month-select').value;
-  const displayedData = MOOD_DATA.filter(d => d.date.startsWith(selMonth));
+  const selMonth = document.getElementById('stats-month-select').value; // 'YYYY-MM'
+  const [year, month] = selMonth.split('-').map(Number);
   
-  if (displayedData.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/8; padding:40px; text-align:center; color:var(--text-muted)">该月份暂无数据记录</div>';
-    return;
+  // 获取当月总天数
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const fullMonthData = [];
+  
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+    const entry = MOOD_DATA.find(d => d.date === dateStr);
+    fullMonthData.push(entry || { date: dateStr, score: 0, note: null });
   }
 
-  displayedData.sort((a,b) => a.date.localeCompare(b.date));
-
-  grid.innerHTML = displayedData.map(d => {
-    const bgColor = getMoodColor(d.score);
-    const isColored = d.score > 0;
+  grid.innerHTML = fullMonthData.map(d => {
+    // 无记录时显示白色 (#fff)，有记录按分值
+    const isRecorded = d.score > 0;
+    const bgColor = isRecorded ? getMoodColor(d.score) : '#ffffff';
+    
     return `
-      <div class="mood-cell ${isColored ? 'vivid-color' : ''}" 
+      <div class="mood-cell ${isRecorded ? 'vivid-color' : ''}" 
            onclick="openEditMood('${d.date}')" 
-           title="${d.note || '用一句话记录为什么是这个心情'}"
-           style="background:${bgColor}">
-        <div class="mood-val">${d.score || '--'}</div>
+           title="${d.note || (isRecorded ? '无备注' : '未记录，点击补充')}"
+           style="background:${bgColor}; ${!isRecorded ? 'border: 1px dashed #ddd;' : ''}">
+        <div class="mood-val" style="${!isRecorded ? 'color:#ccc' : ''}">${d.score || '--'}</div>
         <div class="mood-date">${d.date.slice(5)}</div>
       </div>
     `;
@@ -1900,25 +1909,46 @@ function saveMood() {
 function renderMoodDistribution() {
   const container = document.getElementById('chart-distribution');
   if (!container) return;
-  // 简易计算各个色阶数量
-  const bins = [0, 0, 0, 0, 0]; // 0-2, 3-4, 5-6, 7-8, 9-10
-  MOOD_DATA.forEach(d => {
-    if (d.score <=2) bins[0]++;
-    else if (d.score <=4) bins[1]++;
-    else if (d.score <=6) bins[2]++;
-    else if (d.score <=8) bins[3]++;
-    else bins[4]++;
+
+  // 设定“今天”为 Mock 时间 2026-03-10
+  const T = new Date('2026-03-10');
+  
+  const periods = [
+    { label: '7天均值', days: 7 },
+    { label: '30天均值', days: 30 },
+    { label: '60天均值', days: 60 },
+    { label: '180天均值', days: 180 }
+  ];
+
+  const stats = periods.map(p => {
+    const cutoff = new Date(T);
+    cutoff.setDate(T.getDate() - p.days);
+    
+    // 过滤出该时间段内有分值的记录
+    const relevant = MOOD_DATA.filter(d => {
+      const dDate = new Date(d.date);
+      return dDate > cutoff && dDate <= T && d.score > 0;
+    });
+    
+    const sum = relevant.reduce((acc, curr) => acc + curr.score, 0);
+    const avg = relevant.length > 0 ? (sum / relevant.length).toFixed(1) : '--';
+    
+    return { ...p, avg, count: relevant.length };
   });
-  const max = Math.max(...bins);
-  const colors = ['#ff4757','#ffa502','#eccc68','#2ed573','#10ac84'];
-  container.innerHTML = bins.map((count, i) => `
-    <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px">
-      <div style="width:100%; background:${colors[i]}; height:${(count/max)*100}px; border-radius:4px; position:relative" title="${count}次">
-        <span style="position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:10px; color:var(--text-muted); font-weight:700">${count}</span>
-      </div>
-      <div style="font-size:10px; color:var(--text-muted); font-weight:600">${[2,4,6,8,10][i]}分</div>
+
+  container.innerHTML = `
+    <div style="width:100%; display:grid; grid-template-columns: repeat(2, 1fr); gap:12px">
+      ${stats.map(s => `
+        <div style="background:#f8f9fa; padding:10px; border-radius:8px; border:1px solid #eee">
+          <div style="font-size:11px; color:var(--text-muted); font-weight:600">${s.label}</div>
+          <div style="font-size:22px; font-weight:800; color:var(--app-text); margin-top:4px">
+            ${s.avg} <span style="font-size:11px; font-weight:400; color:var(--text-muted)">pts</span>
+          </div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:2px">样本: ${s.count}天</div>
+        </div>
+      `).join('')}
     </div>
-  `).join('');
+  `;
 }
 
 // ════════════════════════════════════════════════════════════
