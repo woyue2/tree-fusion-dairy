@@ -202,6 +202,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 }
 .board-add-col:hover { background: rgba(255,255,255,.8); border-color: var(--accent); color: var(--accent); }
 
+/* —— Priority/Color 色块（对应原版 CARD_COLORS 交互）—— */
+.color-swatch {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer; flex-shrink: 0;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+.color-swatch:hover { transform: scale(1.15); }
+/* selected 状态：放大 + 灰色圈（原版 border-[#5e6c84] ring-2 ring-black/10 scale-110） */
+.color-swatch.selected {
+  border-color: #5e6c84; transform: scale(1.12);
+  box-shadow: 0 0 0 3px rgba(9,30,66,.12);
+}
+
 /* ════════════════════════════════
    TREE MODULE
 ════════════════════════════════ */
@@ -730,22 +744,77 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div><!-- /main -->
 
 <!-- ══ MODALS ══ -->
-<!-- Add Task -->
+<!-- Add Task Modal（对齐原版 fusion-todo TaskModal + IdeaModal）
+     原版字段：TASK DESCRIPTION textarea / Status / Context(LIST)
+               PRIORITY/COLOR 色块 / TAGS 逗号分隔 / 创建日期 -->
 <div class="modal-overlay" id="modal-add-task">
   <div class="modal-box">
-    <div class="modal-title">➕ 新建任务</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="modal-title" style="margin:0">➕ 新建任务</div>
+      <button style="border:none;background:transparent;font-size:18px;color:var(--text-muted);cursor:pointer;line-height:1"
+        onclick="closeModal('modal-add-task')">×</button>
+    </div>
     <div class="modal-body">
-      <div class="form-group"><label class="form-label">任务名称</label>
-        <input class="form-input" id="new-task-title" type="text" placeholder="做了什么？"></div>
-      <div class="form-group"><label class="form-label">状态</label>
-        <select class="form-input" id="new-task-status">
-          <option value="todo">Todo</option><option value="doing">In Progress</option>
-          <option value="done">Done</option><option value="when-free">When Free</option>
-        </select></div>
-      <div class="form-group"><label class="form-label">清单 (Context)</label>
-        <select class="form-input" id="new-task-context">
-          <option value="c1">💼 工作</option><option value="c2">🏠 个人</option><option value="c3">💡 想法</option>
-        </select></div>
+      <!-- 1. TASK DESCRIPTION —— textarea（原版是 min-h-[80px]） -->
+      <div class="form-group">
+        <label class="form-label">TASK DESCRIPTION</label>
+        <textarea class="form-input" id="new-task-title" rows="3"
+          placeholder="Describe the task..."
+          style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
+      </div>
+
+      <!-- 2. STATUS + CONTEXT 并排（原版两列布局） -->
+      <div style="display:flex;gap:12px">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">STATUS</label>
+          <select class="form-input" id="new-task-status">
+            <option value="todo">To Do</option>
+            <option value="doing">In Progress</option>
+            <option value="done">Done</option>
+            <option value="when-free">When Free</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">CONTEXT (LIST)</label>
+          <select class="form-input" id="new-task-context">
+            <option value="c1">💼 工作</option>
+            <option value="c2">🏠 个人</option>
+            <option value="c3">💡 想法</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 3. PRIORITY / COLOR —— 6个色块（原版 CARD_COLORS） -->
+      <div class="form-group">
+        <label class="form-label">PRIORITY / COLOR</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="color-swatch selected" data-color="#ffffff" style="background:#ffffff;border:2px solid #dfe1e6"
+            onclick="selectTaskColor(this,'#ffffff')"></div>
+          <div class="color-swatch" data-color="#fff0f0" style="background:#fff0f0"
+            onclick="selectTaskColor(this,'#fff0f0')" title="Red / Urgent"></div>
+          <div class="color-swatch" data-color="#fffacd" style="background:#fffacd"
+            onclick="selectTaskColor(this,'#fffacd')" title="Yellow / Medium"></div>
+          <div class="color-swatch" data-color="#e0ffff" style="background:#e0ffff"
+            onclick="selectTaskColor(this,'#e0ffff')" title="Cyan"></div>
+          <div class="color-swatch" data-color="#f0fff0" style="background:#f0fff0"
+            onclick="selectTaskColor(this,'#f0fff0')" title="Green / Low"></div>
+          <div class="color-swatch" data-color="#e6e6fa" style="background:#e6e6fa"
+            onclick="selectTaskColor(this,'#e6e6fa')" title="Purple / Optional"></div>
+        </div>
+      </div>
+
+      <!-- 4. TAGS —— 逗号分隔（原版 TaskModal）-->
+      <div class="form-group">
+        <label class="form-label">TAGS</label>
+        <input class="form-input" id="new-task-tags" type="text"
+          placeholder="e.g. Work, Urgent (comma separated)">
+      </div>
+
+      <!-- 5. 创建日期（原版 IdeaModal 有此字段）-->
+      <div class="form-group">
+        <label class="form-label">创建日期</label>
+        <input class="form-input" id="new-task-date" type="date">
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-modal-ghost" onclick="closeModal('modal-add-task')">取消</button>
@@ -935,11 +1004,17 @@ function taskCardHTML(t) {
   const ctx = CONTEXTS.find(c => c.id === t.context);
   const isStatusView = currentTodoView === 'status';
   const statusClass = `status-${t.status}`;
+  // color 对应原版 card background：白色不看出差异，其他色作为卡片背景色进行优先级标屈
+  const bgColor = t.color && t.color !== '#ffffff' ? t.color : '';
+  const dateStr = t.createdAt ? `<div style="font-size:11px;color:var(--text-muted);margin-top:5px">🗓️ ${t.createdAt}</div>` : '';
   return `
-    <div class="task-card ${statusClass}" onclick="showToast('打开任务: ${t.title.slice(0,10)}...')">
+    <div class="task-card ${statusClass}"
+      style="${bgColor ? 'background:'+bgColor : ''}"
+      onclick="showToast('打开任务: ${t.title.slice(0,10)}...')">
       ${isStatusView && ctx ? `<div class="task-card-context-bar" style="background:${ctx.color}"></div>` : ''}
-      <div class="task-card-title" style="${t.status==='done'?'text-decoration:line-through;color:#888':''}">${t.title}</div>
-      ${t.tags.length ? `<div class="task-tags">${t.tags.map(tag=>`<span class="task-tag" style="background:${strColor(tag)}">${tag}</span>`).join('')}</div>` : ''}
+      <div class="task-card-title" style="${t.status==='done'?'text-decoration:line-through;color:#888':''}"
+        >${t.title}</div>
+      ${t.tags && t.tags.length ? `<div class="task-tags">${t.tags.map(tag=>`<span class="task-tag" style="background:${strColor(tag)}">${tag}</span>`).join('')}</div>` : ''}
       ${!isStatusView ? `
         <select class="task-status-select" onclick="event.stopPropagation()" onchange="changeStatus('${t.id}',this.value)">
           <option value="todo" ${t.status==='todo'?'selected':''}>To Do</option>
@@ -949,6 +1024,7 @@ function taskCardHTML(t) {
         </select>` :
         ctx ? `<div class="task-context-label">📂 ${ctx.title}</div>` : ''
       }
+      ${dateStr}
     </div>`;
 }
 
@@ -1003,18 +1079,48 @@ function quickAdd(colId) {
   openAddTask();
 }
 
-function openAddTask() { document.getElementById('modal-add-task').classList.add('open'); }
+function openAddTask() {
+  // 初始化日期为今天（本地 YYYY-MM-DD 格式，对应原版 IdeaModal getLocalDateString）
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  document.getElementById('new-task-date').value = `${y}-${m}-${d}`;
+  // 重置色块选中到默认白色
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+  const defSwatch = document.querySelector('.color-swatch[data-color="#ffffff"]');
+  if (defSwatch) defSwatch.classList.add('selected');
+  document.getElementById('modal-add-task').classList.add('open');
+}
+
+// 色块点击选中（原版 CARD_COLORS 交互）
+let selectedTaskColor = '#ffffff';
+function selectTaskColor(el, color) {
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTaskColor = color;
+}
 
 function addNewTask() {
   const title = document.getElementById('new-task-title').value.trim();
-  if (!title) { showToast('请输入任务名称'); return; }
-  tasks.push({ id:'t'+Date.now(), title,
-    status: document.getElementById('new-task-status').value,
+  if (!title) { showToast('请输入任务描述'); return; }
+  // 解析 Tags：逗号分隔（对应原版 TaskModal tags.split(',').map(t=>t.trim()).filter(Boolean)）
+  const tagsRaw = document.getElementById('new-task-tags').value;
+  const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+  tasks.push({
+    id: 't' + Date.now(),
+    title,
+    status:  document.getElementById('new-task-status').value,
     context: document.getElementById('new-task-context').value,
-    tags:[] });
+    color:   selectedTaskColor,      // Priority/Color
+    tags,                             // Tags
+    createdAt: document.getElementById('new-task-date').value
+  });
   closeModal('modal-add-task');
   document.getElementById('new-task-title').value = '';
-  renderBoard();
+  document.getElementById('new-task-tags').value = '';
+  selectedTaskColor = '#ffffff';
+  renderBoard(); initDragDrop();
   showToast('任务已创建 ✓');
 }
 
