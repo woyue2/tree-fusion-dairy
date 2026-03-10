@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree-Fusion-Diary · 原型</title>
+<style>
+/* ── Design Tokens (fusion-todo light palette) ── */
+:root {
+  --app-bg: #f4f5f7;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #dfe1e6;
+  --col-bg: #ebecf0;
+  --card-bg: #ffffff;
+  --card-hover-shadow: 0 4px 12px rgba(9,30,66,.15);
+  --app-text: #172b4d;
+  --text-muted: #5e6c84;
+  --text-secondary: #5e6c84;
+  --nav-hover: #091e4214;
+  --status-todo: #dfe1e6;
+  --status-doing: #0079bf;
+  --status-done: #61bd4f;
+  --status-whenfree: #9e9e9e;
+  --accent: #0079bf;
+  --accent-hover: #005582;
+  --danger: #eb5a46;
+  /* module accents */
+  --todo-accent: #0079bf;
+  --tree-accent: #00875a;
+  --diary-accent: #c9481d;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --shadow: 0 1px 2px rgba(9,30,66,.25);
+  --transition: .18s ease;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--app-bg); color: var(--app-text); display: flex; }
+
+/* ── Sidebar nav ── */
+#sidebar {
+  width: 220px; min-width: 220px; height: 100vh;
+  background: var(--sidebar-bg); border-right: 1px solid var(--sidebar-border);
+  display: flex; flex-direction: column; padding: 16px 0; z-index: 100;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px 20px; font-size: 16px; font-weight: 700; color: var(--app-text);
+  cursor: pointer;
+}
+.nav-logo-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg,#0079bf,#00875a);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.nav-section { padding: 4px 8px; margin-bottom: 2px; }
+.nav-section-label { font-size: 11px; font-weight: 600; color: var(--text-muted);
+  letter-spacing: .5px; text-transform: uppercase; padding: 4px 8px 4px; }
+.nav-item {
+  width: 100%; display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 4px; cursor: pointer;
+  color: var(--text-muted); transition: var(--transition);
+  border: none; background: transparent; font-size: 14px; text-align: left;
+}
+.nav-item:hover { background: var(--nav-hover); color: var(--app-text); }
+.nav-item.active { background: #e4f0f6; color: var(--accent); font-weight: 600; }
+.nav-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.nav-spacer { flex: 1; }
+.nav-bottom { padding: 8px; border-top: 1px solid var(--sidebar-border); margin-top: 8px; }
+.sync-row { display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; font-size: 12px; color: var(--text-muted); }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%;
+  background: #61bd4f; box-shadow: 0 0 6px #61bd4f88; flex-shrink: 0; }
+
+/* ── Main ── */
+#main { flex: 1; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+.view { display: none; flex: 1; overflow: hidden; }
+.view.active { display: flex; }
+
+/* ════════════════════════════════
+   TODO MODULE  (fusion-todo style)
+════════════════════════════════ */
+#view-todo { flex-direction: column; }
+.todo-header {
+  padding: 12px 16px; border-bottom: 1px solid var(--sidebar-border);
+  display: flex; align-items: center; gap: 12px; background: #fff;
+  flex-shrink: 0;
+}
+.todo-header h1 { font-size: 20px; font-weight: 700; color: var(--app-text); }
+.view-switcher { display: flex; background: #f1f2f4; border-radius: 8px;
+  padding: 3px; gap: 2px; }
+.view-tab {
+  padding: 5px 14px; border-radius: 6px; font-size: 13px; font-weight: 600;
+  cursor: pointer; color: var(--text-muted); border: none; background: transparent;
+  transition: var(--transition);
+}
+.view-tab.active { background: #fff; color: var(--accent); box-shadow: var(--shadow); }
+.view-tab:not(.active):hover { color: var(--app-text); }
+.header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.btn-primary {
+  padding: 7px 14px; background: var(--accent); color: #fff;
+  border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 6px; transition: var(--transition);
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+/* Board */
+.board-scroll { flex: 1; overflow-x: auto; overflow-y: hidden;
+  padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start; }
+.board-col {
+  min-width: 272px; max-width: 272px;
+  display: flex; flex-direction: column;
+  background: var(--col-bg); border-radius: var(--radius);
+  padding: 10px; max-height: calc(100vh - 100px);
+}
+.col-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; position: relative; }
+.col-title-input {
+  font-size: 14px; font-weight: 600; color: var(--app-text);
+  background: transparent; border: 2px solid transparent;
+  border-radius: 4px; padding: 4px 6px; flex: 1; cursor: pointer;
+  transition: var(--transition);
+}
+.col-title-input:focus { background: #fff; border-color: var(--accent); outline: none; cursor: text; }
+.col-collapse-btn {
+  padding: 3px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;
+  color: var(--text-muted); border: none; background: transparent;
+  transition: var(--transition); white-space: nowrap;
+}
+.col-collapse-btn:hover { background: var(--nav-hover); color: var(--app-text); }
+.col-action-btn {
+  padding: 3px 8px; border-radius: 4px; font-size: 16px; cursor: pointer;
+  color: var(--text-muted); border: none; background: transparent;
+  transition: var(--transition); line-height: 1;
+}
+.col-action-btn:hover { background: var(--nav-hover); color: var(--app-text); }
+.col-count { font-size: 12px; color: var(--text-muted); background: #091e4214;
+  padding: 1px 7px; border-radius: 10px; flex-shrink: 0; }
+.col-action-panel {
+  position: absolute; top: 100%; right: 0; z-index: 20;
+  background: #fff; border: 1px solid var(--sidebar-border);
+  border-radius: 6px; box-shadow: 0 4px 16px rgba(9,30,66,.2);
+  padding: 4px; display: flex; align-items: center; gap: 2px; white-space: nowrap;
+}
+.col-action-panel button {
+  padding: 4px 8px; border-radius: 4px; font-size: 13px; cursor: pointer;
+  color: var(--text-muted); border: none; background: transparent;
+  transition: var(--transition);
+}
+.col-action-panel button:hover:not(:disabled) { background: var(--nav-hover); color: var(--app-text); }
+.col-action-panel button:disabled { opacity: .4; cursor: not-allowed; }
+.col-action-panel .del-btn:hover { background: #ffecea; color: var(--danger); }
+.col-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 20px; }
+.task-card {
+  background: var(--card-bg); border-radius: 4px;
+  padding: 10px 12px; cursor: pointer; margin-bottom: 8px;
+  box-shadow: var(--shadow); position: relative;
+  border-left: 4px solid var(--status-todo);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.task-card:hover { box-shadow: var(--card-hover-shadow); transform: translateY(-1px); }
+.task-card.status-doing { border-left-color: var(--status-doing); }
+.task-card.status-done { border-left-color: var(--status-done); }
+.task-card.status-when-free { border-left-color: var(--status-whenfree); opacity: .85; }
+.task-card-context-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 4px 4px 0 0; }
+.task-card-title {
+  font-size: 14px; color: var(--app-text); line-height: 1.5;
+  white-space: pre-wrap; word-break: break-word;
+}
+.task-card.status-done .task-card-title { text-decoration: line-through; color: #888; }
+.task-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.task-tag { font-size: 11px; padding: 1px 6px; border-radius: 3px; font-weight: 600; color: #fff; }
+.task-context-label { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.task-status-select {
+  margin-top: 8px; width: 100%; padding: 4px 6px; font-size: 12px;
+  border: 1px solid rgba(0,0,0,.1); border-radius: 4px;
+  background: rgba(255,255,255,.8); cursor: pointer;
+}
+.col-add-btn {
+  display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+  border-radius: 4px; color: var(--text-muted); font-size: 13px;
+  cursor: pointer; border: none; background: transparent; text-align: left;
+  transition: var(--transition); margin-top: 4px;
+}
+.col-add-btn:hover { background: var(--nav-hover); color: var(--app-text); }
+.board-add-col {
+  min-width: 272px; height: 48px; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.5); border: 2px dashed #ccc; border-radius: var(--radius);
+  color: var(--text-muted); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: var(--transition); flex-shrink: 0;
+}
+.board-add-col:hover { background: rgba(255,255,255,.8); border-color: var(--accent); color: var(--accent); }
+
+/* ════════════════════════════════
+   TREE MODULE
+════════════════════════════════ */
+#view-tree { }
+.tree-sidebar {
+  width: 240px; min-width: 200px; height: 100%;
+  background: #fff; border-right: 1px solid var(--sidebar-border);
+  display: flex; flex-direction: column;
+}
+.tree-sidebar-header {
+  padding: 12px 12px 8px; border-bottom: 1px solid var(--sidebar-border);
+  display: flex; align-items: center; gap: 8px;
+}
+.tree-sidebar-header h2 { font-size: 14px; font-weight: 700; flex: 1;
+  color: var(--tree-accent); }
+.tree-search-box {
+  margin: 8px 10px; padding: 7px 10px; border-radius: 4px;
+  background: var(--app-bg); border: 1px solid var(--sidebar-border);
+  color: var(--app-text); font-size: 13px; outline: none;
+  transition: var(--transition); width: calc(100% - 20px);
+}
+.tree-search-box:focus { border-color: var(--tree-accent); }
+.tree-doc-list { flex: 1; overflow-y: auto; padding: 4px 6px; }
+.tree-doc-item {
+  padding: 7px 10px; border-radius: 4px; cursor: pointer;
+  transition: var(--transition); display: flex; gap: 8px; align-items: flex-start;
+  border: 1px solid transparent; margin-bottom: 2px;
+}
+.tree-doc-item:hover { background: var(--nav-hover); }
+.tree-doc-item.active { background: #e3f5ed; border-color: #b7dfcc; }
+.tree-doc-item.active .doc-name { color: var(--tree-accent); font-weight: 600; }
+.doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doc-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.tree-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.tree-toolbar {
+  padding: 10px 16px; border-bottom: 1px solid var(--sidebar-border);
+  display: flex; align-items: center; gap: 8px; background: #fff; flex-shrink: 0;
+}
+.tree-doc-title-label { font-size: 15px; font-weight: 700; flex: 1; color: var(--app-text); }
+.tree-btn {
+  padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;
+  border: 1px solid var(--sidebar-border); background: #fff;
+  color: var(--text-muted); transition: var(--transition);
+}
+.tree-btn:hover { background: var(--nav-hover); color: var(--app-text); }
+.tree-btn.primary { background: var(--tree-accent); color: #fff; border-color: var(--tree-accent); }
+.tree-btn.primary:hover { filter: brightness(1.1); }
+.tree-help { font-size: 11px; color: var(--text-muted); background: #f1f8f4;
+  border-radius: 4px; padding: 3px 8px; }
+.outline-area { flex: 1; overflow-y: auto; padding: 12px 16px; }
+.outline-node { }
+.node-row {
+  display: flex; align-items: flex-start; gap: 4px; padding: 2px 6px;
+  border-radius: 4px; cursor: default; transition: background var(--transition);
+  position: relative;
+}
+.node-row:hover { background: rgba(0,135,90,.06); }
+.node-row:hover .node-actions { opacity: 1; }
+.node-toggle {
+  width: 18px; height: 22px; display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 10px; flex-shrink: 0; cursor: pointer;
+  transition: transform var(--transition); user-select: none;
+}
+.node-toggle.open { transform: rotate(90deg); }
+.node-toggle.empty { cursor: default; }
+.node-bullet { width: 6px; height: 6px; border-radius: 50%;
+  background: var(--tree-accent); flex-shrink: 0; margin-top: 9px; }
+.node-text {
+  font-size: 14px; line-height: 1.65; flex: 1; outline: none;
+  border-radius: 3px; padding: 1px 4px; min-width: 0;
+  transition: background var(--transition);
+}
+.node-text:focus { background: #e3f5ed; }
+.node-text.h1 { font-size: 18px; font-weight: 700; color: var(--tree-accent); }
+.node-text.h2 { font-size: 15px; font-weight: 600; }
+.node-actions { opacity: 0; display: flex; gap: 2px; flex-shrink: 0; margin-top: 2px; }
+.node-act-btn {
+  padding: 2px 5px; border-radius: 3px; font-size: 11px; cursor: pointer;
+  border: none; background: transparent; color: var(--text-muted);
+  transition: var(--transition);
+}
+.node-act-btn:hover { background: var(--nav-hover); color: var(--app-text); }
+.node-children { margin-left: 22px; border-left: 2px solid #dfe1e6; padding-left: 8px; }
+
+/* ════════════════════════════════
+   DIARY MODULE
+════════════════════════════════ */
+#view-diary { }
+.diary-sidebar {
+  width: 240px; min-width: 200px; height: 100%;
+  background: #fff; border-right: 1px solid var(--sidebar-border);
+  display: flex; flex-direction: column;
+}
+.diary-sidebar-header {
+  padding: 12px 12px 8px; border-bottom: 1px solid var(--sidebar-border);
+  display: flex; align-items: center; gap: 8px;
+}
+.diary-sidebar-header h2 { font-size: 14px; font-weight: 700; flex: 1;
+  color: var(--diary-accent); }
+.diary-btn-small {
+  padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer;
+  border: none; background: var(--diary-accent); color: #fff;
+  transition: var(--transition); font-weight: 600;
+}
+.diary-btn-small:hover { filter: brightness(1.1); }
+.diary-btn-secondary {
+  padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer;
+  border: 1px solid var(--sidebar-border); background: #fff; color: var(--text-muted);
+  transition: var(--transition);
+}
+.diary-btn-secondary:hover { background: var(--nav-hover); color: var(--app-text); }
+.diary-sidebar-tabs { display: flex; border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0; }
+.diary-sidebar-tab {
+  flex: 1; padding: 8px; text-align: center; font-size: 12px; font-weight: 600;
+  cursor: pointer; color: var(--text-muted); transition: var(--transition);
+  border-bottom: 2px solid transparent;
+}
+.diary-sidebar-tab.active { color: var(--diary-accent); border-bottom-color: var(--diary-accent); }
+.diary-sidebar-tab:hover:not(.active) { background: var(--nav-hover); }
+.diary-list-inner { flex: 1; overflow-y: auto; padding: 6px; }
+.diary-item {
+  padding: 9px 10px; border-radius: 4px; cursor: pointer;
+  transition: var(--transition); border: 1px solid transparent; margin-bottom: 3px;
+}
+.diary-item:hover { background: var(--nav-hover); }
+.diary-item.active { background: #fdeee9; border-color: #f5c5b5; }
+.diary-item.active .diary-item-title { color: var(--diary-accent); }
+.diary-item-date { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+.diary-item-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.diary-item-preview { font-size: 11px; color: var(--text-muted); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.diary-item-check { float: right; margin-top: 2px; width: 14px; height: 14px;
+  cursor: pointer; accent-color: var(--diary-accent); }
+/* Weekly select mode */
+.diary-select-bar {
+  padding: 6px 8px; background: #fdeee9; border-bottom: 1px solid #f5c5b5;
+  font-size: 12px; color: var(--diary-accent); display: flex;
+  align-items: center; gap: 8px; flex-shrink: 0;
+}
+.diary-select-bar button {
+  padding: 3px 8px; border-radius: 4px; border: 1px solid var(--diary-accent);
+  background: #fff; color: var(--diary-accent); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+}
+.diary-select-bar button:hover { background: var(--diary-accent); color: #fff; }
+/* Editor */
+.diary-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.diary-editor-header {
+  padding: 10px 16px; border-bottom: 1px solid var(--sidebar-border);
+  background: #fff; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.diary-title-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-size: 16px; font-weight: 700; color: var(--app-text);
+}
+.diary-toolbar {
+  padding: 6px 16px; border-bottom: 1px solid var(--sidebar-border);
+  display: flex; gap: 4px; align-items: center; flex-wrap: wrap; background: #fff; flex-shrink: 0;
+}
+.toolbar-btn {
+  padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;
+  border: 1px solid var(--sidebar-border); background: #fff;
+  color: var(--text-muted); transition: var(--transition);
+}
+.toolbar-btn:hover { background: var(--nav-hover); color: var(--app-text); }
+.toolbar-sep { width: 1px; height: 16px; background: var(--sidebar-border); margin: 0 2px; }
+.diary-editor-body { flex: 1; overflow-y: auto; padding: 20px 28px; }
+.diary-textarea {
+  width: 100%; min-height: 360px; background: transparent; border: none; outline: none;
+  color: var(--app-text); font-size: 15px; line-height: 1.8; resize: none; font-family: inherit;
+}
+.diary-textarea::placeholder { color: var(--text-muted); }
+.diary-editor-footer {
+  padding: 8px 16px; border-top: 1px solid var(--sidebar-border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fff; flex-shrink: 0;
+}
+.word-count { font-size: 12px; color: var(--text-muted); }
+.diary-actions { display: flex; gap: 6px; }
+.btn-diary { padding: 6px 14px; border-radius: 4px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: var(--transition); }
+.btn-diary-primary { background: var(--diary-accent); color: #fff; }
+.btn-diary-primary:hover { filter: brightness(1.1); }
+.btn-diary-ghost { background: transparent; border: 1px solid var(--sidebar-border);
+  color: var(--text-secondary); }
+.btn-diary-ghost:hover { background: var(--nav-hover); color: var(--app-text); }
+/* AI panel */
+.ai-panel {
+  position: absolute; right: 16px; bottom: 64px; width: 340px;
+  background: #fff; border: 1px solid var(--sidebar-border);
+  border-radius: var(--radius); padding: 14px;
+  box-shadow: 0 8px 28px rgba(9,30,66,.2);
+  display: none; z-index: 50;
+}
+.ai-panel.open { display: block; animation: slideUp .2s ease; }
+@keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.ai-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ai-panel-title { font-size: 13px; font-weight: 700; color: var(--diary-accent); }
+.ai-close { border: none; background: transparent; color: var(--text-muted);
+  font-size: 16px; cursor: pointer; }
+.ai-content { font-size: 13px; line-height: 1.7; color: var(--app-text); }
+.ai-tag { display: inline-block; background: #fdeee9; color: var(--diary-accent);
+  padding: 2px 8px; border-radius: 10px; font-size: 11px; margin: 2px 2px 0 0; }
+
+/* ════════════════════════════════
+   SETTINGS
+════════════════════════════════ */
+#view-settings { flex-direction: column; align-items: center; overflow-y: auto; padding: 32px 16px; }
+.settings-inner { width: 100%; max-width: 520px; }
+.settings-inner h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+.settings-card {
+  background: #fff; border: 1px solid var(--sidebar-border);
+  border-radius: var(--radius); padding: 20px; margin-bottom: 14px;
+}
+.settings-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+.form-group { margin-bottom: 12px; }
+.form-label { font-size: 11px; color: var(--text-muted); margin-bottom: 5px;
+  display: block; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+.form-input {
+  width: 100%; padding: 8px 10px; border-radius: 4px;
+  background: var(--app-bg); border: 1px solid var(--sidebar-border);
+  color: var(--app-text); font-size: 14px; outline: none; transition: var(--transition);
+}
+.form-input:focus { border-color: var(--accent); }
+.btn-save { padding: 8px 18px; background: var(--accent); color: #fff;
+  border: none; border-radius: 4px; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: var(--transition); }
+.btn-save:hover { background: var(--accent-hover); }
+.import-zone {
+  border: 2px dashed var(--sidebar-border); border-radius: var(--radius);
+  padding: 28px; text-align: center; color: var(--text-muted); font-size: 13px;
+  cursor: pointer; transition: var(--transition); margin-top: 8px;
+}
+.import-zone:hover { border-color: var(--accent); background: rgba(0,121,191,.04); color: var(--accent); }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(9,30,66,.4);
+  display: none; align-items: center; justify-content: center; z-index: 200;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 10px; padding: 22px;
+  width: min(480px, 92vw); box-shadow: 0 20px 60px rgba(9,30,66,.25);
+  animation: modalIn .18s ease;
+}
+.modal-box.modal-lg { width: min(600px, 94vw); }
+@keyframes modalIn { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+.modal-body { margin-bottom: 18px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-modal-primary { padding: 7px 16px; background: var(--accent); color: #fff;
+  border: none; border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-modal-primary:hover { background: var(--accent-hover); }
+.btn-modal-ghost { padding: 7px 16px; border: 1px solid var(--sidebar-border);
+  background: transparent; color: var(--text-muted); border-radius: 4px;
+  font-size: 13px; cursor: pointer; }
+.btn-modal-ghost:hover { background: var(--nav-hover); color: var(--app-text); }
+/* weekly modal */
+.weekly-diary-list { max-height: 260px; overflow-y: auto; border: 1px solid var(--sidebar-border);
+  border-radius: 4px; margin-top: 8px; }
+.weekly-diary-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border-bottom: 1px solid var(--sidebar-border); cursor: pointer; transition: var(--transition); }
+.weekly-diary-row:last-child { border-bottom: none; }
+.weekly-diary-row:hover { background: var(--nav-hover); }
+.weekly-diary-row input[type=checkbox] { flex-shrink: 0; accent-color: var(--diary-accent); }
+.weekly-diary-row-title { font-size: 13px; font-weight: 500; flex: 1; }
+.weekly-diary-row-date { font-size: 11px; color: var(--text-muted); }
+.weekly-progress-bar-wrap { background: #eee; border-radius: 4px; height: 6px; margin: 12px 0 4px; overflow: hidden; }
+.weekly-progress-bar { height: 100%; background: linear-gradient(90deg,var(--diary-accent),#e8845a);
+  border-radius: 4px; transition: width .4s ease; }
+.weekly-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+.weekly-tab { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--sidebar-border); background: #fff; color: var(--text-muted);
+  transition: var(--transition); }
+.weekly-tab.active { background: var(--diary-accent); color: #fff; border-color: var(--diary-accent); }
+.weekly-result-content { background: #fdeee9; border-radius: 4px; padding: 14px;
+  font-size: 14px; line-height: 1.8; white-space: pre-wrap; max-height: 280px; overflow-y: auto;
+  border-left: 3px solid var(--diary-accent); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c1c7d0; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #97a0af; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(60px);
+  background: var(--app-text); color: #fff; border-radius: 6px;
+  padding: 9px 18px; font-size: 13px; transition: transform .24s ease, opacity .24s ease;
+  opacity: 0; z-index: 999; pointer-events: none; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+<!-- ══ SIDEBAR ══ -->
+<nav id="sidebar">
+  <div class="nav-logo" onclick="showToast('Tree-Fusion-Diary v0.1')">
+    <div class="nav-logo-icon">🌳</div>
+    Tree-Fusion
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">工作区</div>
+    <button class="nav-item active" id="nav-todo" onclick="switchView('todo')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="6" height="6" rx="1"/><rect x="3" y="13" width="6" height="6" rx="1"/><line x1="13" y1="8" x2="21" y2="8"/><line x1="13" y1="16" x2="21" y2="16"/></svg>
+      Fusion Todo
+    </button>
+    <button class="nav-item" id="nav-tree" onclick="switchView('tree')">
+      <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" stroke-width="1.5"/><line x1="10" y1="6.5" x2="14" y2="6.5"/><line x1="10" y1="17.5" x2="14" y2="17.5"/><line x1="17.5" y1="10" x2="17.5" y2="14"/></svg>
+      知识树
+    </button>
+    <button class="nav-item" id="nav-diary" onclick="switchView('diary')">
+      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      日记本
+    </button>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-section">
+    <button class="nav-item" id="nav-settings" onclick="switchView('settings')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      设置 / 导入
+    </button>
+  </div>
+  <div class="nav-bottom">
+    <div class="sync-row"><div class="sync-dot"></div>已同步 Supabase</div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+
+  <!-- ── TODO VIEW ── -->
+  <div class="view active" id="view-todo">
+    <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="todo-header">
+        <h1>Polished Fusion</h1>
+        <div class="view-switcher">
+          <button class="view-tab active" onclick="setTodoView('status',this)">Status</button>
+          <button class="view-tab" onclick="setTodoView('context',this)">Context</button>
+          <button class="view-tab" onclick="setTodoView('date',this)">Date</button>
+        </div>
+        <div class="header-right">
+          <button class="btn-primary" onclick="openAddTask()">➕ New</button>
+        </div>
+      </div>
+      <div class="board-scroll" id="board-scroll"></div>
+    </div>
+  </div>
+
+  <!-- ── TREE VIEW ── -->
+  <div class="view" id="view-tree">
+    <div class="tree-sidebar">
+      <div class="tree-sidebar-header">
+        <span style="font-size:16px">🌿</span>
+        <h2>知识树</h2>
+        <button class="tree-btn primary" style="font-size:11px;padding:3px 8px" onclick="showToast('新建文档')">+</button>
+      </div>
+      <input class="tree-search-box" type="text" placeholder="🔍 搜索文档...">
+      <div class="tree-doc-list" id="doc-list"></div>
+    </div>
+    <div class="tree-main">
+      <div class="tree-toolbar">
+        <div class="tree-doc-title-label" id="tree-doc-title">碎片化人类 · 主索引</div>
+        <span class="tree-help">Tab缩进 · Shift+Tab反缩进 · Enter换行</span>
+        <button class="tree-btn" onclick="showToast('撤销')">↩ 撤销</button>
+        <button class="tree-btn primary" onclick="showToast('已保存 ✓')">保存</button>
+      </div>
+      <div class="outline-area" id="outline-area"></div>
+    </div>
+  </div>
+
+  <!-- ── DIARY VIEW ── -->
+  <div class="view" id="view-diary">
+    <div class="diary-sidebar">
+      <div class="diary-sidebar-header">
+        <span style="font-size:16px">📖</span>
+        <h2>日记本</h2>
+        <button class="diary-btn-secondary" onclick="openWeeklyModal()" title="生成周记">📝 周记</button>
+        <button class="diary-btn-small" onclick="newDiary()">+ 新建</button>
+      </div>
+      <div class="diary-sidebar-tabs">
+        <div class="diary-sidebar-tab active" onclick="setDiarySideTab('list',this)">列表</div>
+        <div class="diary-sidebar-tab" onclick="setDiarySideTab('select',this)">选择</div>
+      </div>
+      <div id="diary-select-bar" class="diary-select-bar" style="display:none">
+        <span id="diary-selected-count">已选 0 篇</span>
+        <button onclick="selectAllDiaries()">全选</button>
+        <button onclick="clearDiarySelection()">清空</button>
+        <button onclick="openWeeklyModal()" style="background:var(--diary-accent);color:#fff;border-color:var(--diary-accent)">生成周记</button>
+      </div>
+      <div class="diary-list-inner" id="diary-list"></div>
+    </div>
+    <div class="diary-main" style="position:relative">
+      <div class="diary-editor-header">
+        <input class="diary-title-input" id="diary-title-input" type="text" value="今天下午过得很充实">
+        <span style="font-size:12px;color:var(--text-muted)">2026-03-10</span>
+      </div>
+      <div class="diary-toolbar">
+        <button class="toolbar-btn" onclick="showToast('加粗')"><b>B</b></button>
+        <button class="toolbar-btn" onclick="showToast('斜体')"><i>I</i></button>
+        <button class="toolbar-btn" onclick="showToast('下划线')"><u>U</u></button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" onclick="showToast('H1')">H1</button>
+        <button class="toolbar-btn" onclick="showToast('H2')">H2</button>
+        <button class="toolbar-btn" onclick="showToast('列表')">≡</button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" onclick="showToast('插入图片 (Supabase Storage)')">📷 图片</button>
+        <button class="toolbar-btn" onclick="showToast('查看原文')">📄 原文</button>
+      </div>
+      <div class="diary-editor-body">
+        <textarea class="diary-textarea" id="diary-textarea" oninput="updateWordCount(this)">今天下午花了三个小时整理知识树，把最近看的几本书的笔记做了归纳。
+
+发现学习效率比之前高了很多，主要是因为用了番茄钟工作法，每 25 分钟专注，5 分钟休息。
+
+晚上和朋友打了一局篮球，虽然输了，但心情很好。回来之后泡了一杯茶，感觉生活很有仪式感。
+
+明天要完成 Tree-Fusion-Diary 前端原型的确认，期待！</textarea>
+      </div>
+      <div class="diary-editor-footer">
+        <span class="word-count" id="word-count">98 字</span>
+        <div class="diary-actions">
+          <button class="btn-diary btn-diary-ghost" onclick="showToast('仅保存')">保存</button>
+          <button class="btn-diary btn-diary-ghost" onclick="showToast('结构优化 (AI)')">结构优化</button>
+          <button class="btn-diary btn-diary-primary" onclick="toggleAiPanel()">✨ 乐观分析</button>
+        </div>
+      </div>
+      <div class="ai-panel" id="ai-panel">
+        <div class="ai-panel-header">
+          <div class="ai-panel-title">✨ AI 乐观分析</div>
+          <button class="ai-close" onclick="toggleAiPanel()">✕</button>
+        </div>
+        <div class="ai-content">
+          <p style="margin-bottom:6px">情绪标签：</p>
+          <span class="ai-tag">😊 积极</span>
+          <span class="ai-tag">🎯 专注</span>
+          <span class="ai-tag">💡 学习中</span>
+          <span class="ai-tag">🏃 运动</span>
+          <hr style="border:none;border-top:1px solid var(--sidebar-border);margin:10px 0">
+          <p style="font-weight:700;margin-bottom:6px">积极改写建议：</p>
+          <p>今天是高效且充实的一天！你成功地将番茄钟工作法融入学习，并在运动中保持了快乐的心态——这正是成长型思维的体现。明天的里程碑等着你！🚀</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS VIEW ── -->
+  <div class="view" id="view-settings">
+    <div class="settings-inner">
+      <h2>⚙️ 设置 &amp; 数据导入</h2>
+      <div class="settings-card">
+        <h3>🔑 Supabase 配置</h3>
+        <div class="form-group"><label class="form-label">Project URL</label>
+          <input class="form-input" type="text" placeholder="https://xxxx.supabase.co"></div>
+        <div class="form-group"><label class="form-label">Anon Key</label>
+          <input class="form-input" type="password" placeholder="eyJ..."></div>
+        <button class="btn-save" onclick="showToast('配置已保存 ✓')">保存配置</button>
+      </div>
+      <div class="settings-card">
+        <h3>📥 历史数据迁移</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">选择旧版 Diary / Todo 数据文件，系统会自动读取并上传到 Supabase。</p>
+        <div class="import-zone" onclick="showToast('选择文件夹 (File System API)')">
+          📂 点击选择旧版「MyDiary」文件夹<br>
+          <span style="font-size:11px;margin-top:4px;display:block">支持 .json 日记文件 &amp; 图片素材</span>
+        </div>
+        <div style="margin-top:10px">
+          <div class="import-zone" onclick="showToast('选择 todo.db 文件')">
+            🗃️ 点击导入 todo.db（SQLite 自动转 Supabase）
+          </div>
+        </div>
+      </div>
+      <div class="settings-card">
+        <h3>🤖 AI 配置</h3>
+        <div class="form-group"><label class="form-label">AI 服务</label>
+          <select class="form-input"><option>智谱 GLM-4</option><option>OpenAI GPT-4o</option><option>本地 Ollama</option></select></div>
+        <div class="form-group"><label class="form-label">API Key</label>
+          <input class="form-input" type="password" placeholder="sk-..."></div>
+        <button class="btn-save" onclick="showToast('AI 配置已保存 ✓')">保存</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ══ MODALS ══ -->
+<!-- Add Task -->
+<div class="modal-overlay" id="modal-add-task">
+  <div class="modal-box">
+    <div class="modal-title">➕ 新建任务</div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">任务名称</label>
+        <input class="form-input" id="new-task-title" type="text" placeholder="做了什么？"></div>
+      <div class="form-group"><label class="form-label">状态</label>
+        <select class="form-input" id="new-task-status">
+          <option value="todo">Todo</option><option value="doing">In Progress</option>
+          <option value="done">Done</option><option value="when-free">When Free</option>
+        </select></div>
+      <div class="form-group"><label class="form-label">清单 (Context)</label>
+        <select class="form-input" id="new-task-context">
+          <option value="c1">💼 工作</option><option value="c2">🏠 个人</option><option value="c3">💡 想法</option>
+        </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-ghost" onclick="closeModal('modal-add-task')">取消</button>
+      <button class="btn-modal-primary" onclick="addNewTask()">创建</button>
+    </div>
+  </div>
+</div>
+
+<!-- Weekly Diary Modal -->
+<div class="modal-overlay" id="modal-weekly">
+  <div class="modal-box modal-lg">
+    <div class="modal-title">📝 生成周记</div>
+    <div class="modal-body">
+      <div class="weekly-tabs">
+        <div class="weekly-tab active" id="weekly-tab-select" onclick="setWeeklyTab('select',this)">① 选择日记</div>
+        <div class="weekly-tab" id="weekly-tab-gen" onclick="setWeeklyTab('gen',this)">② 生成结果</div>
+      </div>
+      <!-- tab: select -->
+      <div id="weekly-pane-select">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:6px">勾选要汇总的日记（可多选）：</p>
+        <div class="weekly-diary-list" id="weekly-diary-list"></div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+          <button class="btn-modal-ghost" onclick="weeklySelectAll()">全选</button>
+          <button class="btn-modal-ghost" onclick="weeklyClearAll()">清空</button>
+          <span id="weekly-sel-count" style="font-size:12px;color:var(--text-muted)">已选 0 篇</span>
+        </div>
+      </div>
+      <!-- tab: result -->
+      <div id="weekly-pane-gen" style="display:none">
+        <div id="weekly-gen-progress" style="display:none">
+          <p style="font-size:13px;margin-bottom:4px">🤖 AI 正在生成周记...</p>
+          <div class="weekly-progress-bar-wrap"><div class="weekly-progress-bar" id="weekly-pgbar" style="width:0%"></div></div>
+          <p id="weekly-progress-text" style="font-size:12px;color:var(--text-muted)">准备中...</p>
+        </div>
+        <div id="weekly-result-content" class="weekly-result-content" style="display:none"></div>
+        <div id="weekly-gen-actions" style="display:none;margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn-modal-ghost" onclick="showToast('已复制到剪贴板')">📋 复制</button>
+          <button class="btn-modal-ghost" onclick="showToast('已保存为新日记')">💾 保存为日记</button>
+          <button class="btn-modal-ghost" onclick="runWeeklyGen()">🔄 重新生成</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-ghost" onclick="closeModal('modal-weekly')">关闭</button>
+      <button class="btn-modal-primary" id="weekly-next-btn" onclick="weeklyNext()">生成周记 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<script>
+// ════ Mock Data ════
+const CONTEXTS = [
+  { id:'c1', title:'💼 工作',  color:'#0079bf' },
+  { id:'c2', title:'🏠 个人',  color:'#61bd4f' },
+  { id:'c3', title:'💡 想法',  color:'#ff9f1a' },
+];
+const STATUSES = [
+  { id:'todo',      title:'Todo',        color:'#dfe1e6' },
+  { id:'doing',     title:'In Progress', color:'#0079bf' },
+  { id:'done',      title:'Done',        color:'#61bd4f' },
+  { id:'when-free', title:'When Free',   color:'#9e9e9e' },
+];
+let tasks = [
+  { id:'t1', title:'整合 fusion-todo 前端组件到新框架', status:'doing', context:'c1', tags:['feature'] },
+  { id:'t2', title:'设计 Supabase 数据库 Schema', status:'todo', context:'c1', tags:['urgent'] },
+  { id:'t3', title:'编写 HTML 原型并确认交互', status:'doing', context:'c1', tags:[] },
+  { id:'t4', title:'迁移 diary-app 到 Next.js', status:'todo', context:'c1', tags:[] },
+  { id:'t5', title:'读《原子习惯》第5章', status:'todo', context:'c2', tags:[] },
+  { id:'t6', title:'健身 30 分钟', status:'done', context:'c2', tags:[] },
+  { id:'t7', title:'探索 AI 周记功能', status:'done', context:'c3', tags:['idea'] },
+  { id:'t8', title:'todo.db 迁移 Supabase 脚本', status:'todo', context:'c1', tags:['urgent'] },
+  { id:'t9', title:'购物：牛奶 + 咖啡豆', status:'done', context:'c2', tags:[] },
+  { id:'t10', title:'Three.js 知识图谱可视化 PoC', status:'when-free', context:'c3', tags:['idea'] },
+];
+const TREE_DOCS = [
+  { id:'d1', name:'碎片化人类 · 主索引', icon:'🌳', date:'今天' },
+  { id:'d2', name:'读书笔记 · 原子习惯', icon:'📚', date:'昨天' },
+  { id:'d3', name:'技术栈决策记录', icon:'⚙️', date:'3天前' },
+  { id:'d4', name:'AI 工具链调研', icon:'🤖', date:'1周前' },
+  { id:'d5', name:'年度计划 2026', icon:'🎯', date:'2周前' },
+];
+const OUTLINE_DATA = [
+  { text:'碎片化人类', level:1, children:[
+    { text:'方法论', level:2, children:[
+      { text:'番茄钟工作法 — 25/5 节律固化专注闭环', level:3 },
+      { text:'双链笔记 — 知识节点之间的引力场', level:3 },
+      { text:'GTD 收集桶 — 清空大脑的第一步', level:3 },
+    ]},
+    { text:'技术', level:2, children:[
+      { text:'Next.js 14 App Router 架构设计', level:3 },
+      { text:'Supabase — BaaS 选型理由', level:3 },
+      { text:'Zustand + Dexie — 离线优先状态管理', level:3 },
+    ]},
+    { text:'项目', level:2, children:[
+      { text:'🌳 Tree-Fusion-Diary 整合计划', level:3 },
+      { text:'股票分析工具 v2', level:3 },
+    ]},
+  ]}
+];
+let DIARY_DATA = [
+  { id:'e1', date:'2026-03-10', title:'今天下午过得很充实', preview:'番茄钟 + 篮球 + 茶...', content:'今天下午花了三个小时整理知识树...' },
+  { id:'e2', date:'2026-03-09', title:'股票扫描脚本跑通了', preview:'终于解决了 xls 解析...', content:'今天终于把 xls 解析问题搞定了...' },
+  { id:'e3', date:'2026-03-08', title:'架构蓝图确定', preview:'三位一体系统: Todo+Tree+Diary...', content:'今天确定了三位一体架构...' },
+  { id:'e4', date:'2026-03-07', title:'辐射状 UI 探索', preview:'用 Three.js 做知识图谱...', content:'尝试用 Three.js 做了辐射状 UI...' },
+  { id:'e5', date:'2026-03-06', title:'周记功能上线', preview:'AI 生成周记，效果不错...', content:'周记功能终于上线，AI 生成效果很好...' },
+  { id:'e6', date:'2026-03-05', title:'疲惫但充实的一天', preview:'今天事情太多了，但...', content:'今天有点累，但是完成了很多事情...' },
+];
+
+// ════ State ════
+let currentTodoView = 'status';
+let activeDocId = 'd1';
+let activeDiaryId = 'e1';
+let diarySideTab = 'list';   // 'list' | 'select'
+let diarySelected = new Set();
+let collapseState = {};      // colId -> bool
+let weeklyTab = 'select';
+let weeklySelected = new Set();
+
+// ════ View Switch ════
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+}
+
+// ════ TODO MODULE ════
+function renderBoard() {
+  const scroll = document.getElementById('board-scroll');
+  let cols = [];
+  if (currentTodoView === 'status') {
+    cols = STATUSES.map(s => ({
+      id: s.id, title: s.title, color: s.color,
+      tasks: tasks.filter(t => t.status === s.id)
+    }));
+  } else if (currentTodoView === 'context') {
+    cols = CONTEXTS.map(c => ({
+      id: c.id, title: c.title, color: c.color,
+      tasks: tasks.filter(t => t.context === c.id)
+    }));
+  } else {
+    const dates = ['2026-03-10','2026-03-11','2026-03-12','2026-03-13'];
+    cols = dates.map((d,i) => ({
+      id: d, title: d, color: '#0079bf',
+      tasks: tasks.filter((t,ti) => ti % 4 === i)
+    }));
+  }
+
+  scroll.innerHTML = cols.map(col => `
+    <div class="board-col" id="col-${col.id}">
+      <div class="col-header" style="${currentTodoView==='context'?'border-top:4px solid '+col.color:''}">
+        <input class="col-title-input" value="${col.title}"
+          onpointerdown="event.stopPropagation()"
+          onchange="showToast('列标题已更新')">
+        <button class="col-collapse-btn" onclick="toggleCol('${col.id}')">
+          ${collapseState[col.id] ? '展开' : '折叠'}
+        </button>
+        <div style="position:relative" id="action-wrap-${col.id}">
+          <button class="col-action-btn" onclick="toggleColAction('${col.id}')">···</button>
+          <div class="col-action-panel" id="action-panel-${col.id}" style="display:none">
+            <button onclick="showToast('向左移动')">←</button>
+            <button onclick="showToast('向右移动')">→</button>
+            ${currentTodoView!=='status'?`<button class="del-btn" onclick="showToast('删除列表')">删除</button>`:''}
+          </div>
+        </div>
+        <span class="col-count">${col.tasks.length}</span>
+      </div>
+      ${!collapseState[col.id] ? `
+        <div class="col-body" id="col-body-${col.id}">
+          ${col.tasks.map(t => taskCardHTML(t)).join('')}
+        </div>
+        <button class="col-add-btn" onclick="quickAdd('${col.id}')">
+          <span style="font-size:16px;line-height:1">+</span> Add card
+        </button>
+      ` : ''}
+    </div>
+  `).join('');
+
+  if (currentTodoView === 'context') {
+    scroll.innerHTML += `<div class="board-add-col" onclick="showToast('新增清单')">+ Add List</div>`;
+  }
+}
+
+function taskCardHTML(t) {
+  const ctx = CONTEXTS.find(c => c.id === t.context);
+  const isStatusView = currentTodoView === 'status';
+  const statusClass = `status-${t.status}`;
+  return `
+    <div class="task-card ${statusClass}" onclick="showToast('打开任务: ${t.title.slice(0,10)}...')">
+      ${isStatusView && ctx ? `<div class="task-card-context-bar" style="background:${ctx.color}"></div>` : ''}
+      <div class="task-card-title" style="${t.status==='done'?'text-decoration:line-through;color:#888':''}">${t.title}</div>
+      ${t.tags.length ? `<div class="task-tags">${t.tags.map(tag=>`<span class="task-tag" style="background:${strColor(tag)}">${tag}</span>`).join('')}</div>` : ''}
+      ${!isStatusView ? `
+        <select class="task-status-select" onclick="event.stopPropagation()" onchange="changeStatus('${t.id}',this.value)">
+          <option value="todo" ${t.status==='todo'?'selected':''}>To Do</option>
+          <option value="doing" ${t.status==='doing'?'selected':''}>In Progress</option>
+          <option value="done" ${t.status==='done'?'selected':''}>Done</option>
+          <option value="when-free" ${t.status==='when-free'?'selected':''}>When Free</option>
+        </select>` :
+        ctx ? `<div class="task-context-label">📂 ${ctx.title}</div>` : ''
+      }
+    </div>`;
+}
+
+function strColor(str) {
+  let h = 0;
+  for (let i=0; i<str.length; i++) h = str.charCodeAt(i) + ((h<<5)-h);
+  return '#'+(((h&0xffffff)+0x1000000).toString(16).slice(-6));
+}
+
+function changeStatus(taskId, newStatus) {
+  const t = tasks.find(t=>t.id===taskId);
+  if (t) { t.status = newStatus; renderBoard(); showToast('状态已更新'); }
+}
+
+function toggleCol(colId) {
+  collapseState[colId] = !collapseState[colId];
+  renderBoard();
+}
+
+let activeActionCol = null;
+function toggleColAction(colId) {
+  const panel = document.getElementById('action-panel-'+colId);
+  if (activeActionCol && activeActionCol !== colId) {
+    const prev = document.getElementById('action-panel-'+activeActionCol);
+    if (prev) prev.style.display = 'none';
+  }
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'flex';
+  activeActionCol = isOpen ? null : colId;
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('[id^="action-wrap-"]')) {
+    if (activeActionCol) {
+      const panel = document.getElementById('action-panel-'+activeActionCol);
+      if (panel) panel.style.display = 'none';
+      activeActionCol = null;
+    }
+  }
+});
+
+function setTodoView(view, el) {
+  currentTodoView = view;
+  document.querySelectorAll('.view-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderBoard();
+}
+
+function quickAdd(colId) {
+  if (currentTodoView === 'status') document.getElementById('new-task-status').value = colId;
+  else document.getElementById('new-task-context').value = colId;
+  openAddTask();
+}
+
+function openAddTask() { document.getElementById('modal-add-task').classList.add('open'); }
+
+function addNewTask() {
+  const title = document.getElementById('new-task-title').value.trim();
+  if (!title) { showToast('请输入任务名称'); return; }
+  tasks.push({ id:'t'+Date.now(), title,
+    status: document.getElementById('new-task-status').value,
+    context: document.getElementById('new-task-context').value,
+    tags:[] });
+  closeModal('modal-add-task');
+  document.getElementById('new-task-title').value = '';
+  renderBoard();
+  showToast('任务已创建 ✓');
+}
+
+// ════ TREE MODULE ════
+function renderDocList() {
+  const list = document.getElementById('doc-list');
+  list.innerHTML = TREE_DOCS.map(d => `
+    <div class="tree-doc-item ${d.id===activeDocId?'active':''}" onclick="selectDoc('${d.id}')">
+      <div style="font-size:16px;flex-shrink:0">${d.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="doc-name">${d.name}</div>
+        <div class="doc-meta">${d.date}</div>
+      </div>
+    </div>`).join('');
+}
+
+function selectDoc(id) {
+  activeDocId = id;
+  const doc = TREE_DOCS.find(d=>d.id===id);
+  document.getElementById('tree-doc-title').textContent = doc.name;
+  renderDocList();
+  if (id==='d1') renderOutline(OUTLINE_DATA);
+  else renderOutline([{ text:doc.name, level:1, children:[{ text:'（从 Supabase 加载中...）', level:2 }]}]);
+}
+
+function renderOutline(nodes, container) {
+  const area = container || document.getElementById('outline-area');
+  area.innerHTML = '';
+  nodes.forEach(n => area.appendChild(buildNode(n)));
+}
+
+function buildNode(nodeData) {
+  const wrap = document.createElement('div');
+  wrap.className = 'outline-node';
+  const row = document.createElement('div');
+  row.className = 'node-row';
+
+  const hasChildren = nodeData.children && nodeData.children.length;
+  const toggle = document.createElement('div');
+  toggle.className = 'node-toggle' + (hasChildren ? ' open' : ' empty');
+  toggle.innerHTML = hasChildren ? '▶' : '&nbsp;';
+
+  const bullet = document.createElement('div');
+  bullet.className = 'node-bullet';
+
+  const text = document.createElement('div');
+  text.className = 'node-text' + (nodeData.level===1?' h1':nodeData.level===2?' h2':'');
+  text.textContent = nodeData.text;
+  text.contentEditable = 'true';
+  text.setAttribute('data-level', nodeData.level);
+
+  // Keyboard: Tab indent, Shift+Tab unindent, Enter new node
+  text.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (e.shiftKey) {
+        // unindent: move up one level
+        const curLvl = parseInt(text.getAttribute('data-level'));
+        if (curLvl > 1) {
+          text.setAttribute('data-level', curLvl-1);
+          text.className = 'node-text' + (curLvl-1===1?' h1':curLvl-1===2?' h2':'');
+          showToast('已减少缩进 (Shift+Tab)');
+        }
+      } else {
+        // indent: move down one level
+        const curLvl = parseInt(text.getAttribute('data-level'));
+        if (curLvl < 4) {
+          text.setAttribute('data-level', curLvl+1);
+          text.className = 'node-text' + (curLvl+1===1?' h1':curLvl+1===2?' h2':'');
+          showToast('已增加缩进 (Tab)');
+        }
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      // Insert sibling node
+      const newNode = buildNode({ text:'', level: parseInt(text.getAttribute('data-level')) });
+      const parentContainer = wrap.parentNode;
+      if (parentContainer) {
+        parentContainer.insertBefore(newNode, wrap.nextSibling);
+        newNode.querySelector('.node-text').focus();
+      }
+    }
+  });
+
+  // Action buttons
+  const actions = document.createElement('div');
+  actions.className = 'node-actions';
+  const addChildBtn = document.createElement('button');
+  addChildBtn.className = 'node-act-btn'; addChildBtn.textContent = '+ 子节点';
+  addChildBtn.onclick = () => {
+    const newLevel = Math.min(parseInt(text.getAttribute('data-level'))+1, 4);
+    let childContainer = wrap.querySelector('.node-children');
+    if (!childContainer) {
+      childContainer = document.createElement('div');
+      childContainer.className = 'node-children';
+      wrap.appendChild(childContainer);
+      toggle.innerHTML = '▶'; toggle.className = 'node-toggle open';
+    }
+    childContainer.style.display = '';
+    const newNode = buildNode({ text:'', level: newLevel });
+    childContainer.appendChild(newNode);
+    newNode.querySelector('.node-text').focus();
+  };
+  const delBtn = document.createElement('button');
+  delBtn.className = 'node-act-btn'; delBtn.textContent = '删除';
+  delBtn.onclick = () => { wrap.remove(); showToast('节点已删除'); };
+  actions.appendChild(addChildBtn);
+  actions.appendChild(delBtn);
+
+  row.appendChild(toggle);
+  row.appendChild(bullet);
+  row.appendChild(text);
+  row.appendChild(actions);
+  wrap.appendChild(row);
+
+  if (hasChildren) {
+    const childContainer = document.createElement('div');
+    childContainer.className = 'node-children';
+    nodeData.children.forEach(c => childContainer.appendChild(buildNode(c)));
+    wrap.appendChild(childContainer);
+    toggle.onclick = e => {
+      e.stopPropagation();
+      const isOpen = toggle.classList.contains('open');
+      toggle.classList.toggle('open', !isOpen);
+      childContainer.style.display = isOpen ? 'none' : '';
+    };
+  }
+  return wrap;
+}
+
+// ════ DIARY MODULE ════
+function renderDiaryList() {
+  const list = document.getElementById('diary-list');
+  list.innerHTML = DIARY_DATA.map(e => `
+    <div class="diary-item ${e.id===activeDiaryId?'active':''}" onclick="selectDiary('${e.id}')">
+      ${diarySideTab==='select' ? `<input type="checkbox" class="diary-item-check"
+        ${diarySelected.has(e.id)?'checked':''} onclick="event.stopPropagation();toggleDiarySelect('${e.id}')">` : ''}
+      <div class="diary-item-date">${e.date}</div>
+      <div class="diary-item-title">${e.title}</div>
+      <div class="diary-item-preview">${e.preview}</div>
+    </div>`).join('');
+}
+
+function selectDiary(id) {
+  if (diarySideTab === 'select') { toggleDiarySelect(id); return; }
+  activeDiaryId = id;
+  const entry = DIARY_DATA.find(e=>e.id===id);
+  document.getElementById('diary-title-input').value = entry.title;
+  document.getElementById('diary-textarea').value = entry.content || entry.preview;
+  document.getElementById('ai-panel').classList.remove('open');
+  renderDiaryList();
+  updateWordCount(document.getElementById('diary-textarea'));
+}
+
+function toggleDiarySelect(id) {
+  if (diarySelected.has(id)) diarySelected.delete(id);
+  else diarySelected.add(id);
+  updateDiarySelectBar();
+  renderDiaryList();
+}
+
+function updateDiarySelectBar() {
+  document.getElementById('diary-selected-count').textContent = `已选 ${diarySelected.size} 篇`;
+}
+
+function setDiarySideTab(tab, el) {
+  diarySideTab = tab;
+  document.querySelectorAll('.diary-sidebar-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const bar = document.getElementById('diary-select-bar');
+  bar.style.display = tab === 'select' ? 'flex' : 'none';
+  if (tab !== 'select') { diarySelected.clear(); }
+  renderDiaryList();
+}
+
+function selectAllDiaries() {
+  DIARY_DATA.forEach(e => diarySelected.add(e.id));
+  updateDiarySelectBar(); renderDiaryList();
+}
+
+function clearDiarySelection() {
+  diarySelected.clear(); updateDiarySelectBar(); renderDiaryList();
+}
+
+function newDiary() {
+  const newEntry = { id:'e_'+Date.now(), date:'2026-03-10', title:'新日记', preview:'', content:'' };
+  DIARY_DATA.unshift(newEntry);
+  activeDiaryId = newEntry.id;
+  document.getElementById('diary-title-input').value = '';
+  document.getElementById('diary-textarea').value = '';
+  document.getElementById('ai-panel').classList.remove('open');
+  renderDiaryList();
+  document.getElementById('diary-textarea').focus();
+}
+
+function updateWordCount(el) {
+  document.getElementById('word-count').textContent = el.value.replace(/\s/g,'').length + ' 字';
+}
+
+function toggleAiPanel() { document.getElementById('ai-panel').classList.toggle('open'); }
+
+// ════ WEEKLY MODAL ════
+function openWeeklyModal() {
+  weeklySelected = new Set(diarySelected.size > 0 ? diarySelected : []);
+  setWeeklyTab('select', document.getElementById('weekly-tab-select'));
+  renderWeeklyDiaryList();
+  updateWeeklyCount();
+  document.getElementById('weekly-pane-gen').style.display = 'none';
+  document.getElementById('weekly-pane-select').style.display = 'block';
+  document.getElementById('modal-weekly').classList.add('open');
+  document.getElementById('weekly-next-btn').textContent = '生成周记 →';
+}
+
+function renderWeeklyDiaryList() {
+  const list = document.getElementById('weekly-diary-list');
+  list.innerHTML = DIARY_DATA.map(e => `
+    <div class="weekly-diary-row">
+      <input type="checkbox" ${weeklySelected.has(e.id)?'checked':''}
+        onchange="toggleWeeklySelect('${e.id}',this.checked)">
+      <div class="weekly-diary-row-title">${e.title}</div>
+      <div class="weekly-diary-row-date">${e.date}</div>
+    </div>`).join('');
+}
+
+function toggleWeeklySelect(id, checked) {
+  if (checked) weeklySelected.add(id);
+  else weeklySelected.delete(id);
+  updateWeeklyCount();
+}
+
+function updateWeeklyCount() {
+  document.getElementById('weekly-sel-count').textContent = `已选 ${weeklySelected.size} 篇`;
+}
+
+function weeklySelectAll() {
+  DIARY_DATA.forEach(e=>weeklySelected.add(e.id));
+  renderWeeklyDiaryList(); updateWeeklyCount();
+}
+
+function weeklyClearAll() {
+  weeklySelected.clear(); renderWeeklyDiaryList(); updateWeeklyCount();
+}
+
+function setWeeklyTab(tab, el) {
+  weeklyTab = tab;
+  document.querySelectorAll('.weekly-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('weekly-pane-select').style.display = tab==='select' ? 'block' : 'none';
+  document.getElementById('weekly-pane-gen').style.display = tab==='gen' ? 'block' : 'none';
+}
+
+function weeklyNext() {
+  if (weeklySelected.size === 0) { showToast('请先选择至少一篇日记'); return; }
+  setWeeklyTab('gen', document.getElementById('weekly-tab-gen'));
+  document.getElementById('weekly-next-btn').style.display = 'none';
+  runWeeklyGen();
+}
+
+function runWeeklyGen() {
+  const progress = document.getElementById('weekly-gen-progress');
+  const result = document.getElementById('weekly-result-content');
+  const actions = document.getElementById('weekly-gen-actions');
+  progress.style.display = 'block';
+  result.style.display = 'none';
+  actions.style.display = 'none';
+  const pgbar = document.getElementById('weekly-pgbar');
+  const pgtext = document.getElementById('weekly-progress-text');
+  pgbar.style.width = '0%';
+
+  const steps = ['读取日记内容...', '分析关键事件...', 'AI 撰写周记...', '润色优化...', '完成！'];
+  let i = 0;
+  const interval = setInterval(() => {
+    i++;
+    pgbar.style.width = (i/steps.length*100) + '%';
+    pgtext.textContent = steps[i-1] || '';
+    if (i >= steps.length) {
+      clearInterval(interval);
+      setTimeout(() => {
+        progress.style.display = 'none';
+        // generate mock weekly content from selected diaries
+        const selected = DIARY_DATA.filter(e=>weeklySelected.has(e.id));
+        const mockWeekly = `📅 本周周记（${selected.length} 篇汇总）\n\n` +
+          selected.map((e,idx) => `【${e.date}】${e.title}\n${e.preview}`).join('\n\n') +
+          '\n\n---\n✨ AI 总结：\n本周整体状态积极，在技术攻关与个人成长上均取得了显著进展。学习与生活的节奏保持了良好平衡，继续保持！🚀';
+        result.textContent = mockWeekly;
+        result.style.display = 'block';
+        actions.style.display = 'flex';
+      }, 300);
+    }
+  }, 600);
+}
+
+// ════ Utils ════
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target===el) el.classList.remove('open'); });
+});
+
+// ════ Init ════
+renderBoard();
+renderDocList();
+renderOutline(OUTLINE_DATA);
+renderDiaryList();
+</script>
+</body>
+</html>

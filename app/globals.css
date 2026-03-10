@@ -1,0 +1,67 @@
+/* INPUT: 无
+   OUTPUT: 全局 CSS 变量 + reset
+   POS: app/globals.css — 全局样式入口
+   [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── App Shell 全局变量（侧边导航 / 基础色） ──────────────── */
+:root {
+  --app-bg:           #0f1117;
+  --app-text:         #e2e8f0;
+  --app-muted:        #64748b;
+  --app-border:       #1e2434;
+  --app-primary:      #6366f1;
+
+  --sidebar-bg:       #0a0d14;
+  --sidebar-border:   #1e2434;
+  --nav-muted:        #475569;
+  --nav-hover:        #1e2434;
+  --nav-active:       #818cf8;
+
+  /* 圆角 + 阴影 */
+  --radius: 8px;
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ── fusion-theme：Todo 看板（Indigo / 深蓝） ────────────── */
+.fusion-theme {
+  --module-accent:   #6366f1;
+  --module-bg:       #0f1117;
+  --module-card:     #161b27;
+  --module-column:   #1a1f2e;
+  --module-text:     #e2e8f0;
+  --module-muted:    #64748b;
+}
+
+/* ── tree-theme：知识树（Emerald / 绿） ─────────────────── */
+.tree-theme {
+  --module-accent:   #10b981;
+  --module-bg:       #0b1612;
+  --module-card:     #111d18;
+  --module-column:   #162420;
+  --module-text:     #d1fae5;
+  --module-muted:    #6ee7b7;
+}
+
+/* ── diary-theme：日记（Amber / 暖金） ─────────────────── */
+.diary-theme {
+  --module-accent:   #f59e0b;
+  --module-bg:       #14110a;
+  --module-card:     #1c180f;
+  --module-column:   #241f12;
+  --module-text:     #fef3c7;
+  --module-muted:    #fcd34d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  margin: 0;
+}
