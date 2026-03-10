@@ -209,11 +209,42 @@ CREATE TABLE tree_documents (
 
 ---
 
+## 5. 全局配置模块 (User Settings)
+
+由于 `diary-app` 和 `tree-index` 均重度依赖 AI 接口与自定义图床（Imgur / SM.MS / 自建服务器），我们需要一个表来持久化用户的私有凭证。
+
+```sql
+-- 表名: user_settings (用户全局配置)
+CREATE TABLE user_settings (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) NOT NULL,
+  
+  -- AI 供应商配置 (允许用户自带 Key)
+  ai_provider VARCHAR(50) DEFAULT 'claude',  -- 'claude', 'openai', 'gemini'
+  ai_api_keys JSONB,                         -- {"claude": "sk-...", "openai": "sk-..."}
+  
+  -- 图床配置 (Image Hosting)
+  -- 如果不使用 Supabase 原生 Storage，则使用此配置直连外部图床
+  img_provider VARCHAR(50) DEFAULT 'custom', -- 'imgur', 'smms', 'custom', 'supabase'
+  img_upload_url TEXT,                       -- 自定义图床 API 地址
+  img_api_token TEXT,                        -- 图床鉴权 Token
+  
+  -- 界面偏好设置
+  theme_mode VARCHAR(20) DEFAULT 'system',
+  auto_save BOOLEAN DEFAULT TRUE,
+  
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+---
+
 ## 总结优化与对齐思考
 
 1. **分离与正交**:
    * **心情(Mood) vs 日记(Diary)**: 将 `moods` 从 `diaries` 分离。用户可以在看板直接评 8 分并写下一句话备注，而不需要强迫他打开大日记编辑器。日历热力图只需 SELECT `moods` 表，性能开销极小。
 2. **Offline-First 同步友好**:
    * 所有表的主键 ID，除了 `moods` 可以让后端默认生成外，其他表（Task, Diary, Document）尽量支持**客户端在离线时生成 UUID/Nanoid 并插入本地 Dexie**。当恢复在线网络时，以带唯一 ID 的 Upsert (`ON CONFLICT (id) DO UPDATE`) 模式推送到 Supabase。
-3. **存储策略**:
-   * 图片不要以 Base64 存放在以上表中，应该一律使用 **Supabase Storage**，在以上表中只存放对应的 **Public URL 字符串**。
+3. **图床与媒体存储策略**:
+   * 如果用户配置了**私有图床 (Upload URL / Token)**，客户端上传后将获取外界 URL 存入 DB。
+   * 如果没有配置，则默认走 **Supabase Storage**，在表中仅存放对应的 **Public URL 字符串**，坚决避免将图片转为 Base64 塞进数据库。
