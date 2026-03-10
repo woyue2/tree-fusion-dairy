@@ -894,34 +894,52 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="view" id="view-settings">
     <div class="settings-inner">
       <h2>⚙️ 设置 &amp; 数据导入</h2>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.5">
+        所有配置（包括 AI Key 与图床 Token）均将<strong style="color:var(--text)">加密存储于 Supabase 的 <code>user_settings</code> 表中</strong>，实现多端实时同步。<br>
+        若 API 调用失败，系统将自动跳转回本页要求重新配置。
+      </p>
+
       <div class="settings-card">
-        <h3>🔑 Supabase 配置</h3>
+        <h3>🔑 Supabase 配置 (Core)</h3>
         <div class="form-group"><label class="form-label">Project URL</label>
           <input class="form-input" type="text" placeholder="https://xxxx.supabase.co"></div>
         <div class="form-group"><label class="form-label">Anon Key</label>
           <input class="form-input" type="password" placeholder="eyJ..."></div>
-        <button class="btn-save" onclick="showToast('配置已保存 ✓')">保存配置</button>
+        <button class="btn-save" onclick="showToast('Supabase 配置已保存并连接 ✓')">连接并保存</button>
       </div>
+
       <div class="settings-card">
-        <h3>📥 历史数据迁移</h3>
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">选择旧版 Diary / Todo 数据文件，系统会自动读取并上传到 Supabase。</p>
-        <div class="import-zone" onclick="showToast('选择文件夹 (File System API)')">
-          📂 点击选择旧版「MyDiary」文件夹<br>
-          <span style="font-size:11px;margin-top:4px;display:block">支持 .json 日记文件 &amp; 图片素材</span>
-        </div>
-        <div style="margin-top:10px">
-          <div class="import-zone" onclick="showToast('选择 todo.db 文件')">
-            🗃️ 点击导入 todo.db（SQLite 自动转 Supabase）
-          </div>
-        </div>
-      </div>
-      <div class="settings-card">
-        <h3>🤖 AI 配置</h3>
-        <div class="form-group"><label class="form-label">AI 服务</label>
-          <select class="form-input"><option>智谱 GLM-4</option><option>OpenAI GPT-4o</option><option>本地 Ollama</option></select></div>
+        <h3>🤖 AI 引擎配置</h3>
+        <div class="form-group"><label class="form-label">AI 服务提供商</label>
+          <select class="form-input"><option>智谱 GLM-4 (推荐)</option><option>OpenAI GPT-4o</option><option>Anthropic Claude</option></select></div>
         <div class="form-group"><label class="form-label">API Key</label>
           <input class="form-input" type="password" placeholder="sk-..."></div>
-        <button class="btn-save" onclick="showToast('AI 配置已保存 ✓')">保存</button>
+        <button class="btn-save" onclick="showToast('AI 配置已同步至云端 ✓')">验证并保存</button>
+      </div>
+
+      <div class="settings-card">
+        <h3>🖼️ 自定义图床配置 (Image Hosting)</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">留空则默认使用 Supabase Storage 存储图片。</p>
+        <div class="form-group"><label class="form-label">服务商</label>
+          <select class="form-input"><option>Supabase Storage (默认)</option><option>SM.MS</option><option>Imgur</option><option>自定义 API</option></select></div>
+        <div class="form-group"><label class="form-label">Upload URL</label>
+          <input class="form-input" type="text" placeholder="https://sm.ms/api/v2/upload"></div>
+        <div class="form-group"><label class="form-label">Auth Token / API Key</label>
+          <input class="form-input" type="password" placeholder="Bearer ..."></div>
+        <button class="btn-save" onclick="showToast('图床配置已同步至云端 ✓')">测试连接并保存</button>
+      </div>
+
+      <div class="settings-card" style="border-top: 2px dashed #eee; margin-top:30px; padding-top:20px">
+        <h3>📥 历史数据全量迁移</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">由于架构升级，原先基于 IndexedDB/LocalStorage 的数据需在此手动迁移至 Supabase。</p>
+        <div class="import-zone" onclick="showToast('唤起 File System API，开始读取 JSON')">
+          📂 点击选择旧版「MyDiary」/「TreeIndex」文件夹
+        </div>
+        <div style="margin-top:10px">
+          <div class="import-zone" onclick="showToast('开始解析 SQLite 并写入 Supabase...')">
+            🗃️ 点击导入 fusion-todo 的 <code>todo.db</code> 文件
+          </div>
+        </div>
       </div>
     </div>
   </div>
