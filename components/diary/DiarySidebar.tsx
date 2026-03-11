@@ -11,6 +11,7 @@ interface DiarySidebarProps {
   onWeeklyModal: () => void
   tab: 'list' | 'select'
   onTabChange: (tab: 'list' | 'select') => void
+  selectedEntries: Set<string>
 }
 
 export default function DiarySidebar({ 
@@ -20,7 +21,8 @@ export default function DiarySidebar({
   onNewEntry, 
   onWeeklyModal,
   tab,
-  onTabChange
+  onTabChange,
+  selectedEntries
 }: DiarySidebarProps) {
   return (
     <div className="diary-sidebar">
@@ -54,7 +56,12 @@ export default function DiarySidebar({
             className={`diary-item ${entry.id === activeEntryId ? 'active' : ''}`}
           >
             {tab === 'select' && (
-              <input type="checkbox" className="diary-item-check" />
+              <input 
+                type="checkbox" 
+                className="diary-item-check" 
+                checked={selectedEntries.has(entry.id)}
+                onChange={() => {}} // Handled by parent onClick
+              />
             )}
             <div className="diary-item-date">{new Date(entry.createdAt).toLocaleDateString()}</div>
             <div className="diary-item-title">{entry.title}</div>

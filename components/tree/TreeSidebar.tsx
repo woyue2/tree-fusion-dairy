@@ -41,9 +41,38 @@ export default function TreeSidebar({ documents, activeDocId, onSelectDoc, onNew
           >
             <div style={{ fontSize: '16px' }}>{doc.icon || '📄'}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="doc-name">{doc.title}</div>
+              <div 
+                className="doc-name"
+                contentEditable
+                suppressContentEditableWarning
+                onClick={(e) => {
+                  e.stopPropagation() // Prevent triggering select when trying to edit
+                }}
+                onBlur={(e) => {
+                  // @ts-ignore
+                  useTreeStore.getState().renameDocument(doc.id, e.currentTarget.textContent || doc.title)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    e.currentTarget.blur()
+                  }
+                }}
+              >
+                {doc.title}
+              </div>
               <div className="doc-meta">{new Date(doc.updatedAt).toLocaleDateString()}</div>
             </div>
+            
+            <Trash2 
+               size={14} 
+               className="tree-doc-trash-icon text-gray-400 hover:text-red-500 cursor-pointer hidden group-hover:block ml-2" 
+               onClick={(e) => {
+                 e.stopPropagation()
+                 // @ts-ignore
+                 if (confirm('Delete document?')) useTreeStore.getState().deleteDocument(doc.id)
+               }}
+            />
           </div>
         ))}
       </div>

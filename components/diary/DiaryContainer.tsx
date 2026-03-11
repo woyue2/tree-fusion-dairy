@@ -8,6 +8,7 @@ import { Sparkles, X } from 'lucide-react'
 export default function DiaryContainer() {
   const { entries, activeEntry, setActiveEntry, updateEntry, addEntry, setEntries } = useDiaryStore()
   const [tab, setTab] = useState<'list' | 'select'>('list')
+  const [selectedEntries, setSelectedEntries] = useState<Set<string>>(new Set())
   const [showAi, setShowAi] = useState(false)
 
   // Mock initial data if none
@@ -27,27 +28,67 @@ export default function DiaryContainer() {
     }
   }, [entries.length, setActiveEntry, setEntries])
 
+  // Clear selection when leaving select mode
+  useEffect(() => {
+    if (tab === 'list') {
+      setSelectedEntries(new Set())
+    }
+  }, [tab])
+
   return (
     <div id="view-diary" className="view active">
       <DiarySidebar 
         entries={entries}
         activeEntryId={activeEntry?.id}
         onSelectEntry={(id) => {
-          const entry = entries.find(e => e.id === id)
-          if (entry) setActiveEntry(entry)
+          if (tab === 'select') {
+            const next = new Set(selectedEntries)
+            if (next.has(id)) next.delete(id)
+            else next.add(id)
+            setSelectedEntries(next)
+          } else {
+            const entry = entries.find(e => e.id === id)
+            if (entry) setActiveEntry(entry)
+          }
         }}
-        onNewEntry={() => {}}
+        onNewEntry={() => {
+          const newEntry = {
+            id: 'e_' + Date.now(),
+            title: '',
+            content: '',
+            date: new Date().toISOString().split('T')[0],
+            preview: '新日记...',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+          addEntry(newEntry)
+          setActiveEntry(newEntry)
+        }}
         onWeeklyModal={() => {}}
         tab={tab}
         onTabChange={setTab}
+        selectedEntries={selectedEntries}
       />
 
       {tab === 'select' && (
-        <div className="diary-select-bar">
-          <span>已选择 0 篇日记</span>
+        <div style={{ position: 'absolute', bottom: 0, left: 240, width: 300, display: 'flex', alignItems: 'center', padding: '12px 16px', background: '#fff', borderTop: '1px solid #e0e0e0', zIndex: 10, boxSizing: 'border-box' }}>
+          <span style={{ fontSize: '12px', color: '#666' }}>已选择 {selectedEntries.size} 篇日记</span>
           <div style={{ flex: 1 }}></div>
-          <button>生成周记</button>
-          <button style={{ borderColor: '#eb5a46', color: '#eb5a46' }}>删除</button>
+          <button style={{ marginRight: '8px', padding: '4px 8px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }} disabled={selectedEntries.size === 0}>周记</button>
+          <button 
+            style={{ borderColor: selectedEntries.size > 0 ? '#eb5a46' : '#ccc', color: selectedEntries.size > 0 ? '#eb5a46' : '#ccc' }}
+            disabled={selectedEntries.size === 0}
+            onClick={() => {
+              if (confirm(`确定删除这 ${selectedEntries.size} 篇日记吗？`)) {
+                Array.from(selectedEntries).forEach(id => {
+                  useDiaryStore.getState().deleteEntry(id)
+                })
+                setTab('list')
+              }
+            }}
+          >
+            删除
+          </button>
         </div>
       )}
 

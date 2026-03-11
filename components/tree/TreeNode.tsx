@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { OutlineNode } from '@/types'
+import { useTreeStore } from '@/hooks/useTreeStore'
 
 interface TreeNodeProps {
   nodeId: string
@@ -32,11 +33,25 @@ export default function TreeNode({ nodeId, nodes, onUpdate }: TreeNodeProps) {
           contentEditable
           suppressContentEditableWarning
           onBlur={(e) => onUpdate(node.id, e.currentTarget.textContent || '')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              // @ts-ignore
+              useTreeStore.getState().addNode(node.docId, node.parentId, node.id)
+            } else if (e.key === 'Backspace' && e.currentTarget.textContent === '') {
+              e.preventDefault()
+              // @ts-ignore
+              useTreeStore.getState().deleteNode(node.docId, node.id)
+            }
+          }}
         >
           {node.content}
         </div>
         <div className="node-actions">
-          <button className="node-act-btn">＋</button>
+          <button className="node-act-btn" onClick={() => {
+            // @ts-ignore
+            useTreeStore.getState().addNode(node.docId, node.parentId, node.id)
+          }}>＋</button>
           <button className="node-act-btn">⋮</button>
         </div>
       </div>

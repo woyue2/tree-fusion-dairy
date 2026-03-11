@@ -9,53 +9,6 @@ import { Undo2, Save } from 'lucide-react'
 export default function TreeContainer() {
   const { documents, activeDoc, setActiveDoc, updateNode, setDocuments } = useTreeStore()
 
-  // Mock initial document if none exists
-  useEffect(() => {
-    if (documents.length === 0) {
-      const mockDoc = {
-        id: 'd1',
-        title: '碎片化人类 · 主索引',
-        icon: '🌳',
-        updatedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        nodes: {
-          'root': {
-            id: 'root',
-            parentId: null,
-            content: '碎片化人类',
-            level: 1,
-            children: ['n1', 'n2']
-          },
-          'n1': {
-            id: 'n1',
-            parentId: 'root',
-            content: '方法论',
-            level: 2,
-            children: ['n1-1']
-          },
-          'n1-1': {
-            id: 'n1-1',
-            parentId: 'n1',
-            content: '番茄钟工作法 — 25/5 节律固化专注闭环',
-            level: 3,
-            children: []
-          },
-          'n2': {
-            id: 'n2',
-            parentId: 'root',
-            content: '技术',
-            level: 2,
-            children: []
-          }
-        }
-      }
-      // @ts-ignore
-      setDocuments([mockDoc])
-      // @ts-ignore
-      setActiveDoc(mockDoc)
-    }
-  }, [documents.length, setActiveDoc, setDocuments])
-
   const handleUpdateNode = (nodeId: string, content: string) => {
     if (activeDoc) {
       updateNode(activeDoc.id, nodeId, { content })
@@ -72,17 +25,42 @@ export default function TreeContainer() {
           const doc = documents.find(d => d.id === id)
           if (doc) setActiveDoc(doc)
         }}
-        onNewDoc={() => {}}
+        onNewDoc={() => {
+          // @ts-ignore
+          useTreeStore.getState().addDocument('无标题文档')
+        }}
       />
 
       <div className="tree-main">
-        <div className="tree-toolbar">
-          <div className="tree-doc-title-label" id="tree-doc-title">
+        <div className="tree-toolbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', borderBottom: '1px solid #e0e0e0', paddingBottom: '12px', marginBottom: '16px' }}>
+          <div 
+            className="tree-doc-title-label" 
+            id="tree-doc-title"
+            contentEditable
+            suppressContentEditableWarning
+            style={{ fontSize: '24px', fontWeight: 'bold', outline: 'none', borderBottom: '1px dashed transparent', padding: '4px' }}
+            onFocus={(e) => e.currentTarget.style.borderBottomColor = '#ccc'}
+            onBlur={(e) => {
+              e.currentTarget.style.borderBottomColor = 'transparent'
+              if (activeDoc) {
+                // @ts-ignore
+                useTreeStore.getState().renameDocument(activeDoc.id, e.currentTarget.textContent || activeDoc.title)
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                e.currentTarget.blur()
+              }
+            }}
+          >
             {activeDoc?.title || '新文档'}
           </div>
-          <span className="tree-help">Tab缩进 · Shift+Tab反缩进 · Enter换行</span>
-          <button className="tree-btn">↩ 撤销</button>
-          <button className="tree-btn primary">保存</button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <span className="tree-help" style={{ fontSize: '12px', color: '#888', marginRight: '16px' }}>Tab缩进 · Shift+Tab反缩进 · Enter换行</span>
+            <button className="tree-btn">↩ 撤销</button>
+            <button className="tree-btn primary">保存</button>
+          </div>
         </div>
 
         <div className="outline-area" id="outline-area">

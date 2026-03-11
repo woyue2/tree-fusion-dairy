@@ -49,12 +49,15 @@ export interface TodoTask {
 
 export interface OutlineNode {
   id: string
-  parentId: string | null
+  docId: string
+  parentId?: string | null
   content: string
-  level: number
+  level?: number
   children: string[] // Array of child node IDs
   images?: string[]
   collapsed?: boolean
+  isExpanded?: boolean
+  isRoot?: boolean
   isHeader?: boolean
   isSubHeader?: boolean
   isItalic?: boolean
@@ -64,9 +67,13 @@ export interface OutlineNode {
 
 export interface TreeDocument {
   id: string
+  userId: string
   title: string
   icon?: string
+  emoji?: string
+  isArchived?: boolean
   nodes: Record<string, OutlineNode> // Flattened tree nodes
+  rootNodeId?: string
   createdAt: string
   updatedAt: string
   deletedAt?: string | null
