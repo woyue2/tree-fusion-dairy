@@ -113,19 +113,19 @@ export default function DiaryContainer() {
 
         {/* Toolbar */}
         <div className="diary-toolbar">
-          <button className="toolbar-btn" style={{ fontWeight: 700 }}>B</button>
-          <button className="toolbar-btn" style={{ fontStyle: 'italic' }}>I</button>
-          <button className="toolbar-btn" style={{ textDecoration: 'underline' }}>U</button>
+          <button className="toolbar-btn" style={{ fontWeight: 700 }} onClick={() => alert('加粗 (B)')}>B</button>
+          <button className="toolbar-btn" style={{ fontStyle: 'italic' }} onClick={() => alert('斜体 (I)')}>I</button>
+          <button className="toolbar-btn" style={{ textDecoration: 'underline' }} onClick={() => alert('下划线 (U)')}>U</button>
           <div className="toolbar-sep"></div>
-          <button className="toolbar-btn">H1</button>
-          <button className="toolbar-btn">H2</button>
+          <button className="toolbar-btn" onClick={() => alert('标题 1 (H1)')}>H1</button>
+          <button className="toolbar-btn" onClick={() => alert('标题 2 (H2)')}>H2</button>
           <div className="toolbar-sep"></div>
-          <button className="toolbar-btn">● 列表</button>
-          <button className="toolbar-btn">1. 排序</button>
-          <button className="toolbar-btn">[] 待办</button>
+          <button className="toolbar-btn" onClick={() => alert('无序列表 (●)')}>● 列表</button>
+          <button className="toolbar-btn" onClick={() => alert('有序列表 (1.)')}>1. 排序</button>
+          <button className="toolbar-btn" onClick={() => alert('待办列表 ([])')}>[] 待办</button>
           <div className="toolbar-sep"></div>
-          <button className="toolbar-btn blockquote">❝ 引用</button>
-          <button className="toolbar-btn">-- 分割线</button>
+          <button className="toolbar-btn blockquote" onClick={() => alert('引用块 (❝)')}>❝ 引用</button>
+          <button className="toolbar-btn" onClick={() => alert('分割线 (--)')}>-- 分割线</button>
         </div>
 
         {/* Editor Body */}
@@ -142,8 +142,15 @@ export default function DiaryContainer() {
         <div className="diary-editor-footer">
           <div className="word-count">字数: {activeEntry?.content.length || 0}</div>
           <div className="diary-actions">
-            <button className="btn-diary btn-diary-ghost">删除</button>
-            <button className="btn-diary btn-diary-primary">保存 (Ctrl+S)</button>
+            <button 
+              className="btn-diary btn-diary-ghost"
+              onClick={() => {
+                if (activeEntry && confirm('确定要删除这篇日记吗？')) {
+                  useDiaryStore.getState().deleteEntry(activeEntry.id)
+                }
+              }}
+            >删除</button>
+            <button className="btn-diary btn-diary-primary" onClick={() => alert('日记已保存')}>保存 (Ctrl+S)</button>
           </div>
         </div>
 

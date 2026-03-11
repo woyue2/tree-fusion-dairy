@@ -17,6 +17,7 @@ interface TodoColumnProps {
 export default function TodoColumn({ id, title, tasks, color, onAddTask }: TodoColumnProps) {
   const { viewMode } = useTodoStore()
   const [isActionOpen, setIsActionOpen] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const headerStyle = viewMode === 'context' && color ? { borderTop: `4px solid ${color}` } : undefined
   const actionRef = useRef<HTMLDivElement>(null)
 
@@ -31,57 +32,72 @@ export default function TodoColumn({ id, title, tasks, color, onAddTask }: TodoC
   }, [])
 
   return (
-    <div className="board-col">
+    <div className="board-col" style={{ width: isCollapsed ? '100px' : '260px', opacity: isCollapsed ? 0.7 : 1 }}>
       <div className="col-header" style={{ ...headerStyle, justifyContent: 'space-between', padding: '4px' }}>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
-          <input 
-            type="text" 
-            className="col-title-input" 
-            value={title} 
-            readOnly
-            style={{ width: '100%', textOverflow: 'ellipsis' }}
-          />
-        </div>
+        {!isCollapsed && (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
+            <input 
+              type="text" 
+              className="col-title-input" 
+              value={title} 
+              readOnly
+              style={{ width: '100%', textOverflow: 'ellipsis' }}
+            />
+          </div>
+        )}
         
-        <button className="col-collapse-btn" style={{ flexShrink: 0 }} title="折叠此列">
+        <button 
+          className="col-collapse-btn" 
+          style={{ flexShrink: 0, transform: isCollapsed ? 'rotate(-90deg)' : 'none' }} 
+          title="折叠此列"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+        >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
 
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', flexShrink: 0 }} ref={actionRef}>
+        {!isCollapsed && (
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', flexShrink: 0 }} ref={actionRef}>
+            <button 
+              className="col-action-btn" 
+              onClick={() => setIsActionOpen(!isActionOpen)}
+            >
+              ⋯
+            </button>
+            
+            {isActionOpen && (
+              <div className="col-action-panel" style={{ display: 'flex', right: '0' }}>
+                <button title="向左移动" onClick={() => alert('Moved left')}>←</button>
+                <button title="向右移动" onClick={() => alert('Moved right')}>→</button>
+                {viewMode !== 'status' && viewMode !== 'date' && (
+                  <button className="del-btn" title="删除列表" onClick={() => {
+                    if (confirm('Delete column?')) alert('Deleted')
+                  }}>删除</button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!isCollapsed && <div className="col-count" style={{ flexShrink: 0 }}>{tasks.length}</div>}
+      </div>
+
+      {!isCollapsed && (
+        <>
+          <div className="col-body">
+            {tasks.map((task) => (
+              <TodoCard key={task.id} task={task} />
+            ))}
+          </div>
+
           <button 
-            className="col-action-btn" 
-            onClick={() => setIsActionOpen(!isActionOpen)}
+            onClick={() => onAddTask?.(id)}
+            className="col-add-btn"
           >
-            ⋯
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add a card
           </button>
-          
-          {isActionOpen && (
-            <div className="col-action-panel" style={{ display: 'flex', right: '0' }}>
-              <button title="向左移动">←</button>
-              <button title="向右移动">→</button>
-              {viewMode !== 'status' && viewMode !== 'date' && (
-                <button className="del-btn" title="删除列表">删除</button>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="col-count" style={{ flexShrink: 0 }}>{tasks.length}</div>
-      </div>
-
-      <div className="col-body">
-        {tasks.map((task) => (
-          <TodoCard key={task.id} task={task} />
-        ))}
-      </div>
-
-      <button 
-        onClick={() => onAddTask?.(id)}
-        className="col-add-btn"
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-        Add a card
-      </button>
+        </>
+      )}
     </div>
   )
 }

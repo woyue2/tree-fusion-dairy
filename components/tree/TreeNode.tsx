@@ -52,7 +52,7 @@ export default function TreeNode({ nodeId, nodes, onUpdate }: TreeNodeProps) {
             // @ts-ignore
             useTreeStore.getState().addNode(node.docId, node.parentId, node.id)
           }}>＋</button>
-          <button className="node-act-btn">⋮</button>
+          <button className="node-act-btn" onClick={() => alert('Node Action Menu (WIP)')}>⋮</button>
         </div>
       </div>
 

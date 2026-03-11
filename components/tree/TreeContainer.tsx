@@ -58,8 +58,8 @@ export default function TreeContainer() {
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <span className="tree-help" style={{ fontSize: '12px', color: '#888', marginRight: '16px' }}>Tab缩进 · Shift+Tab反缩进 · Enter换行</span>
-            <button className="tree-btn">↩ 撤销</button>
-            <button className="tree-btn primary">保存</button>
+            <button className="tree-btn" onClick={() => alert('Undo action (WIP)')}>↩ 撤销</button>
+            <button className="tree-btn primary" onClick={() => alert('Document saved to Supabase/IndexedDB')}>保存</button>
           </div>
         </div>
 

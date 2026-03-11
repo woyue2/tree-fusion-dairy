@@ -9,6 +9,7 @@ import IdeaModal from './IdeaModal'
 export default function BoardContainer() {
   const { tasks, statuses, contexts, viewMode, setViewMode } = useTodoStore()
   const [isIdeaModalOpen, setIsIdeaModalOpen] = useState(false)
+  const [isVertical, setIsVertical] = useState(false)
   
   // Columns to display based on viewMode
   const columns = React.useMemo(() => {
@@ -72,7 +73,12 @@ export default function BoardContainer() {
             Date
           </button>
         </div>
-        <button className="col-action-btn" style={{ marginLeft: '4px' }} title="切换布局 (横向/纵向)">
+        <button 
+          className="col-action-btn" 
+          style={{ marginLeft: '4px' }} 
+          title="切换布局 (横向/纵向)"
+          onClick={() => setIsVertical(!isVertical)}
+        >
           <span style={{ fontSize: '14px', filter: 'grayscale(1)', opacity: 0.6 }}>🔃</span>
         </button>
 
@@ -84,14 +90,17 @@ export default function BoardContainer() {
           >
             <Lightbulb size={16} /> Idea
           </button>
-          <button className="btn-primary">
+          <button className="btn-primary" onClick={() => {
+            // New Task modal opening logic would go here
+            alert('Open New Task Modal')
+          }}>
             <span>+</span> New
           </button>
         </div>
       </div>
 
       {/* ── Board ─────────────────────────────────── */}
-      <div className="board-scroll" id="board-scroll">
+      <div className="board-scroll" id="board-scroll" style={{ flexDirection: isVertical ? 'column' : 'row' }}>
         {columns.map(col => (
           <TodoColumn 
             key={col.id}
