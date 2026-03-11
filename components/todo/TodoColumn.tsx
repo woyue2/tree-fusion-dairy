@@ -32,18 +32,22 @@ export default function TodoColumn({ id, title, tasks, color, onAddTask }: TodoC
 
   return (
     <div className="board-col">
-      <div className="col-header" style={headerStyle}>
-        <input 
-          type="text" 
-          className="col-title-input" 
-          value={title} 
-          readOnly
-        />
-        <div className="col-count">{tasks.length}</div>
-        <button className="col-collapse-btn" title="折叠此列">
+      <div className="col-header" style={{ ...headerStyle, justifyContent: 'space-between', padding: '4px' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
+          <input 
+            type="text" 
+            className="col-title-input" 
+            value={title} 
+            readOnly
+            style={{ width: '100%', textOverflow: 'ellipsis' }}
+          />
+        </div>
+        
+        <button className="col-collapse-btn" style={{ flexShrink: 0 }} title="折叠此列">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
-        <div style={{ position: 'relative' }} ref={actionRef}>
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', flexShrink: 0 }} ref={actionRef}>
           <button 
             className="col-action-btn" 
             onClick={() => setIsActionOpen(!isActionOpen)}
@@ -52,7 +56,7 @@ export default function TodoColumn({ id, title, tasks, color, onAddTask }: TodoC
           </button>
           
           {isActionOpen && (
-            <div className="col-action-panel" style={{ display: 'flex' }}>
+            <div className="col-action-panel" style={{ display: 'flex', right: '0' }}>
               <button title="向左移动">←</button>
               <button title="向右移动">→</button>
               {viewMode !== 'status' && viewMode !== 'date' && (
@@ -61,6 +65,8 @@ export default function TodoColumn({ id, title, tasks, color, onAddTask }: TodoC
             </div>
           )}
         </div>
+
+        <div className="col-count" style={{ flexShrink: 0 }}>{tasks.length}</div>
       </div>
 
       <div className="col-body">

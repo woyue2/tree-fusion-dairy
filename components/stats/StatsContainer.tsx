@@ -93,19 +93,37 @@ export default function StatsContainer() {
         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           
           <div className="stats-card" style={{ flex: '1 1 300px', marginBottom: 0 }}>
-            <h2><span style={{ fontSize: '20px' }}>📊</span> 情绪均值统计</h2>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
-              <div style={{ fontSize: '48px', fontWeight: 900, color: 'var(--tree-accent)', lineHeight: 1 }}>
-                {averageScore}
-              </div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '14px', paddingBottom: '6px', fontWeight: 600 }}>
-                本月平均分
-              </div>
+            <h3>📊 情绪均值统计</h3>
+            <div style={{ fontSize: '32px', fontWeight: 700, margin: '10px 0', color: 'var(--accent)' }}>
+              {averageScore} <span style={{ fontSize: '14px', fontWeight: 'normal', color: '#888' }}>本月平均分</span>
             </div>
-            <div style={{ marginTop: '16px', height: '6px', background: '#eee', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${(Number(averageScore) * 10)}%`, background: 'var(--tree-accent)', borderRadius: '4px' }}></div>
+            
+            <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', margin: '16px 0' }}>
+              {[
+                { label: '7天均值', days: 7 },
+                { label: '30天均值', days: 30 },
+                { label: '60天均值', days: 60 },
+                { label: '180天均值', days: 180 }
+              ].map(p => {
+                const cutoff = new Date()
+                cutoff.setDate(cutoff.getDate() - p.days)
+                const relevant = moods.filter(d => new Date(d.date) > cutoff && d.score > 0)
+                const sum = relevant.reduce((acc, curr) => acc + curr.score, 0)
+                const avg = relevant.length > 0 ? (sum / relevant.length).toFixed(1) : '--'
+                
+                return (
+                  <div key={p.label} style={{ background: '#f8f9fa', padding: '10px', borderRadius: '8px', border: '1px solid #eee' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>{p.label}</div>
+                    <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--app-text)', marginTop: '4px' }}>
+                      {avg} <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)' }}>pts</span>
+                    </div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>样本: {relevant.length}天</div>
+                  </div>
+                )
+              })}
             </div>
-            <p style={{ marginTop: '12px', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+
+            <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
               你的平均情绪处于稳步上升趋势，最近一周的专注力有明显提升。
             </p>
           </div>
