@@ -67,6 +67,43 @@ export const supabaseDb = {
     return data
   },
 
+  // ── Board Config (Statuses/Contexts) ───────────────────────
+  async upsertStatus(status: any) {
+    const supabase = createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('todo_statuses')
+      .upsert({
+        id: status.id,
+        user_id: status.userId,
+        title: status.title,
+        color: status.color,
+        collapsed: status.collapsed,
+        order_index: status.orderIndex,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+    if (error) throw error
+    return data
+  },
+
+  async upsertContext(context: any) {
+    const supabase = createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('todo_contexts')
+      .upsert({
+        id: context.id,
+        user_id: context.userId,
+        title: context.title,
+        color: context.color,
+        collapsed: context.collapsed,
+        order_index: context.orderIndex,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+    if (error) throw error
+    return data
+  },
+
   // ── Batch Fetch (Initial Sync) ─────────────────────────────
   async fetchUserData(userId: string) {
     const supabase = createSupabaseServerClient()
