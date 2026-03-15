@@ -32,7 +32,8 @@ anti-huihuan-kaifa/
 │   ├── loading.tsx                 ← 全局 loading fallback
 │   │
 │   ├── actions/                    ← ⭐ Server Actions（数据变更入口）
-│   │   └── index.ts                ← re-export 聚合
+│   │   ├── index.ts                ← re-export 聚合
+│   │   └── sync.ts                 ← 离线同步专属 Actions
 │   │
 │   ├── api/                        ← Route Handlers（Webhook / 文件上传等）
 │   │   └── health/route.ts         ← GET /api/health
@@ -44,8 +45,10 @@ anti-huihuan-kaifa/
 │   └── ui/                         ← 原子组件（Button, Input, Modal...）
 │
 ├── hooks/                          ← 自定义 React Hooks
-│
+│   ├── useSyncWorker.ts            ← 离线同步引擎 Hook
+│   └── useAppStore.ts              ← 全局状态（在线状态/同步状态）
 ├── lib/                            ← 业务逻辑 + 外部服务
+│   ├── db.ts                       ← Dexie.js (IDB) 本地数据库定义
 │   ├── supabase.ts                 ← 客户端 Supabase 实例（浏览器）
 │   ├── supabase-server.ts          ← ⭐ 服务端 Supabase client（Server Actions 专用）
 │   ├── supabase-db.ts              ← Supabase 数据操作封装（CRUD）
@@ -64,6 +67,7 @@ anti-huihuan-kaifa/
 ├── .env.local                      ← 实际环境变量（不提交 git）
 │
 ├── docs/                           ← 项目文档
+├── supabase_schema.sql             ← Supabase 数据库建表语句
 ├── CLAUDE.md                       ← GEB L1 根文档（本文件）
 ├── AGENTS.md                       ← Agent 配置
 ├── 前后端目录规范.md                ← 目录规范检查参照
