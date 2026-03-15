@@ -8,7 +8,7 @@
 import { useEffect, useRef } from 'react';
 import { db } from '@/lib/db';
 import { useAppStore } from './useAppStore';
-import { syncMoodAction, syncTaskAction, syncDocAction } from '@/lib/sync-actions';
+import { syncMoodAction, syncTaskAction, syncDocAction, syncStatusAction, syncContextAction } from '@/app/actions/sync';
 
 export function useSyncWorker() {
   const isOnline = useAppStore(s => s.isOnline);
@@ -39,6 +39,20 @@ export function useSyncWorker() {
       for (const doc of dirtyDocs) {
         await syncDocAction(doc);
         await db.documents.update(doc.id, { _dirty: 0 });
+      }
+
+      // 4. Sync Statuses
+      const dirtyStatuses = await db.statuses.where('_dirty').equals(1).toArray();
+      for (const status of dirtyStatuses) {
+        await syncStatusAction(status);
+        await db.statuses.update(status.id, { _dirty: 0 });
+      }
+
+      // 5. Sync Contexts
+      const dirtyContexts = await db.contexts.where('_dirty').equals(1).toArray();
+      for (const ctx of dirtyContexts) {
+        await syncContextAction(ctx);
+        await db.contexts.update(ctx.id, { _dirty: 0 });
       }
 
       setSyncStatus('synced');
