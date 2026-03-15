@@ -5,23 +5,8 @@ import { useMoodStore } from '@/hooks/useMoodStore'
 import { ChevronDown } from 'lucide-react'
 
 export default function StatsContainer() {
-  const { moods, setMoods } = useMoodStore()
-
-  // Generate mock data for the current month
-  useEffect(() => {
-    if (moods.length === 0) {
-      const mockMoods = Array.from({ length: 31 }, (_, i) => ({
-        id: `m-${i}`,
-        userId: 'user-1',
-        date: `2026-03-${String(i + 1).padStart(2, '0')}`,
-        score: Math.floor(Math.random() * 10) + 1,
-        note: `Day ${i + 1} mood`,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }))
-      setMoods(mockMoods)
-    }
-  }, [moods.length, setMoods])
+  const moods = useMoodStore(s => s.moods)
+  const getRollingAverage = useMoodStore(s => s.getRollingAverage)
 
   const getColorForScore = (score: number) => {
     if (score <= 2) return '#ff4757'
@@ -105,19 +90,21 @@ export default function StatsContainer() {
                 { label: '60天均值', days: 60 },
                 { label: '180天均值', days: 180 }
               ].map(p => {
-                const cutoff = new Date()
-                cutoff.setDate(cutoff.getDate() - p.days)
-                const relevant = moods.filter(d => new Date(d.date) > cutoff && d.score > 0)
-                const sum = relevant.reduce((acc, curr) => acc + curr.score, 0)
-                const avg = relevant.length > 0 ? (sum / relevant.length).toFixed(1) : '--'
+                const avg = getRollingAverage(p.days)
+                const count = moods.filter(m => {
+                  const d = new Date(m.date)
+                  const cutoff = new Date()
+                  cutoff.setDate(cutoff.getDate() - p.days)
+                  return d >= cutoff
+                }).length
                 
                 return (
                   <div key={p.label} style={{ background: '#f8f9fa', padding: '10px', borderRadius: '8px', border: '1px solid #eee' }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>{p.label}</div>
                     <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--app-text)', marginTop: '4px' }}>
-                      {avg} <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)' }}>pts</span>
+                      {avg === 0 ? '--' : avg} <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)' }}>pts</span>
                     </div>
-                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>样本: {relevant.length}天</div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>样本: {count}天</div>
                   </div>
                 )
               })}
