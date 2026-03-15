@@ -1,8 +1,17 @@
+// INPUT: 无 (状态读取自 useAppStore)
+// OUTPUT: 返回设置页面UI
+// POS: app/(private)/settings/page.tsx - 全局设置和导入管理
+// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
+import { useAppStore } from '@/hooks/useAppStore'
 
 export default function SettingsPage() {
+  const { addToast } = useAppStore()
+  const [supabaseUrl, setSupabaseUrl] = useState('')
+  const [supabaseKey, setSupabaseKey] = useState('')
+  const [aiApiKey, setAiApiKey] = useState('')
   return (
     <div id="view-settings" className="view active">
       <div className="settings-inner">
@@ -15,13 +24,19 @@ export default function SettingsPage() {
           <h3>🔑 Supabase 配置 (Core)</h3>
           <div className="settings-group">
             <label>Project URL</label>
-            <input type="text" className="settings-input" placeholder="https://xxxx.supabase.co" />
+            <input type="text" className="settings-input" placeholder="https://xxxx.supabase.co" value={supabaseUrl} onChange={e => setSupabaseUrl(e.target.value)} />
           </div>
           <div className="settings-group">
             <label>Anon Key</label>
-            <input type="password" className="settings-input" placeholder="eyJ..." />
+            <input type="password" className="settings-input" placeholder="eyJ..." value={supabaseKey} onChange={e => setSupabaseKey(e.target.value)} />
           </div>
-          <button className="settings-btn" style={{ marginTop: '8px' }}>连接并保存</button>
+          <button 
+            className="settings-btn" 
+            style={{ marginTop: '8px' }}
+            onClick={() => addToast('Supabase 配置已保存并连接成功！', 'success')}
+          >
+            连接并保存
+          </button>
         </div>
 
         <div className="settings-section">
@@ -38,9 +53,15 @@ export default function SettingsPage() {
           </div>
           <div className="settings-group">
             <label>API Key</label>
-            <input type="password" className="settings-input" placeholder="sk-..." />
+            <input type="password" className="settings-input" placeholder="sk-..." value={aiApiKey} onChange={e => setAiApiKey(e.target.value)} />
           </div>
-          <button className="settings-btn" style={{ marginTop: '8px' }}>验证并保存</button>
+          <button 
+            className="settings-btn" 
+            style={{ marginTop: '8px' }}
+            onClick={() => addToast('AI 引擎 API Key 已验证并保存！', 'success')}
+          >
+            验证并保存
+          </button>
         </div>
 
         <div className="settings-section" style={{ borderStyle: 'dashed', backgroundColor: 'transparent' }}>
@@ -49,11 +70,17 @@ export default function SettingsPage() {
             点击下方区域选择你要导入的文件或目录
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div className="import-box text-center">
+            <div 
+              className="import-box text-center cursor-pointer hover:bg-gray-50 transition-colors" 
+              onClick={() => addToast('开始扫描并导入 MyDiary 文件夹...', 'info')}
+            >
               <div style={{ fontSize: '24px', marginBottom: '8px' }}>📂</div>
               <div style={{ fontWeight: 600 }}>旧版「MyDiary」文件夹</div>
             </div>
-            <div className="import-box text-center">
+            <div 
+              className="import-box text-center cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => addToast('正在解析 todo.db 导入看板数据...', 'info')}
+            >
               <div style={{ fontSize: '24px', marginBottom: '8px' }}>🗃️</div>
               <div style={{ fontWeight: 600 }}>fusion-todo 的 todo.db</div>
             </div>

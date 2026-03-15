@@ -1,7 +1,12 @@
+// INPUT: 无 (状态读取自 useTreeStore)
+// OUTPUT: 渲染知识树主容器组件
+// POS: components/tree/TreeContainer.tsx - 知识树模块入口组件
+// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 'use client'
 
 import React, { useEffect } from 'react'
 import { useTreeStore } from '@/hooks/useTreeStore'
+import { useAppStore } from '@/hooks/useAppStore'
 import TreeSidebar from './TreeSidebar'
 import TreeNode from './TreeNode'
 import { Undo2, Save } from 'lucide-react'
@@ -58,8 +63,8 @@ export default function TreeContainer() {
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <span className="tree-help" style={{ fontSize: '12px', color: '#888', marginRight: '16px' }}>Tab缩进 · Shift+Tab反缩进 · Enter换行</span>
-            <button className="tree-btn" onClick={() => alert('Undo action (WIP)')}>↩ 撤销</button>
-            <button className="tree-btn primary" onClick={() => alert('Document saved to Supabase/IndexedDB')}>保存</button>
+            <button className="tree-btn" onClick={() => useAppStore.getState().addToast('撤销功能开发中...', 'info')}>↩ 撤销</button>
+            <button className="tree-btn primary" onClick={() => useAppStore.getState().addToast('文档已随时自动保存', 'success')}>保存</button>
           </div>
         </div>
 

@@ -1,3 +1,7 @@
+// INPUT: entries, activeEntryId, actions
+// OUTPUT: 渲染日记侧边栏组件
+// POS: components/diary/DiarySidebar.tsx - 日记列表和操作侧边栏
+// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 'use client'
 
 import React from 'react'
@@ -29,7 +33,7 @@ export default function DiarySidebar({
       <div className="diary-sidebar-header">
         <span style={{ fontSize: '16px' }}>📖</span>
         <h2>日记本</h2>
-        <button className="diary-btn-secondary" onClick={onWeeklyModal}>📝 周记</button>
+        <button className="diary-btn-secondary" onClick={onWeeklyModal} title="生成周记">📝 周记</button>
         <button className="diary-btn-small" onClick={onNewEntry}>+ 新建</button>
       </div>
 
@@ -44,9 +48,27 @@ export default function DiarySidebar({
           className={`diary-sidebar-tab ${tab === 'select' ? 'active' : ''}`}
           onClick={() => onTabChange('select')}
         >
-          筛选
+          选择
         </div>
       </div>
+
+      {tab === 'select' && (
+        <div className="diary-select-bar">
+          <span id="diary-selected-count">已选 {selectedEntries.size} 篇</span>
+          <button onClick={() => {
+            const allIds = new Set(entries.map(e => e.id))
+            allIds.forEach(id => onSelectEntry(id)) // This might need a bulk select prop instead of multiple calls, but let's keep it simple
+          }}>全选</button>
+          <button onClick={() => onTabChange('list')}>取消</button>
+          <button 
+            style={{ background: 'var(--diary-accent)', color: '#fff', borderColor: 'var(--diary-accent)' }}
+            onClick={onWeeklyModal}
+            disabled={selectedEntries.size === 0}
+          >
+            周记
+          </button>
+        </div>
+      )}
 
       <div className="diary-list-inner">
         {entries.map((entry) => (
@@ -63,7 +85,7 @@ export default function DiarySidebar({
                 onChange={() => {}} // Handled by parent onClick
               />
             )}
-            <div className="diary-item-date">{new Date(entry.createdAt).toLocaleDateString()}</div>
+            <div className="diary-item-date">{entry.createdAt.split('T')[0]}</div>
             <div className="diary-item-title">{entry.title}</div>
             <div className="diary-item-preview">{entry.content.substring(0, 30)}...</div>
           </div>

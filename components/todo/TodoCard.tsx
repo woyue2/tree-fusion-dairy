@@ -1,8 +1,14 @@
+// INPUT: task
+// OUTPUT: 渲染 Todo 单个任务卡片
+// POS: components/todo/TodoCard.tsx - Todo 任务展示组件
+// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 'use client'
 
 import React from 'react'
 import { TodoTask } from '@/types'
 import { useTodoStore } from '@/hooks/useTodoStore'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface TodoCardProps {
   task: TodoTask
@@ -17,7 +23,7 @@ function strColor(str: string) {
 }
 
 export default function TodoCard({ task }: TodoCardProps) {
-  const { viewMode, contexts, updateTask } = useTodoStore()
+  const { viewMode, contexts, updateTask, setEditingTaskId } = useTodoStore()
   
   const ctx = contexts.find(c => c.id === task.contextId)
   const isStatusView = viewMode === 'status'
@@ -29,10 +35,33 @@ export default function TodoCard({ task }: TodoCardProps) {
     </div>
   ) : null
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: task.id, 
+    data: { type: 'Task', task } 
+  })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    ...(bgColor ? { background: bgColor } : {})
+  }
+
   return (
     <div 
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
       className={`task-card ${statusClass}`}
-      style={bgColor ? { background: bgColor } : undefined}
+      onClick={() => setEditingTaskId(task.id)}
     >
       {isStatusView && ctx && (
         <div className="task-card-context-bar" style={{ background: ctx.color }}></div>

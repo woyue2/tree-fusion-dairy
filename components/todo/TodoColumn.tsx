@@ -1,3 +1,7 @@
+// INPUT: column properties (id, title, tasks), interactions
+// OUTPUT: 渲染 Todo 卡片列/组
+// POS: components/todo/TodoColumn.tsx - Todo 状态/上下文分组列组件
+// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
@@ -5,88 +9,149 @@ import { Plus, MoreHorizontal } from 'lucide-react'
 import { TodoTask, TodoStatus, TodoContext } from '@/types'
 import TodoCard from '@/components/todo/TodoCard'
 import { useTodoStore } from '@/hooks/useTodoStore'
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface TodoColumnProps {
   id: string
   title: string
   tasks: TodoTask[]
   color?: string
+  collapsed?: boolean
+  onToggleCollapsed?: (id: string, collapsed: boolean) => void
   onAddTask?: (colId: string) => void
+  onMoveAbove?: (id: string) => void
+  onMoveBelow?: (id: string) => void
+  onMoveLeft?: (id: string) => void
+  onMoveRight?: (id: string) => void
+  canMoveAbove?: boolean
+  canMoveBelow?: boolean
+  canMoveLeft?: boolean
+  canMoveRight?: boolean
 }
 
-export default function TodoColumn({ id, title, tasks, color, onAddTask }: TodoColumnProps) {
+export default function TodoColumn({ 
+  id, title, tasks, color, collapsed = false, onToggleCollapsed, onAddTask, 
+  onMoveAbove, onMoveBelow, onMoveLeft, onMoveRight,
+  canMoveAbove, canMoveBelow, canMoveLeft, canMoveRight
+}: TodoColumnProps) {
   const { viewMode } = useTodoStore()
   const [isActionOpen, setIsActionOpen] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(false)
   const headerStyle = viewMode === 'context' && color ? { borderTop: `4px solid ${color}` } : undefined
   const actionRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (actionRef.current && !actionRef.current.contains(event.target as Node)) {
-        setIsActionOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+    data: { type: 'Column', column: { id, title, color } }
+  })
+
+  // same logic as fusion-todo
+  const style: React.CSSProperties = {
+    width: '260px',
+    opacity: isDragging ? 0.6 : (collapsed ? 0.9 : 1),
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
 
   return (
-    <div className="board-col" style={{ width: isCollapsed ? '100px' : '260px', opacity: isCollapsed ? 0.7 : 1 }}>
-      <div className="col-header" style={{ ...headerStyle, justifyContent: 'space-between', padding: '4px' }}>
-        {!isCollapsed && (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
-            <input 
-              type="text" 
-              className="col-title-input" 
-              value={title} 
-              readOnly
-              style={{ width: '100%', textOverflow: 'ellipsis' }}
-            />
-          </div>
-        )}
+    <div className="board-col" style={style} ref={setNodeRef}>
+      <div className="col-header" style={{ ...headerStyle, position: 'relative', padding: '8px', flexDirection: 'row', alignItems: 'flex-start' }}>
+        
+        <div 
+          style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}
+        >
+          <input 
+            type="text" 
+            className="col-title-input" 
+            defaultValue={title} 
+            onBlur={(e) => useTodoStore.getState().updateColumn(id, viewMode, e.target.value)}
+            onPointerDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            style={{ width: '100%', textOverflow: 'ellipsis' }}
+          />
+        </div>
         
         <button 
           className="col-collapse-btn" 
-          style={{ flexShrink: 0, transform: isCollapsed ? 'rotate(-90deg)' : 'none' }} 
-          title="折叠此列"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => onToggleCollapsed?.(id, !collapsed)}
+          title={collapsed ? "展开此列" : "折叠此列"}
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          {collapsed ? "展开" : "折叠"}
         </button>
 
-        {!isCollapsed && (
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', flexShrink: 0 }} ref={actionRef}>
-            <button 
-              className="col-action-btn" 
-              onClick={() => setIsActionOpen(!isActionOpen)}
-            >
-              ⋯
-            </button>
-            
-            {isActionOpen && (
-              <div className="col-action-panel" style={{ display: 'flex', right: '0' }}>
-                <button title="向左移动" onClick={() => alert('Moved left')}>←</button>
-                <button title="向右移动" onClick={() => alert('Moved right')}>→</button>
-                {viewMode !== 'status' && viewMode !== 'date' && (
-                  <button className="del-btn" title="删除列表" onClick={() => {
-                    if (confirm('Delete column?')) alert('Deleted')
-                  }}>删除</button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', flexShrink: 0 }} ref={actionRef}>
+              <button 
+                className="col-action-btn ml-1" 
+                onClick={() => setIsActionOpen(!isActionOpen)}
+                title="更多动作"
+              >
+                ⋯
+              </button>
+              
+              {isActionOpen && (
+                <div className="col-action-panel absolute right-0 top-full mt-1 bg-white border border-gray-200 shadow-md rounded flex z-10" style={{ padding: '2px', gap: '2px', width: 'max-content' }}>
+                  <button 
+                    title={canMoveAbove ? '移到左侧邻列上方或解除堆叠' : '不可用'} 
+                    disabled={!canMoveAbove}
+                    onClick={() => { onMoveAbove?.(id); setIsActionOpen(false); }}
+                    style={{ opacity: canMoveAbove ? 1 : 0.4, padding: '4px 8px', borderRadius: '4px', cursor: canMoveAbove ? 'pointer' : 'not-allowed' }}
+                  >↥</button>
+                  <button 
+                    title={canMoveBelow ? '移到左侧邻列下方' : '不可用'} 
+                    disabled={!canMoveBelow}
+                    onClick={() => { onMoveBelow?.(id); setIsActionOpen(false); }}
+                    style={{ opacity: canMoveBelow ? 1 : 0.4, padding: '4px 8px', borderRadius: '4px', cursor: canMoveBelow ? 'pointer' : 'not-allowed' }}
+                  >↧</button>
+                  <button 
+                    title={canMoveLeft ? '向左移动' : '不可用'} 
+                    disabled={!canMoveLeft}
+                    onClick={() => { onMoveLeft?.(id); setIsActionOpen(false); }}
+                    style={{ opacity: canMoveLeft ? 1 : 0.4, padding: '4px 8px', borderRadius: '4px', cursor: canMoveLeft ? 'pointer' : 'not-allowed' }}
+                  >←</button>
+                  <button 
+                    title={canMoveRight ? '向右移动' : '不可用'} 
+                    disabled={!canMoveRight}
+                    onClick={() => { onMoveRight?.(id); setIsActionOpen(false); }}
+                    style={{ opacity: canMoveRight ? 1 : 0.4, padding: '4px 8px', borderRadius: '4px', cursor: canMoveRight ? 'pointer' : 'not-allowed' }}
+                  >→</button>
+                  {viewMode !== 'date' && (
+                    <button 
+                      title="删除列表" 
+                      onClick={() => {
+                        if (confirm('Delete column?')) {
+                          useTodoStore.getState().deleteColumn(id, viewMode)
+                          setIsActionOpen(false)
+                        }
+                      }}
+                      style={{ padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', color: 'red', fontWeight: 'bold' }}
+                    >删</button>
+                  )}
+                </div>
+              )}
+            </div>
 
-        {!isCollapsed && <div className="col-count" style={{ flexShrink: 0 }}>{tasks.length}</div>}
+            <button
+              type="button"
+              {...attributes}
+              {...listeners}
+              className="col-action-btn ml-1"
+              style={{ cursor: 'grab', padding: '0 6px' }}
+              title="拖拽列"
+            >
+              ≡
+            </button>
+
+            <div className="col-count" style={{ flexShrink: 0, marginLeft: '4px' }}>{tasks.length}</div>
       </div>
 
-      {!isCollapsed && (
+      {!collapsed && (
         <>
           <div className="col-body">
-            {tasks.map((task) => (
-              <TodoCard key={task.id} task={task} />
-            ))}
+            <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
+              {tasks.map((task) => (
+                <TodoCard key={task.id} task={task} />
+              ))}
+            </SortableContext>
           </div>
 
           <button 

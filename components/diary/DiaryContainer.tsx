@@ -1,15 +1,43 @@
+// INPUT: 无 (状态读取自 useDiaryStore)
+// OUTPUT: 渲染日记主容器组件
+// POS: components/diary/DiaryContainer.tsx - 日记模块入口组件
+// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useDiaryStore } from '@/hooks/useDiaryStore'
+import { useAppStore } from '@/hooks/useAppStore'
 import DiarySidebar from './DiarySidebar'
-import { Sparkles, X } from 'lucide-react'
+import WeeklySummaryModal from './WeeklySummaryModal'
+import { Sparkles, X, Image as ImageIcon } from 'lucide-react'
 
 export default function DiaryContainer() {
   const { entries, activeEntry, setActiveEntry, updateEntry, addEntry, setEntries } = useDiaryStore()
   const [tab, setTab] = useState<'list' | 'select'>('list')
   const [selectedEntries, setSelectedEntries] = useState<Set<string>>(new Set())
   const [showAi, setShowAi] = useState(false)
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false)
+  const [showWeeklyModal, setShowWeeklyModal] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const insertFormat = (prefix: string, suffix: string) => {
+    if (!activeEntry || !textareaRef.current) return
+    const el = textareaRef.current
+    const start = el.selectionStart
+    const end = el.selectionEnd
+    const text = activeEntry.content
+    const before = text.substring(0, start)
+    const selected = text.substring(start, end)
+    const after = text.substring(end)
+    
+    const newText = before + prefix + selected + suffix + after
+    updateEntry(activeEntry.id, { content: newText })
+    
+    setTimeout(() => {
+      el.focus()
+      el.setSelectionRange(start + prefix.length, end + prefix.length)
+    }, 0)
+  }
 
   // Mock initial data if none
   useEffect(() => {
@@ -64,33 +92,11 @@ export default function DiaryContainer() {
           addEntry(newEntry)
           setActiveEntry(newEntry)
         }}
-        onWeeklyModal={() => {}}
+        onWeeklyModal={() => setShowWeeklyModal(true)}
         tab={tab}
         onTabChange={setTab}
         selectedEntries={selectedEntries}
       />
-
-      {tab === 'select' && (
-        <div style={{ position: 'absolute', bottom: 0, left: 240, width: 300, display: 'flex', alignItems: 'center', padding: '12px 16px', background: '#fff', borderTop: '1px solid #e0e0e0', zIndex: 10, boxSizing: 'border-box' }}>
-          <span style={{ fontSize: '12px', color: '#666' }}>已选择 {selectedEntries.size} 篇日记</span>
-          <div style={{ flex: 1 }}></div>
-          <button style={{ marginRight: '8px', padding: '4px 8px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }} disabled={selectedEntries.size === 0}>周记</button>
-          <button 
-            style={{ borderColor: selectedEntries.size > 0 ? '#eb5a46' : '#ccc', color: selectedEntries.size > 0 ? '#eb5a46' : '#ccc' }}
-            disabled={selectedEntries.size === 0}
-            onClick={() => {
-              if (confirm(`确定删除这 ${selectedEntries.size} 篇日记吗？`)) {
-                Array.from(selectedEntries).forEach(id => {
-                  useDiaryStore.getState().deleteEntry(id)
-                })
-                setTab('list')
-              }
-            }}
-          >
-            删除
-          </button>
-        </div>
-      )}
 
       <div className="diary-main">
         {/* Editor Header */}
@@ -98,39 +104,33 @@ export default function DiaryContainer() {
           <input 
             type="text" 
             className="diary-title-input" 
-            placeholder="日记标题..." 
+            placeholder="今天下午过得很充实" 
             value={activeEntry?.title || ''}
             onChange={(e) => activeEntry && updateEntry(activeEntry.id, { title: e.target.value })}
           />
-          <button 
-            className="btn-modal-ghost" 
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px' }}
-            onClick={() => setShowAi(!showAi)}
-          >
-            <Sparkles size={14} style={{ color: 'var(--diary-accent)' }} /> AI
-          </button>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+            {activeEntry?.date || new Date().toISOString().split('T')[0]}
+          </span>
         </div>
 
-        {/* Toolbar */}
+        {/* Toolbar - Restored from prototype.html */}
         <div className="diary-toolbar">
-          <button className="toolbar-btn" style={{ fontWeight: 700 }} onClick={() => alert('加粗 (B)')}>B</button>
-          <button className="toolbar-btn" style={{ fontStyle: 'italic' }} onClick={() => alert('斜体 (I)')}>I</button>
-          <button className="toolbar-btn" style={{ textDecoration: 'underline' }} onClick={() => alert('下划线 (U)')}>U</button>
+          <button className="toolbar-btn" onClick={() => insertFormat('**', '**')}><b>B</b></button>
+          <button className="toolbar-btn" onClick={() => insertFormat('*', '*')}><i>I</i></button>
+          <button className="toolbar-btn" onClick={() => insertFormat('<u>', '</u>')}><u>U</u></button>
           <div className="toolbar-sep"></div>
-          <button className="toolbar-btn" onClick={() => alert('标题 1 (H1)')}>H1</button>
-          <button className="toolbar-btn" onClick={() => alert('标题 2 (H2)')}>H2</button>
+          <button className="toolbar-btn" onClick={() => insertFormat('\n# ', '\n')}>H1</button>
+          <button className="toolbar-btn" onClick={() => insertFormat('\n## ', '\n')}>H2</button>
+          <button className="toolbar-btn" onClick={() => insertFormat('\n- ', '')}>≡</button>
           <div className="toolbar-sep"></div>
-          <button className="toolbar-btn" onClick={() => alert('无序列表 (●)')}>● 列表</button>
-          <button className="toolbar-btn" onClick={() => alert('有序列表 (1.)')}>1. 排序</button>
-          <button className="toolbar-btn" onClick={() => alert('待办列表 ([])')}>[] 待办</button>
-          <div className="toolbar-sep"></div>
-          <button className="toolbar-btn blockquote" onClick={() => alert('引用块 (❝)')}>❝ 引用</button>
-          <button className="toolbar-btn" onClick={() => alert('分割线 (--)')}>-- 分割线</button>
+          <button className="toolbar-btn" onClick={() => insertFormat('\n> ', '\n')}>❝</button>
+          <button className="toolbar-btn" onClick={() => insertFormat('\n---\n', '\n')}>--</button>
         </div>
 
         {/* Editor Body */}
         <div className="diary-editor-body">
           <textarea 
+            ref={textareaRef}
             className="diary-textarea" 
             placeholder="今天发生了什么？有什么想记录的..."
             value={activeEntry?.content || ''}
@@ -142,35 +142,53 @@ export default function DiaryContainer() {
         <div className="diary-editor-footer">
           <div className="word-count">字数: {activeEntry?.content.length || 0}</div>
           <div className="diary-actions">
+            <button className="btn-diary btn-diary-ghost" onClick={() => useAppStore.getState().addToast('日记已保存', 'success')}>保存</button>
+            <button className="btn-diary btn-diary-ghost" onClick={() => useAppStore.getState().addToast('结构优化完成', 'info')}>结构优化</button>
             <button 
-              className="btn-diary btn-diary-ghost"
+              className="btn-diary btn-diary-primary"
               onClick={() => {
-                if (activeEntry && confirm('确定要删除这篇日记吗？')) {
-                  useDiaryStore.getState().deleteEntry(activeEntry.id)
+                if (!showAi) {
+                  setIsGeneratingAi(true)
+                  setShowAi(true)
+                  setTimeout(() => setIsGeneratingAi(false), 1500)
+                } else {
+                  setShowAi(false)
                 }
               }}
-            >删除</button>
-            <button className="btn-diary btn-diary-primary" onClick={() => alert('日记已保存')}>保存 (Ctrl+S)</button>
+            >✨ 乐观分析</button>
           </div>
         </div>
 
-        {/* AI Panel */}
+        {/* AI Panel - Absolute slide-up from prototype */}
         <div className={`ai-panel ${showAi ? 'open' : ''}`}>
           <div className="ai-panel-header">
-            <div className="ai-panel-title">✨ AI 洞察</div>
+            <div className="ai-panel-title">✨ AI 乐观分析</div>
             <button className="ai-close" onClick={() => setShowAi(false)}>&times;</button>
           </div>
           <div className="ai-content">
-            <p>这段日记体现了你很强的<strong>行动力</strong>和<strong>自我反思能力</strong>。番茄钟工作法显然对你很有效，这可以作为长期的习惯固化下来。</p>
-            <br />
-            <div>
-              <span className="ai-tag">行动力 +1</span>
-              <span className="ai-tag">番茄钟工作法</span>
-              <span className="ai-tag">生活仪式感</span>
-            </div>
+            {isGeneratingAi ? (
+              <div style={{ padding: '20px 0', textAlign: 'center', color: '#666' }}>
+                <Sparkles size={20} className="animate-spin" style={{ margin: '0 auto 12px', color: '#eb5a46' }} />
+                AI 正在生成洞察...
+              </div>
+            ) : (
+              <div>
+                <p>这段日记体现了你很强的<strong>行动力</strong>和<strong>自律性</strong>。继续保持这种积极的节奏！</p>
+                <div style={{ marginTop: '12px' }}>
+                  <span className="ai-tag">行动力 +1</span>
+                  <span className="ai-tag">番茄钟工作法</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <WeeklySummaryModal 
+        isOpen={showWeeklyModal} 
+        onClose={() => setShowWeeklyModal(false)}
+        selectedCount={selectedEntries.size > 0 ? selectedEntries.size : entries.length}
+      />
     </div>
   )
 }

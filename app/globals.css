@@ -1,3 +1,9 @@
+/*
+ * [INPUT]: Tailwind directive, CSS variables
+ * [OUTPUT]: Global styles for the app
+ * [POS]: app/globals.css - Root style definitions
+ * [PROTOCOL]: Update this header when root tokens change
+ */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -500,9 +506,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 }
 .toolbar-btn:hover { background: var(--nav-hover); color: var(--app-text); }
 .toolbar-sep { width: 1px; height: 16px; background: var(--sidebar-border); margin: 0 2px; }
-.diary-editor-body { flex: 1; overflow-y: auto; padding: 20px 28px; }
+.diary-editor-body { flex: 1; overflow-y: auto; padding: 20px 28px; display: flex; flex-direction: column; }
 .diary-textarea {
-  width: 100%; min-height: 360px; background: transparent; border: none; outline: none;
+  width: 100%; flex: 1; height: 100%; min-height: 0; background: transparent; border: none; outline: none;
   color: var(--app-text); font-size: 15px; line-height: 1.8; resize: none; font-family: inherit;
 }
 .diary-textarea::placeholder { color: var(--text-muted); }

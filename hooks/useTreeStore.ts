@@ -1,3 +1,7 @@
+// INPUT: 无
+// OUTPUT: 知识树全局状态和节点操作方法
+// POS: hooks/useTreeStore.ts - 知识树模块的状态管理层
+// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 import { create } from 'zustand'
 import { TreeDocument, OutlineNode } from '@/types'
 
@@ -12,6 +16,9 @@ interface TreeState {
   addDocument: (title: string) => void
   renameDocument: (id: string, newTitle: string) => void
   deleteDocument: (id: string) => void
+  moveToTrash: (id: string) => void
+  restoreDocument: (id: string) => void
+  emptyTrash: () => void
   
   updateNode: (docId: string, nodeId: string, updates: Partial<OutlineNode>) => void
   addNode: (docId: string, parentId: string | null, afterNodeId: string) => void
@@ -170,12 +177,85 @@ export const useTreeStore = create<TreeState>((set) => ({
     const filteredDocs = state.documents.filter(d => d.id !== id)
     return {
       documents: filteredDocs,
-      activeDoc: state.activeDoc?.id === id ? filteredDocs[0] || null : state.activeDoc
+      activeDoc: state.activeDoc?.id === id ? filteredDocs.find(d => !d.deletedAt) || null : state.activeDoc
     }
   }),
 
+  moveToTrash: (id: string) => set((state) => {
+    const updatedDocs = state.documents.map(d => d.id === id ? { ...d, deletedAt: new Date().toISOString() } : d)
+    return {
+      documents: updatedDocs,
+      activeDoc: state.activeDoc?.id === id ? updatedDocs.find(d => !d.deletedAt) || null : state.activeDoc
+    }
+  }),
+
+  restoreDocument: (id: string) => set((state) => {
+    const updatedDocs = state.documents.map(d => d.id === id ? { ...d, deletedAt: null } : d)
+    return {
+      documents: updatedDocs
+    }
+  }),
+
+  emptyTrash: () => set((state) => ({
+    documents: state.documents.filter(d => !d.deletedAt)
+  })),
+
   indentNode: (docId, nodeId, direction) => set((state) => {
-    // Logic to change level and parentId
-    return state
+    if (!state.activeDoc || state.activeDoc.id !== docId || nodeId === 'root') return state
+    
+    let nodes = { ...state.activeDoc.nodes }
+    const node = { ...nodes[nodeId] }
+    if (!node.parentId || !nodes[node.parentId]) return state
+    
+    const parent = { ...nodes[node.parentId] }
+    const idx = parent.children.indexOf(nodeId)
+    
+    if (direction === 'in') {
+      // Must have a previous sibling to indent under
+      if (idx > 0) {
+        const prevSiblingId = parent.children[idx - 1]
+        const prevSibling = { ...nodes[prevSiblingId] }
+        
+        // Remove from parent
+        parent.children = parent.children.filter(id => id !== nodeId)
+        
+        // Add to prevSibling
+        prevSibling.children = [...prevSibling.children, nodeId]
+        
+        // Update node
+        node.parentId = prevSiblingId
+        // Update new parent expanded state to show the newly added child
+        prevSibling.isExpanded = true
+        
+        nodes[parent.id] = parent
+        nodes[prevSibling.id] = prevSibling
+        nodes[node.id] = node
+      }
+    } else if (direction === 'out') {
+      // Must not be a top-level node (child of root)
+      if (parent.id !== 'root' && parent.parentId) {
+        const grandParent = { ...nodes[parent.parentId] }
+        
+        // Remove from parent
+        parent.children = parent.children.filter(id => id !== nodeId)
+        
+        // Add to grandParent after parent
+        const parentIdx = grandParent.children.indexOf(parent.id)
+        const newChildren = [...grandParent.children]
+        newChildren.splice(parentIdx + 1, 0, nodeId)
+        grandParent.children = newChildren
+        
+        // Update node
+        node.parentId = grandParent.id
+        
+        nodes[parent.id] = parent
+        nodes[grandParent.id] = grandParent
+        nodes[node.id] = node
+      }
+    }
+    
+    return {
+      activeDoc: { ...state.activeDoc, nodes }
+    }
   })
 }))
