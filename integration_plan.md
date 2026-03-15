@@ -36,7 +36,7 @@
 - **UI 绑定**: 使用 **Zustand** 订阅 Dexie 的变化（通过 `useLiveQuery`）。
 - **同步引擎 (Sync Engine)**: 
   - 放弃 `SWR/React Query`。
-  - 开发通用的 `useSyncWorker`。当用户操作（如创建 Todo 或日记）时，先写 Dexie 并标记 `_dirty: true`。
+  - 开发通用的 `useSyncEngine`。当用户操作（如创建 Todo 或日记）时，先写 Dexie 并标记 `_dirty: true`。
   - 背景进程（Background Sync）负责将 `_dirty` 记录推送到 Supabase，并在成功后清除标记。
   - **优势**: 实现真正的 0 延迟 UI 反馈，且完美适配 `tree-index` 现有的树形复杂状态。
 

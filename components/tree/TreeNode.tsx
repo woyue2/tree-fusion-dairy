@@ -145,14 +145,18 @@ export default function TreeNode({ nodeId, nodes, onUpdate }: TreeNodeProps) {
 
       {!collapsed && hasChildren && (
         <div className="node-children">
-          {node.children.map((childId: string) => (
-            <TreeNode 
-              key={childId}
-              nodeId={childId}
-              nodes={nodes}
-              onUpdate={onUpdate}
-            />
-          ))}
+          {node.children.map((childId: any) => {
+            const childNode = nodes[childId];
+            if (!childNode) return null;
+            return (
+              <TreeNode 
+                key={childId}
+                nodeId={childId}
+                nodes={nodes}
+                onUpdate={onUpdate}
+              />
+            );
+          })}
         </div>
       )}
     </div>

@@ -37,6 +37,7 @@ create table if not exists tree_documents (
   title text not null,
   icon text,
   nodes jsonb default '[]'::jsonb,
+  metadata jsonb default '{}'::jsonb,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   deleted_at timestamptz
@@ -64,7 +65,21 @@ create table if not exists todo_contexts (
   updated_at timestamptz default now()
 );
 
--- 7. (可选) RLS 策略 - 简单示例：允许所有人读写自己对应 user_id 的数据
+-- 7. 日记表
+create table if not exists diaries (
+  id uuid primary key default uuid_generate_v4(),
+  user_id text not null,
+  date date not null,
+  title text,
+  content jsonb default '{}'::jsonb, -- 包含 original, structured, final 等版本
+  images text[],
+  analysis jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  deleted_at timestamptz
+);
+
+-- 8. (可选) RLS 策略
 -- alter table moods enable row level security;
 -- create policy "Users can only access their own moods" on moods for all using (true);
 -- 同理应用到其他表...

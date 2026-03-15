@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: '日记本 — 记录今天发生的事',
 }
 
-import DiaryContainer from '@/components/diary/DiaryContainer'
+import { DiaryContainer } from '@/components/diary/DiaryContainer'
 
 export default async function DiaryPage() {
   return (

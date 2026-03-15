@@ -1,19 +1,48 @@
 /**
- * [INPUT]:    依赖 lib/db (Dexie) 和 lib/supabase-db (Server Actions)
- * [OUTPUT]:   在后台自动同步 _dirty 记录到云端
- * [POS]:      hooks/useSyncWorker.ts - 全局同步引擎 Hook
+ * [INPUT]:    依赖 lib/db (Dexie) 和 app/actions/sync (Server Actions)
+ * [OUTPUT]:   全量数据初始化拉取 (Pull) + 增量变动同步更新 (Push)
+ * [POS]:      hooks/syncEngine.ts - 核心同步编排中心
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
 import { useEffect, useRef } from 'react';
 import { db } from '@/lib/db';
 import { useAppStore } from './useAppStore';
-import { syncMoodAction, syncTaskAction, syncDocAction, syncStatusAction, syncContextAction, syncTreeAction } from '@/app/actions/sync';
+import { useMoodStore } from './useMoodStore';
+import { useTodoStore } from './useTodoStore';
+import { useTreeStore } from './useTreeStore';
+import { useDiaryStore } from './useDiaryStore';
+import { syncMoodAction, syncTaskAction, syncDocAction, syncDiaryAction } from '@/app/actions/sync';
 
-export function useSyncWorker() {
+export function useSyncEngine() {
   const isOnline = useAppStore(s => s.isOnline);
   const setSyncStatus = useAppStore(s => s.setSyncStatus);
   const syncInterval = useRef<NodeJS.Timeout | null>(null);
+  
+  const pullAll = useMoodStore(s => s.pullMoods);
+  const pullTodo = useTodoStore(s => s.pullAll);
+  const pullTree = useTreeStore(s => s.pullDocuments);
+  const pullDiary = useDiaryStore(s => s.pullDiaries);
+
+  const performPull = async () => {
+    if (!isOnline) return;
+    try {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[SyncEngine] Starting initial pull...');
+      }
+      await Promise.all([
+        pullAll(),
+        pullTodo(),
+        pullTree(),
+        pullDiary()
+      ]);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[SyncEngine] Initial pull completed.');
+      }
+    } catch (err) {
+      console.error('[SyncEngine] Initial pull failed:', err);
+    }
+  };
 
   const performSync = async () => {
     if (!isOnline) return;
@@ -37,23 +66,16 @@ export function useSyncWorker() {
       // 3. Sync Documents
       const dirtyDocs = await db.documents.where('_dirty').equals(1).toArray();
       for (const doc of dirtyDocs) {
-        // cast to any to avoid circular reference detection if the tree is deep
+        // @ts-ignore
         await syncDocAction(doc as any);
-        await db.documents.update(doc.id, { _dirty: 0 });
+        await (db.documents as any).update(doc.id, { _dirty: 0 });
       }
 
-      // 4. Sync Statuses
-      const dirtyStatuses = await db.statuses.where('_dirty').equals(1).toArray();
-      for (const status of dirtyStatuses) {
-        await syncStatusAction(status);
-        await db.statuses.update(status.id, { _dirty: 0 });
-      }
-
-      // 5. Sync Contexts
-      const dirtyContexts = await db.contexts.where('_dirty').equals(1).toArray();
-      for (const ctx of dirtyContexts) {
-        await syncContextAction(ctx);
-        await db.contexts.update(ctx.id, { _dirty: 0 });
+      // 4. Sync Diaries
+      const dirtyDiaries = await db.diaries.where('_dirty').equals(1).toArray();
+      for (const diary of dirtyDiaries) {
+        await syncDiaryAction(diary);
+        await db.diaries.update(diary.id, { _dirty: 0 });
       }
 
       setSyncStatus('synced');
@@ -66,7 +88,7 @@ export function useSyncWorker() {
   useEffect(() => {
     if (isOnline) {
       // Initial sync on mount or when coming back online
-      performSync();
+      performPull().then(() => performSync());
       
       // Periodic sync every 30 seconds
       syncInterval.current = setInterval(performSync, 30000);

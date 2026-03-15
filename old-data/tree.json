@@ -1,0 +1,2091 @@
+[
+    {
+        "id": "66c29021-31e3-4080-b409-fdf6725ea968",
+        "user_id": "10ef0f60-dfa6-4ec1-9597-f82d2334fced",
+        "title": "存在-非人",
+        "root": {
+            "id": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+            "icon": "😶",
+            "level": 0,
+            "images": [],
+            "content": "",
+            "children": [
+                {
+                    "id": "21e36c92-bcb5-4b6f-b716-415a7a714287",
+                    "level": 1,
+                    "images": [],
+                    "content": "https://cloud.==browser-use.==com/   github登录 woyue2 username",
+                    "children": [
+                        {
+                            "id": "b7432fea-fa92-4151-83c3-1732e287743e",
+                            "level": 2,
+                            "images": [],
+                            "content": "bu_Ri3DB_7g-Ozow8BwLHylkH6p5O2htyZfOdcGVFNrcOo",
+                            "children": [],
+                            "parentId": "21e36c92-bcb5-4b6f-b716-415a7a714287",
+                            "collapsed": false,
+                            "createdAt": 1771014785192,
+                            "updatedAt": 1771014785859
+                        },
+                        {
+                            "id": "5a32cdd1-93dd-47c1-9b36-bef0cbea84ca",
+                            "level": 2,
+                            "images": [],
+                            "content": "BROWSER_USE_API_KEY=bu_Ri3DB_7g-Ozow8BwLHylkH6p5O2htyZfOdcGVFNrcOo",
+                            "children": [],
+                            "parentId": "21e36c92-bcb5-4b6f-b716-415a7a714287",
+                            "collapsed": false,
+                            "createdAt": 1771014789256,
+                            "updatedAt": 1771014789486
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1771014736687,
+                    "updatedAt": 1771082692402
+                },
+                {
+                    "id": "6c1f4424-d8e8-42e0-8208-0ef39b43bb18",
+                    "level": 1,
+                    "images": [],
+                    "content": "https://www.graphile.org/postgraphile/ ",
+                    "children": [
+                        {
+                            "id": "7f653244-4f15-471a-9430-49422f8a605b",
+                            "level": 2,
+                            "images": [],
+                            "content": "前端 (React/Vue 等)  ➡️  PostGraphile (接收 GraphQL 请求，转为 SQL)  ➡️  PostgreSQL (实际存储数据的数据库) ",
+                            "children": [],
+                            "parentId": "6c1f4424-d8e8-42e0-8208-0ef39b43bb18",
+                            "collapsed": false,
+                            "createdAt": 1772994030443,
+                            "updatedAt": 1772994031524
+                        },
+                        {
+                            "id": "3adf5212-47ed-41cf-950a-819e747d4578",
+                            "level": 2,
+                            "images": [],
+                            "content": "大型 Web 应用、复杂的企业级后台、需要复杂权限控制的系统。",
+                            "children": [],
+                            "parentId": "6c1f4424-d8e8-42e0-8208-0ef39b43bb18",
+                            "collapsed": false,
+                            "createdAt": 1772994042869,
+                            "updatedAt": 1772994043055
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1772994021043,
+                    "updatedAt": 1772994042869
+                },
+                {
+                    "id": "b556da2a-02c0-4f71-a595-ef5c9eb27fdf",
+                    "level": 1,
+                    "images": [],
+                    "content": "vibe - ui  审美",
+                    "children": [
+                        {
+                            "id": "7ab91413-8d8f-4380-851a-964d9a8a17f5",
+                            "level": 2,
+                            "images": [],
+                            "content": "https://paper.design/ ",
+                            "children": [],
+                            "parentId": "b556da2a-02c0-4f71-a595-ef5c9eb27fdf",
+                            "collapsed": false,
+                            "createdAt": 1772871190800,
+                            "updatedAt": 1772871195898
+                        },
+                        {
+                            "id": "6d7a36c8-a6e8-428d-98f3-b4ad4edc7d86",
+                            "level": 2,
+                            "images": [],
+                            "content": "https://21st.dev/home",
+                            "children": [],
+                            "parentId": "b556da2a-02c0-4f71-a595-ef5c9eb27fdf",
+                            "collapsed": false,
+                            "createdAt": 1772871196761,
+                            "updatedAt": 1772871200051
+                        },
+                        {
+                            "id": "d65d24e9-6e9a-4a21-8465-27de688d1d29",
+                            "level": 2,
+                            "images": [],
+                            "content": "variant",
+                            "children": [],
+                            "parentId": "b556da2a-02c0-4f71-a595-ef5c9eb27fdf",
+                            "collapsed": false,
+                            "createdAt": 1772871205410,
+                            "updatedAt": 1772871207115
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1772871190152,
+                    "updatedAt": 1772871217284
+                },
+                {
+                    "id": "6fa3b29e-2e17-44c6-9e45-53bd412510c9",
+                    "level": 1,
+                    "images": [],
+                    "content": "https://www.loot-drop.io/ideas     创业坟墓",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1771867486278,
+                    "updatedAt": 1771867496567
+                },
+                {
+                    "id": "86ecf7a7-425c-4293-ad47-ef76d32552e1",
+                    "level": 1,
+                    "images": [
+                        {
+                            "id": "c0815cbb-c82c-417e-aeed-b4bdaf5758d0",
+                            "url": "https://s3.bmp.ovh/2026/02/15/bcmBD6vi.png",
+                            "width": 565,
+                            "height": 498,
+                            "uploadedAt": 1771085305832
+                        },
+                        {
+                            "id": "822a88c6-01e4-4af5-bcc3-73e9acbb6088",
+                            "url": "https://s3.bmp.ovh/2026/02/15/8J2m6C98.jpg",
+                            "width": 1080,
+                            "height": 2400,
+                            "uploadedAt": 1771148860462
+                        }
+                    ],
+                    "content": "无服务器的其他例子后端 / daisy ui组件库",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1771082626067,
+                    "updatedAt": 1771148886505
+                },
+                {
+                    "id": "9714d67e-cf29-47ba-aa50-f17a8967fe49",
+                    "level": 1,
+                    "images": [
+                        {
+                            "id": "26d3312d-b4c9-4f2b-b098-06a771b648f6",
+                            "url": "https://s3.bmp.ovh/2026/02/12/OJQRaaiF.png",
+                            "width": 681,
+                            "height": 402,
+                            "uploadedAt": 1770859972697
+                        },
+                        {
+                            "id": "1c986e43-2bb6-445f-aa43-47606a6918b3",
+                            "url": "https://s3.bmp.ovh/2026/02/12/Qq99k6zb.png",
+                            "width": 486,
+                            "height": 386,
+                            "uploadedAt": 1770862114109
+                        },
+                        {
+                            "id": "1e715e80-6045-4153-a229-6fdb3fa02d4f",
+                            "url": "https://s3.bmp.ovh/2026/02/13/64rPRCgs.jpg",
+                            "width": 1080,
+                            "height": 2400,
+                            "uploadedAt": 1770967786696
+                        }
+                    ],
+                    "content": "爬虫",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770859943360,
+                    "updatedAt": 1770967786696
+                },
+                {
+                    "id": "edc2fb96-c06d-47a7-8d4b-1324f969a182",
+                    "level": 1,
+                    "images": [
+                        {
+                            "id": "a8474fa2-a483-46e3-aad6-de743e43c2b3",
+                            "url": "https://s3.bmp.ovh/2026/02/18/ItSgJx01.jpg",
+                            "width": 1080,
+                            "height": 2400,
+                            "uploadedAt": 1771405376983
+                        }
+                    ],
+                    "content": "",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1771014736192,
+                    "updatedAt": 1771405376984
+                },
+                {
+                    "id": "712dd005-155c-4dff-a976-42882647292b",
+                    "level": 1,
+                    "images": [],
+                    "content": "racknerd ",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1771014736399,
+                    "updatedAt": 1771087669328
+                },
+                {
+                    "id": "0da255d1-b26c-4044-bcb3-9e3e31b58452",
+                    "level": 1,
+                    "images": [],
+                    "content": "upstash(serverless redis) redis database frontend三种",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770760779525,
+                    "updatedAt": 1770820611072
+                },
+                {
+                    "id": "181dda28-9207-47ff-a7fd-0ad4477da09a",
+                    "level": 1,
+                    "images": [],
+                    "content": "https://www.==namesilo==.com/account/domains/21592486#dns (wowoyue.1@==gmail==.com 登录)",
+                    "children": [
+                        {
+                            "id": "7ddec82a-1595-414a-8621-709fa055baf5",
+                            "level": 2,
+                            "images": [],
+                            "content": "",
+                            "children": [],
+                            "parentId": "181dda28-9207-47ff-a7fd-0ad4477da09a",
+                            "collapsed": false,
+                            "createdAt": 1770859943624,
+                            "updatedAt": 1770859947972
+                        },
+                        {
+                            "id": "e40423b3-5eda-4f72-8bdf-6fb076d75277",
+                            "level": 2,
+                            "images": [],
+                            "content": "站长工具https://==tool.chinaz==.com/   ping xxx.com看ip ==namesilo==绑定了没有",
+                            "children": [],
+                            "parentId": "181dda28-9207-47ff-a7fd-0ad4477da09a",
+                            "collapsed": false,
+                            "createdAt": 1770658092124,
+                            "updatedAt": 1770658092958
+                        },
+                        {
+                            "id": "9e47f1d0-17ed-4109-b3db-d9ecb77f10b0",
+                            "level": 2,
+                            "images": [],
+                            "content": "配置 a aa www 给==vercel==  （==github ==stephendufoxmail登录) 要 ==public==才能免费 同步push修改，需要加==webhook==手动",
+                            "children": [],
+                            "parentId": "181dda28-9207-47ff-a7fd-0ad4477da09a",
+                            "collapsed": false,
+                            "createdAt": 1770658102709,
+                            "updatedAt": 1770658102926
+                        },
+                        {
+                            "id": "0e480f2d-5a0a-4170-a7c0-064a92b5eaf5",
+                            "level": 2,
+                            "images": [],
+                            "content": "==supabase== （==github ==stephendufoxmail登录) 好东西d1数据库垃圾不能实时同步",
+                            "children": [],
+                            "parentId": "181dda28-9207-47ff-a7fd-0ad4477da09a",
+                            "collapsed": false,
+                            "createdAt": 1770658111181,
+                            "updatedAt": 1770817739082
+                        },
+                        {
+                            "id": "b70e21e8-7477-43eb-a087-adfe18425fcb",
+                            "level": 2,
+                            "images": [],
+                            "content": "少的内容直接放自己服务器，文本就几kb",
+                            "children": [],
+                            "parentId": "181dda28-9207-47ff-a7fd-0ad4477da09a",
+                            "collapsed": false,
+                            "createdAt": 1770658233258,
+                            "updatedAt": 1770817754332
+                        },
+                        {
+                            "id": "acb2d656-4053-4c84-ba81-6b9d52b39e63",
+                            "level": 2,
+                            "images": [
+                                {
+                                    "id": "3c9ed872-1cf3-4a73-89cf-c42fcfdbc549",
+                                    "url": "https://s3.bmp.ovh/2026/02/11/tFhlaAIG.jpg",
+                                    "width": 839,
+                                    "height": 161,
+                                    "uploadedAt": 1770819942190
+                                }
+                            ],
+                            "content": "whisper flow",
+                            "children": [],
+                            "parentId": "181dda28-9207-47ff-a7fd-0ad4477da09a",
+                            "collapsed": false,
+                            "createdAt": 1770817754310,
+                            "updatedAt": 1770821803095
+                        },
+                        {
+                            "id": "75a9517e-da5c-4932-8287-54bd46a43951",
+                            "level": 2,
+                            "images": [],
+                            "content": "https://foxcode.rjj.cc/",
+                            "children": [],
+                            "parentId": "181dda28-9207-47ff-a7fd-0ad4477da09a",
+                            "collapsed": false,
+                            "createdAt": 1770827561222,
+                            "updatedAt": 1770827561801
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770658039090,
+                    "updatedAt": 1770859952261
+                },
+                {
+                    "id": "97427ec1-ccd9-4a6a-a157-38c03667ff98",
+                    "level": 1,
+                    "images": [],
+                    "content": "https://downr.org/  youtube下载 而且快",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770825727886,
+                    "updatedAt": 1770825740553
+                },
+                {
+                    "id": "33005ce3-b8da-45ce-8cb9-accf77d61d44",
+                    "level": 1,
+                    "images": [],
+                    "content": "设计 vibe",
+                    "children": [
+                        {
+                            "id": "d3c3b0e2-be92-479c-89c2-878610e7ee91",
+                            "level": 2,
+                            "images": [
+                                {
+                                    "id": "490fcf1a-9f57-4579-9382-a611a0709db8",
+                                    "url": "https://s3.bmp.ovh/2026/02/10/0G8kSpUP.jpg",
+                                    "width": 1080,
+                                    "height": 2408,
+                                    "uploadedAt": 1770661142803
+                                }
+                            ],
+                            "content": "==gemini ==3 flash用法 参考这个文件，像素级同步到我的系统中",
+                            "children": [],
+                            "parentId": "33005ce3-b8da-45ce-8cb9-accf77d61d44",
+                            "collapsed": false,
+                            "createdAt": 1770661032656,
+                            "updatedAt": 1770820611072
+                        },
+                        {
+                            "id": "160ef557-9cdf-4d80-b8d6-4cae53f7f763",
+                            "level": 2,
+                            "images": [],
+                            "content": "配色 ==humint== skill ui-ux-max",
+                            "children": [],
+                            "parentId": "33005ce3-b8da-45ce-8cb9-accf77d61d44",
+                            "collapsed": false,
+                            "createdAt": 1770820139307,
+                            "updatedAt": 1770820563706
+                        },
+                        {
+                            "id": "df055ef8-51a9-43cf-b792-def27ddb8958",
+                            "level": 2,
+                            "images": [],
+                            "content": "==variant==.com  一次性给4个，选再继续 vibe-ui like ==figma== ==google-stich ====magic-path== ",
+                            "children": [],
+                            "parentId": "33005ce3-b8da-45ce-8cb9-accf77d61d44",
+                            "collapsed": false,
+                            "createdAt": 1770820431189,
+                            "updatedAt": 1770820591142
+                        },
+                        {
+                            "id": "0c45e89f-1a43-4d9f-9ffc-f77c720d052d",
+                            "level": 2,
+                            "images": [],
+                            "content": "==awards== ==dribble== ==behance== 设计师网站",
+                            "children": [],
+                            "parentId": "33005ce3-b8da-45ce-8cb9-accf77d61d44",
+                            "collapsed": false,
+                            "createdAt": 1770820481953,
+                            "updatedAt": 1770820606141
+                        },
+                        {
+                            "id": "6bd5fc70-1ecd-479d-825b-674d2b4fb63e",
+                            "level": 2,
+                            "images": [],
+                            "content": "==phosphor ==**图标库**",
+                            "children": [],
+                            "parentId": "33005ce3-b8da-45ce-8cb9-accf77d61d44",
+                            "collapsed": false,
+                            "createdAt": 1770820616754,
+                            "updatedAt": 1770820617074
+                        },
+                        {
+                            "id": "548bc465-8808-421d-9b54-dc9aa810293d",
+                            "level": 2,
+                            "images": [],
+                            "content": "==lovart==也有ai美术，可以参考一个图生成多个（例如==小图==片），也支持去背景",
+                            "children": [
+                                {
+                                    "id": "cf2090f7-7af4-4f08-8611-c6dacef8b356",
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "ui需要去背景，不然会白色遮挡",
+                                    "children": [],
+                                    "parentId": "548bc465-8808-421d-9b54-dc9aa810293d",
+                                    "collapsed": false,
+                                    "createdAt": 1770806381979,
+                                    "updatedAt": 1770806695980
+                                },
+                                {
+                                    "id": "a5540cd8-890c-440e-883c-2d5275dffcd6",
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "根据主题，给图，生产4*4这样的图标库，再裁减（eg.水獭主题）",
+                                    "children": [],
+                                    "parentId": "548bc465-8808-421d-9b54-dc9aa810293d",
+                                    "collapsed": false,
+                                    "createdAt": 1770806697911,
+                                    "updatedAt": 1770806727187
+                                },
+                                {
+                                    "id": "f1e8d434-823a-4c39-9772-8d1045c3455f",
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "设计老师-->图生视频-->转gif-->去背景",
+                                    "children": [],
+                                    "parentId": "548bc465-8808-421d-9b54-dc9aa810293d",
+                                    "collapsed": false,
+                                    "createdAt": 1770820630051,
+                                    "updatedAt": 1770820630275
+                                },
+                                {
+                                    "id": "db599806-06f5-4637-a7af-c8340411b02c",
+                                    "icon": "🧸",
+                                    "level": 3,
+                                    "images": [
+                                        {
+                                            "id": "24cab732-cb0d-4ca3-bfc3-7862137e5d0f",
+                                            "url": "https://s3.bmp.ovh/2026/02/10/lLz01UWS.jpg",
+                                            "width": 1080,
+                                            "height": 2408,
+                                            "uploadedAt": 1770661343711
+                                        },
+                                        {
+                                            "id": "d0ef1bf9-edff-4ac8-be5b-36cf7fb8beae",
+                                            "url": "https://s3.bmp.ovh/2026/02/10/SBb5uI6f.jpg",
+                                            "width": 2408,
+                                            "height": 1080,
+                                            "uploadedAt": 1770661645034
+                                        },
+                                        {
+                                            "id": "864143d5-cfc5-4249-8393-9b78bb1440ab",
+                                            "url": "https://s3.bmp.ovh/2026/02/10/CEBPMQya.jpg",
+                                            "width": 2408,
+                                            "height": 1080,
+                                            "uploadedAt": 1770661656518
+                                        }
+                                    ],
+                                    "content": "==dicebear ==头像库 加 ==opencreator == （调用gemini和banana) 美术资源 ",
+                                    "children": [],
+                                    "parentId": "548bc465-8808-421d-9b54-dc9aa810293d",
+                                    "collapsed": false,
+                                    "createdAt": 1770661323246,
+                                    "updatedAt": 1770820639733
+                                }
+                            ],
+                            "parentId": "33005ce3-b8da-45ce-8cb9-accf77d61d44",
+                            "collapsed": false,
+                            "createdAt": 1770806149409,
+                            "updatedAt": 1770820639733
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770820548416,
+                    "updatedAt": 1770820672260
+                },
+                {
+                    "id": "878ba5d9-8742-49e9-8075-bf151ce825cc",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770820672534,
+                    "updatedAt": 1770820672534
+                },
+                {
+                    "id": "84b3a5be-f8dd-47a3-8aee-444d31317503",
+                    "level": 1,
+                    "images": [],
+                    "content": "https://my.==racknerd==.com/clientarea.php?action=productdetails&id=316919",
+                    "children": [
+                        {
+                            "id": "aac8c20a-1d7d-4fb8-bde9-e9df49c69f35",
+                            "level": 2,
+                            "images": [],
+                            "content": "helloworld f7",
+                            "children": [
+                                {
+                                    "id": "b35604bf-e603-4f5c-a880-1150e8b378bf",
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "黑客松",
+                                    "children": [],
+                                    "parentId": "aac8c20a-1d7d-4fb8-bde9-e9df49c69f35",
+                                    "collapsed": false,
+                                    "createdAt": 1770658233794,
+                                    "updatedAt": 1770660305143
+                                }
+                            ],
+                            "parentId": "84b3a5be-f8dd-47a3-8aee-444d31317503",
+                            "collapsed": false,
+                            "createdAt": 1771135253797,
+                            "updatedAt": 1771135277695
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770658233425,
+                    "updatedAt": 1771135284311
+                },
+                {
+                    "id": "5658011a-e4b6-4f40-b12f-78e0968b8232",
+                    "level": 1,
+                    "images": [
+                        {
+                            "id": "f6896bdb-32de-4781-8d3a-510d25b922c4",
+                            "url": "https://s3.bmp.ovh/2026/02/19/EfZ8mzQd.jpg",
+                            "width": 1196,
+                            "height": 1760,
+                            "uploadedAt": 1771476480187
+                        }
+                    ],
+                    "content": "火了生成肌肉记忆",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770661032472,
+                    "updatedAt": 1771476496349
+                },
+                {
+                    "id": "e29de30f-9614-4785-95c8-9391315b0549",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770661256930,
+                    "updatedAt": 1770820615211
+                },
+                {
+                    "id": "d50701a5-2cdd-46f4-8948-89e1afbd401b",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770806693041,
+                    "updatedAt": 1770820627948
+                },
+                {
+                    "id": "d8f6c547-71ae-48a7-a6ca-b0702250162c",
+                    "level": 1,
+                    "images": [],
+                    "content": "一些用法",
+                    "children": [
+                        {
+                            "id": "bfb5f513-7cc4-4323-8d35-9c1b03fffbb1",
+                            "level": 2,
+                            "images": [],
+                            "content": "https://code.coze.cn/p/7604558416878796863/preview  coze编程 工作流",
+                            "children": [
+                                {
+                                    "id": "ba3fbe8c-bdb7-4506-ad29-dd7f8eccabca",
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "https://www.youtube.com/watch?v=89Oumj6M29M   采集",
+                                    "children": [],
+                                    "parentId": "bfb5f513-7cc4-4323-8d35-9c1b03fffbb1",
+                                    "collapsed": false,
+                                    "createdAt": 1770662734878,
+                                    "updatedAt": 1770662764601
+                                },
+                                {
+                                    "id": "84116396-05f0-4fd3-b52b-71957fadb143",
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "https://www.youtube.com/watch?v=GVyWHfBxTVk 采集小红书 、抖音",
+                                    "children": [],
+                                    "parentId": "bfb5f513-7cc4-4323-8d35-9c1b03fffbb1",
+                                    "collapsed": false,
+                                    "createdAt": 1770662730974,
+                                    "updatedAt": 1770662843564
+                                }
+                            ],
+                            "parentId": "d8f6c547-71ae-48a7-a6ca-b0702250162c",
+                            "collapsed": false,
+                            "createdAt": 1770662696005,
+                            "updatedAt": 1770662756673
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770662695805,
+                    "updatedAt": 1770674521792
+                },
+                {
+                    "id": "6a91fcef-d0e8-47c1-bfda-2f94d32e0c8c",
+                    "level": 1,
+                    "images": [],
+                    "content": "==俞军==",
+                    "children": [
+                        {
+                            "id": "e2489855-52cf-4bd3-8a42-d5ecb94d09c1",
+                            "level": 2,
+                            "images": [],
+                            "content": "产品价值 = 新体验 - 旧体验 - 替换成本 （时间、金钱、学习成本、习惯改变等）",
+                            "children": [],
+                            "parentId": "6a91fcef-d0e8-47c1-bfda-2f94d32e0c8c",
+                            "collapsed": false,
+                            "createdAt": 1770662696325,
+                            "updatedAt": 1770675315849
+                        },
+                        {
+                            "id": "e88108c7-902f-428f-b14a-399c5cce518c",
+                            "level": 2,
+                            "images": [],
+                            "content": "价格=客户参考价格+差异化价值（增值−减值）+转换成本（激励） 其他版本",
+                            "children": [],
+                            "parentId": "6a91fcef-d0e8-47c1-bfda-2f94d32e0c8c",
+                            "collapsed": false,
+                            "createdAt": 1770675347612,
+                            "updatedAt": 1770675351973
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770662696173,
+                    "updatedAt": 1770675347612
+                },
+                {
+                    "id": "d6a44b75-5e04-4a26-8662-7c911ae2780a",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770662696485,
+                    "updatedAt": 1770662696485
+                },
+                {
+                    "id": "b63c8d47-ba2c-4ddc-a1bd-9d81df908be0",
+                    "level": 1,
+                    "images": [],
+                    "content": "人会为“想法”点赞，但只会为“痛苦”改变行为。",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770683833050,
+                    "updatedAt": 1770683837821
+                },
+                {
+                    "id": "8a7e5b0d-82d5-44e4-be93-aa977ce7e28b",
+                    "level": 1,
+                    "images": [],
+                    "content": "不要试图记住“谁在问问题”， 要学会识别“世界在重复制造什么失败”。",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770683833210,
+                    "updatedAt": 1770684098648
+                },
+                {
+                    "id": "fef75b6d-b305-4d5a-a955-aef078010d8d",
+                    "level": 1,
+                    "images": [],
+                    "content": "去人化：“如果把人名、账号、具体情绪去掉，这个问题还剩什么？”",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770683833347,
+                    "updatedAt": 1770684440345
+                },
+                {
+                    "id": "bc84aed4-a231-44b3-814b-1faeb84142e0",
+                    "level": 1,
+                    "images": [],
+                    "content": "不是缺能力， 你是缺“被现实需要”的位置。而这个位置：  不在 GitHub  不在教程  不在爆款项目  它在：  家长的焦虑里  学生的崩溃点上  普通人“搞不定但又不得不搞定”的地方",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770686869178,
+                    "updatedAt": 1770686878885
+                },
+                {
+                    "id": "bafa9915-c624-4ff8-a2a0-6ab628f6b7b9",
+                    "level": 1,
+                    "images": [],
+                    "content": "第一筛：这是不是“系统性痛苦”？  你问自己 3 个问题：  这不是一次意外，而是反复发生的吗？  不是我一个人，而是很多人都会遇到吗？  问题不是“不会做”，而是“不知道该怎么理解”吗？",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770686871361,
+                    "updatedAt": 1770686912182
+                },
+                {
+                    "id": "2600842a-f926-40ec-b2d5-996606a8bc16",
+                    "level": 1,
+                    "images": [],
+                    "content": "所以你现在要积累的，不是“下一项技能”  而是这件事（请你慢慢读）：  “我是否能提前识别： 哪些痛苦只是阶段性的， 哪些痛苦会长期反复出现？”",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770686871690,
+                    "updatedAt": 1770687491843
+                },
+                {
+                    "id": "413cd27b-290d-421f-8dbe-cd5a00333494",
+                    "icon": "📄",
+                    "level": 1,
+                    "images": [],
+                    "content": "一、先把“不会被淘汰的位置”讲清楚（不讲善恶）  在任何长期反复的痛苦系统里， 确实存在三类稳定位置",
+                    "children": [
+                        {
+                            "id": "feefb5e7-5adf-4df4-a4de-9d64db6b2dc1",
+                            "level": 2,
+                            "images": [],
+                            "content": "：  ① 规则制定者（最稳）  设定评价标准的人  决定“什么算好 / 什么算差”的人  例子：  平台算法  考试制度  审美标准  KPI 体系  📌 他们不被淘汰， 因为系统就是为他们服务的。",
+                            "children": [],
+                            "parentId": "413cd27b-290d-421f-8dbe-cd5a00333494",
+                            "collapsed": false,
+                            "createdAt": 1770687838493,
+                            "updatedAt": 1770687871552
+                        },
+                        {
+                            "id": "d95f22dc-9ed1-437c-8fca-742ce4cebef9",
+                            "level": 2,
+                            "images": [],
+                            "content": "  ② 痛苦转化者（真正稀缺）  这类人不制造痛苦， 但他们：  让痛苦被理解  让痛苦可叙述  让痛苦被处理  例子：  老师（好的）  咨询师  教练  产品经理  医生  设计者  📌 他们稳定，是因为：  只要系统还在制造痛苦， 就一定需要有人来“消化它”。",
+                            "children": [],
+                            "parentId": "413cd27b-290d-421f-8dbe-cd5a00333494",
+                            "collapsed": false,
+                            "createdAt": 1770687872455,
+                            "updatedAt": 1770687873112
+                        },
+                        {
+                            "id": "ba1482d7-40a7-407a-825f-9164fa575983",
+                            "level": 2,
+                            "images": [],
+                            "content": "  ③ 痛苦放大者（看起来稳，其实危险）  你说的“制造痛苦的人”， 多数属于这一类。  他们：  放大焦虑  刺激比较  制造恐惧  利用不安  例子：  贩卖容貌焦虑的内容  极端成功学  恐吓式营销  无止境内卷叙事  📌 他们短期很稳， 但高度依赖环境与平台。",
+                            "children": [],
+                            "parentId": "413cd27b-290d-421f-8dbe-cd5a00333494",
+                            "collapsed": false,
+                            "createdAt": 1770687852582,
+                            "updatedAt": 1770687853176
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770687820669,
+                    "updatedAt": 1770711301751
+                },
+                {
+                    "id": "5f0ec39f-a533-4a0c-9a1b-70602ee2e48b",
+                    "level": 1,
+                    "images": [],
+                    "content": "三、一个非常重要的禁区（请你一定记住）  ❌ 不要站在这里：  “女性应该更自信”  “放下外貌焦虑”  “看开一点”  📌 这在结构上等同于：  “你在失败现场， 但你把责任推回给当事人。”  你会瞬间失去所有合法性。",
+                    "children": [
+                        {
+                            "id": "78f94131-7193-4e21-8d8d-50ee04f67b79",
+                            "level": 2,
+                            "images": [],
+                            "content": "你不需要成为“她们的一员”， 你只需要成为 “能把她们困住的结构画出来的人”。 ",
+                            "children": [],
+                            "parentId": "5f0ec39f-a533-4a0c-9a1b-70602ee2e48b",
+                            "collapsed": false,
+                            "createdAt": 1770687821093,
+                            "updatedAt": 1770711080168
+                        },
+                        {
+                            "id": "e25c4bed-2413-45da-a6b4-edfa05854edf",
+                            "level": 2,
+                            "images": [],
+                            "content": "只描述「机制」，不描述「感受」  你用的句式应该是：  ❌ “她们很痛苦”  ✅ “系统通过不断更换比较对象，让任何状态都不稳定”  📌 永远用“系统在做什么”， 而不是“她们在想什么”。",
+                            "children": [],
+                            "parentId": "5f0ec39f-a533-4a0c-9a1b-70602ee2e48b",
+                            "collapsed": false,
+                            "createdAt": 1770711112769,
+                            "updatedAt": 1770711113156
+                        },
+                        {
+                            "id": "a9140ba1-9550-47b9-b9d1-39e483acfe03",
+                            "level": 2,
+                            "images": [],
+                            "content": "② 迁移能力  你拆的是：  比较系统  评价系统  商业焦虑系统  📌 这些结构不只存在于女性容貌焦虑， 还能迁移到：  职场  教育  自我提升  AI 焦虑",
+                            "children": [],
+                            "parentId": "5f0ec39f-a533-4a0c-9a1b-70602ee2e48b",
+                            "collapsed": false,
+                            "createdAt": 1770711134977,
+                            "updatedAt": 1770711135923
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770711071655,
+                    "updatedAt": 1770711300686
+                },
+                {
+                    "id": "38ebf942-e5b9-4b93-9760-f5542c829700",
+                    "level": 1,
+                    "images": [],
+                    "content": "✅ 「金钱发生在失败者无法独立完成的那一步",
+                    "children": [
+                        {
+                            "id": "cec1871a-bafd-4eb6-bd8e-4c970ad81c0b",
+                            "level": 2,
+                            "images": [],
+                            "content": "① 判断失败接口  “我到底算不算需要改变？”  医美咨询  测评  诊断  对比工具  📌 钱发生在判断权被外包的地方。",
+                            "children": [],
+                            "parentId": "38ebf942-e5b9-4b93-9760-f5542c829700",
+                            "collapsed": false,
+                            "createdAt": 1770711411941,
+                            "updatedAt": 1770711419333
+                        },
+                        {
+                            "id": "4765c545-7bfc-47b5-ac54-39cad518e639",
+                            "level": 2,
+                            "images": [],
+                            "content": "② 决策失败接口  “我该不该做？做哪一个？”  咨询  私教  顾问  方案设计  📌 钱发生在替人承担决策风险的地方。",
+                            "children": [],
+                            "parentId": "38ebf942-e5b9-4b93-9760-f5542c829700",
+                            "collapsed": false,
+                            "createdAt": 1770711424052,
+                            "updatedAt": 1770711432477
+                        },
+                        {
+                            "id": "6d276872-78f5-4b80-a808-7f6117324e81",
+                            "level": 2,
+                            "images": [],
+                            "content": "③ 试错成本失败接口  “我不想再试错了。”  套餐  路线图  成功率承诺  组合方案  📌 钱发生在减少失败次数的地方。",
+                            "children": [],
+                            "parentId": "38ebf942-e5b9-4b93-9760-f5542c829700",
+                            "collapsed": false,
+                            "createdAt": 1770711432884,
+                            "updatedAt": 1770727397038
+                        },
+                        {
+                            "id": "20c4c6cd-0c88-462d-8b61-1f1d324c4616",
+                            "level": 2,
+                            "images": [],
+                            "content": "④ 退出失败接口  “我停不下来，但我也不想继续被割。”  降级方案  风险控制  边界管理  防沉迷设计  📌 这是最稀缺、也最干净的金钱位置。",
+                            "children": [],
+                            "parentId": "38ebf942-e5b9-4b93-9760-f5542c829700",
+                            "collapsed": false,
+                            "createdAt": 1770727364886,
+                            "updatedAt": 1770727404742
+                        },
+                        {
+                            "id": "e812186f-abe2-4e6a-af6d-bf5e155f50ba",
+                            "level": 2,
+                            "images": [],
+                            "content": "金钱不是奖励“解决问题的人”， 而是奖励“缩短失败路径的人”。",
+                            "children": [],
+                            "parentId": "38ebf942-e5b9-4b93-9760-f5542c829700",
+                            "collapsed": false,
+                            "createdAt": 1770727365014,
+                            "updatedAt": 1770727514234
+                        },
+                        {
+                            "id": "4208cacc-afca-41e5-b7d5-117288cd52b8",
+                            "level": 2,
+                            "images": [],
+                            "content": "超市买薯片",
+                            "children": [
+                                {
+                                    "id": "a386cd0b-6553-4044-b94d-2863d7270b90",
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "1. 判断失败：你不确定是否该买，问别人或者查评价，钱在这里发生。 2. 决策失败：你不知道该选哪个，花钱让别人给你推荐。 3. 试错成本失败：你不想再浪费钱，花钱买更靠谱、能减少失败的方案。 4. 退出失败：你不想继续买过多的零食，花钱去买更健康的选项。",
+                                    "children": [],
+                                    "parentId": "4208cacc-afca-41e5-b7d5-117288cd52b8",
+                                    "collapsed": false,
+                                    "createdAt": 1770747179249,
+                                    "updatedAt": 1770747207468
+                                }
+                            ],
+                            "parentId": "38ebf942-e5b9-4b93-9760-f5542c829700",
+                            "collapsed": false,
+                            "createdAt": 1770747195554,
+                            "updatedAt": 1770747207468
+                        },
+                        {
+                            "id": "73b791b0-5e3a-459f-97b9-d57911d97427",
+                            "level": 2,
+                            "images": [],
+                            "content": "",
+                            "children": [],
+                            "parentId": "38ebf942-e5b9-4b93-9760-f5542c829700",
+                            "collapsed": false,
+                            "createdAt": 1770747204874,
+                            "updatedAt": 1770747204874
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770711074767,
+                    "updatedAt": 1770747207468
+                },
+                {
+                    "id": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                    "level": 1,
+                    "images": [],
+                    "content": "用一句“游戏版真理”记住  世界 = 游戏系统 问题 = 持续掉血 你 = 找到回血方式的人",
+                    "children": [
+                        {
+                            "id": "abd817ee-af6d-4a84-ba6a-44f662cd9c35",
+                            "level": 2,
+                            "images": [],
+                            "content": "第一关：游戏里有个“小毛病”，但不影响玩 游戏世界的反应  官方：不管  更新日志：没有这一条  👉 因为： 没人因为它输掉游戏",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770711068223,
+                            "updatedAt": 1770746112897
+                        },
+                        {
+                            "id": "65b80eea-6d4d-4388-ae54-55d52ba5dc8e",
+                            "level": 2,
+                            "images": [],
+                            "content": "第二关：问题开始影响输赢 游戏世界的反应  官方开始注意  但只是：  收集反馈  说“我们在看”",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770745962628,
+                            "updatedAt": 1770746117452
+                        },
+                        {
+                            "id": "bbe0a2a9-ebb7-4124-a2b7-ab3de5b19987",
+                            "level": 2,
+                            "images": [],
+                            "content": "第三关：问题开始“反复伤害人”  再后来：  每天都有人因为这个 bug 输  排位掉分  好多人退游  现在发生了什么？  服务器数据变差  玩家数量下降  钱开始少了  👉 这就是“真的疼了”",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770745986957,
+                            "updatedAt": 1770746119580
+                        },
+                        {
+                            "id": "4b468f09-1df6-4c4a-8bee-b47ef5b22fb7",
+                            "level": 2,
+                            "images": [],
+                            "content": "第四关：有个玩家做了一件很小的事  不是官方，不是大佬。  只是一个普通玩家：  发现一个走位方法  或一个装备搭配  可以绕开那个 bug  他发了个帖子：  “照这样玩，基本不会被坑。”",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770746000437,
+                            "updatedAt": 1770746122093
+                        },
+                        {
+                            "id": "664f59e0-3881-4f70-8aad-2db0d4fef321",
+                            "level": 2,
+                            "images": [],
+                            "content": "第五关：玩家开始“默认照他说的来”  接下来几天：  高分段都在用这个打法  新人被教：  “按这个来，稳。”  没有公告， 但行为变了。  👉 游戏里的“世界”已经注意到了这个玩家。",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770746023831,
+                            "updatedAt": 1770746123389
+                        },
+                        {
+                            "id": "25a44986-08dc-49a8-885f-f73e34c12000",
+                            "level": 2,
+                            "images": [],
+                            "content": "第六关：如果这个玩家不在  有一天：  他不发帖了  不上线了  结果：  bug 又开始坑人  大家又开始输  玩家会说：  “那个方法谁还记得？”  👉 世界开始依赖他",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770746033895,
+                            "updatedAt": 1770746125556
+                        },
+                        {
+                            "id": "77cba5ff-b1c3-4d3b-a5d2-effa1e07206c",
+                            "level": 2,
+                            "images": [],
+                            "content": "第七关：官方找上门  这时候才发生你以为的“成功”：  官方私信他  让他进测试服  甚至请他当策划 / 顾问  不是因为他最聪明， 而是因为：  他让游戏“没那么难受”",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770746039519,
+                            "updatedAt": 1770746126605
+                        },
+                        {
+                            "id": "657a8d74-1319-45bf-95ef-a372914c14e5",
+                            "level": 2,
+                            "images": [],
+                            "content": "如果这个 bug 一直不伤人，会发生什么？ 玩家吐槽两句  官方永远不修  再好的建议也没人理  👉 因为：  没掉血，就不会用药。",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770746063552,
+                            "updatedAt": 1770746067914
+                        },
+                        {
+                            "id": "9c83d81d-af73-4dc0-8bb9-e93d34e95163",
+                            "level": 2,
+                            "images": [],
+                            "content": "==在游戏世界里， 谁让玩家少输、少掉分、少退游， 谁就会被系统“点名”。==",
+                            "children": [],
+                            "parentId": "2b5a75b9-efbf-48bf-a749-15ec30f2d6a8",
+                            "collapsed": false,
+                            "createdAt": 1770746055448,
+                            "updatedAt": 1770747251082
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770746076064,
+                    "updatedAt": 1770747176001
+                },
+                {
+                    "id": "73e89d1a-753f-4647-8030-98b238ea6c75",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770746455427,
+                    "updatedAt": 1770746455427
+                },
+                {
+                    "id": "0d6eac1d-006c-4ec5-a7d7-b5b1cae90ba9",
+                    "level": 1,
+                    "images": [],
+                    "content": "用一句话记住  世界就像一个大人， 只有在“真的不舒服”的时候， 才会认真听谁能帮忙。",
+                    "children": [
+                        {
+                            "id": "bbc36acd-4f8f-4c65-8ff2-5cd456ff3cab",
+                            "level": 2,
+                            "images": [],
+                            "content": "如果“没有人受伤，会发生什么？”  那就会是这样：  老师说：  “虽然挤，但还能走。”  学校不会花钱  谁画线都没人听  👉 因为不疼，就没人动。  ",
+                            "children": [],
+                            "parentId": "0d6eac1d-006c-4ec5-a7d7-b5b1cae90ba9",
+                            "collapsed": false,
+                            "createdAt": 1770746453414,
+                            "updatedAt": 1770746464900
+                        },
+                        {
+                            "id": "cef44b11-000a-4d2e-9d1b-640669d36ab9",
+                            "level": 2,
+                            "images": [],
+                            "content": "",
+                            "children": [],
+                            "parentId": "0d6eac1d-006c-4ec5-a7d7-b5b1cae90ba9",
+                            "collapsed": false,
+                            "createdAt": 1773595100304,
+                            "updatedAt": 1773595100304
+                        },
+                        {
+                            "id": "3f49f018-bf56-44a5-93bc-48bfa9197c4d",
+                            "level": 2,
+                            "images": [],
+                            "content": "",
+                            "children": [],
+                            "parentId": "0d6eac1d-006c-4ec5-a7d7-b5b1cae90ba9",
+                            "collapsed": false,
+                            "createdAt": 1773595100536,
+                            "updatedAt": 1773595100536
+                        }
+                    ],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1770746453190,
+                    "updatedAt": 1773595101527
+                },
+                {
+                    "id": "b08e34a4-c864-4318-882a-84c9ceb50e7d",
+                    "level": 1,
+                    "images": [],
+                    "content": "你好",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1773595100785,
+                    "updatedAt": 1773595103504
+                },
+                {
+                    "id": "6a27620c-36b5-4894-97b4-24a2a8593034",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "27666140-8ba3-4eba-b218-9fae3cda3e7a",
+                    "collapsed": false,
+                    "createdAt": 1773595103800,
+                    "updatedAt": 1773595103800
+                }
+            ],
+            "parentId": null,
+            "collapsed": false,
+            "createdAt": 1770658039090,
+            "updatedAt": 1773595103800
+        },
+        "metadata": {
+            "icon": "😶",
+            "version": "1.0.0",
+            "createdAt": 1770658039090,
+            "updatedAt": 1773595103800
+        },
+        "created_at": "2026-02-09T17:27:19.09+00:00",
+        "updated_at": "2026-03-15T17:18:25.70664+00:00"
+    },
+    {
+        "id": "b7a86547-d719-493d-b9ac-72a6dbab571c",
+        "user_id": "10ef0f60-dfa6-4ec1-9597-f82d2334fced",
+        "title": "外卖股票",
+        "root": {
+            "id": "0110178b-6181-433d-9867-f804b200da3f",
+            "icon": "🧐",
+            "level": 0,
+            "images": [],
+            "content": "",
+            "children": [
+                {
+                    "id": "1b5554f2-7ec4-403c-988d-37a712fff612",
+                    "level": 1,
+                    "images": [],
+                    "content": "002127\t南极电商 000766\t通化金马 \t300087\t荃银高科 603589\t口子窖",
+                    "children": [
+                        {
+                            "id": "72853017-bff3-4a2f-8d48-0e1990f1e3b0",
+                            "level": 2,
+                            "images": [],
+                            "content": "跌买 冠盛股份605088 603730\t岱美股份 601599\t浙文影业 天和磁材603072",
+                            "children": [],
+                            "parentId": "1b5554f2-7ec4-403c-988d-37a712fff612",
+                            "collapsed": false,
+                            "createdAt": 1770680738606,
+                            "updatedAt": 1772871482723
+                        }
+                    ],
+                    "parentId": "0110178b-6181-433d-9867-f804b200da3f",
+                    "collapsed": false,
+                    "createdAt": 1770680973466,
+                    "updatedAt": 1772871482723
+                }
+            ],
+            "parentId": null,
+            "collapsed": false,
+            "createdAt": 1770680738606,
+            "updatedAt": 1772871482723
+        },
+        "metadata": {
+            "icon": "🧐",
+            "version": "1.0.0",
+            "createdAt": 1770680738606,
+            "updatedAt": 1772871482723
+        },
+        "created_at": "2026-02-09T23:45:38.606+00:00",
+        "updated_at": "2026-03-08T18:20:17.330846+00:00"
+    },
+    {
+        "id": "5e351dd0-7686-4246-af37-b8af8075fa77",
+        "user_id": "10ef0f60-dfa6-4ec1-9597-f82d2334fced",
+        "title": "存在-人",
+        "root": {
+            "id": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+            "tags": [],
+            "level": 0,
+            "images": [],
+            "content": "🤙 **域名配置**",
+            "children": [
+                {
+                    "id": "ee6e06af-e372-4bdd-883d-f4966576e879",
+                    "level": 1,
+                    "images": [],
+                    "content": "思路清晰的女摄 - 该学习 - 该多看",
+                    "children": [],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770651569979,
+                    "updatedAt": 1771192905919
+                },
+                {
+                    "id": "0f86bdb2-37d2-4688-bda9-ea0ecaf0a3ca",
+                    "level": 1,
+                    "images": [
+                        {
+                            "id": "1bae1316-bf59-4d12-ac18-8475d869f5c8",
+                            "url": "https://s3.bmp.ovh/2026/02/16/iJZtiByD.jpg",
+                            "width": 1080,
+                            "height": 2400,
+                            "uploadedAt": 1771253146396
+                        }
+                    ],
+                    "content": "",
+                    "children": [],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770652353044,
+                    "updatedAt": 1771253146396
+                },
+                {
+                    "id": "b320ec5d-7a92-4fe3-89cc-f44ab6ec9df2",
+                    "level": 1,
+                    "images": [],
+                    "content": "Gabriel Petersson",
+                    "children": [
+                        {
+                            "id": "d7384fc1-4d3a-4a5c-b84d-711fd1966f28",
+                            "icon": "📄",
+                            "level": 2,
+                            "images": [],
+                            "content": "",
+                            "children": [],
+                            "parentId": "b320ec5d-7a92-4fe3-89cc-f44ab6ec9df2",
+                            "collapsed": false,
+                            "createdAt": 1770655001235,
+                            "updatedAt": 1770659498035
+                        },
+                        {
+                            "id": "33f1a0d8-c089-496c-9709-26fbb2a9b2e6",
+                            "icon": "📄",
+                            "level": 2,
+                            "images": [],
+                            "content": "",
+                            "children": [],
+                            "parentId": "b320ec5d-7a92-4fe3-89cc-f44ab6ec9df2",
+                            "collapsed": false,
+                            "createdAt": 1770655001635,
+                            "updatedAt": 1770659493658
+                        }
+                    ],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770651295041,
+                    "updatedAt": 1771867467725
+                },
+                {
+                    "id": "42bda411-40fe-439e-b747-31a3406d1cf7",
+                    "tags": [],
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770651261082,
+                    "updatedAt": 1771867470958,
+                    "isSubHeader": false
+                },
+                {
+                    "id": "c1ec0e58-ab11-4027-bfcb-06486e74856f",
+                    "icon": "📄",
+                    "tags": [],
+                    "level": 1,
+                    "images": [
+                        {
+                            "id": "16e17362-d4e4-436b-a1b8-7572ade20610",
+                            "url": "https://s3.bmp.ovh/2026/02/10/SXCBTULF.jpg",
+                            "width": 1080,
+                            "height": 610,
+                            "uploadedAt": 1770653032617
+                        }
+                    ],
+                    "content": "==boris cherny==",
+                    "children": [],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770651261082,
+                    "updatedAt": 1770654664687,
+                    "isSubHeader": false
+                },
+                {
+                    "id": "c4236ddc-2b80-4523-8f09-fcd57e84fc51",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770654997891,
+                    "updatedAt": 1770654997891
+                },
+                {
+                    "id": "38cb6236-4f26-4f01-be33-513aa07a4a05",
+                    "tags": [],
+                    "level": 1,
+                    "images": [
+                        {
+                            "id": "f1c4063c-0759-44d0-8d19-9697ba9ab609",
+                            "url": "https://s3.bmp.ovh/2026/02/10/v4Hw0jQi.jpg",
+                            "width": 1080,
+                            "height": 2400,
+                            "uploadedAt": 1770653620937
+                        }
+                    ],
+                    "content": "==ab ai创业版== 如何用Manus每天读一个油管大神Dan Koe视频 我最近让M... http://xhslink.com/o/93wCbylT8Gj  複製後打開【小紅書】查看筆記！",
+                    "children": [
+                        {
+                            "id": "08669672-2126-4ca6-a062-8855d6640861",
+                            "level": 2,
+                            "images": [],
+                            "content": "==dan koe==",
+                            "children": [],
+                            "parentId": "38cb6236-4f26-4f01-be33-513aa07a4a05",
+                            "collapsed": false,
+                            "createdAt": 1770653734046,
+                            "updatedAt": 1770654656175
+                        }
+                    ],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770651261082,
+                    "updatedAt": 1770654654118,
+                    "isSubHeader": false
+                },
+                {
+                    "id": "ce6fde88-a2b6-4c1e-9066-1bc0579f3685",
+                    "level": 1,
+                    "images": [],
+                    "content": "黑客松",
+                    "children": [],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770656230491,
+                    "updatedAt": 1770656234965
+                },
+                {
+                    "id": "ab6c9968-7b67-469f-86d5-ead4816f0060",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770670756180,
+                    "updatedAt": 1770670756180
+                },
+                {
+                    "id": "0fc7db8c-24e1-4ed3-ac4b-d7e2531c3ece",
+                    "level": 1,
+                    "images": [
+                        {
+                            "id": "e15cb15a-9f01-4afc-8c7a-d20ed56331cc",
+                            "url": "https://s3.bmp.ovh/2026/02/10/L0bNKRxv.png",
+                            "width": 978,
+                            "height": 371,
+                            "uploadedAt": 1770672401945
+                        },
+                        {
+                            "id": "30f36ede-71f6-47a8-ace4-8da8f9c19a1f",
+                            "url": "https://s3.bmp.ovh/2026/02/10/KMETy5i0.png",
+                            "width": 971,
+                            "height": 458,
+                            "uploadedAt": 1770672418690
+                        },
+                        {
+                            "id": "a6353175-1562-455a-8ca6-395eac30cec8",
+                            "url": "https://s3.bmp.ovh/2026/02/10/VFZX7Aj6.png",
+                            "width": 986,
+                            "height": 271,
+                            "uploadedAt": 1770672427445
+                        },
+                        {
+                            "id": "1b2c1e05-00b0-4c4a-b313-04a3ca241177",
+                            "url": "https://s3.bmp.ovh/2026/02/10/PS0YcTD4.png",
+                            "width": 938,
+                            "height": 376,
+                            "uploadedAt": 1770672496446
+                        }
+                    ],
+                    "content": "Gabriel Petersson 高中生openai",
+                    "children": [
+                        {
+                            "id": "de598dab-8d50-4b24-9075-4090802cab32",
+                            "level": 2,
+                            "images": [],
+                            "content": "https://hobbytp.github.io/zh/my_insights/gabrielpetersson/#-%E6%80%BB%E7%BB%93%E5%9B%BE%E8%B0%B1",
+                            "children": [],
+                            "parentId": "0fc7db8c-24e1-4ed3-ac4b-d7e2531c3ece",
+                            "collapsed": false,
+                            "createdAt": 1770743812677,
+                            "updatedAt": 1770743813464
+                        }
+                    ],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770670756476,
+                    "updatedAt": 1770743812918
+                },
+                {
+                    "id": "4a90b287-f936-4fb9-809d-8b8dcb3443cd",
+                    "level": 1,
+                    "images": [],
+                    "content": "Oliver Edholm",
+                    "children": [],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770670756316,
+                    "updatedAt": 1770735467184
+                },
+                {
+                    "id": "f4394c60-bd4a-4b20-8d94-2c45ebee0772",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "d5ac8d23-26d1-4ef0-b96a-0baca8be3273",
+                    "collapsed": false,
+                    "createdAt": 1770735467965,
+                    "updatedAt": 1770735467965
+                }
+            ],
+            "isHeader": true,
+            "isItalic": false,
+            "parentId": null,
+            "collapsed": false,
+            "createdAt": 1770651261082,
+            "updatedAt": 1771867467725,
+            "isSubHeader": false
+        },
+        "metadata": {
+            "version": "1.0.0",
+            "createdAt": 1770651261082,
+            "updatedAt": 1771867467725
+        },
+        "created_at": "2026-02-09T15:34:21.082+00:00",
+        "updated_at": "2026-02-23T17:24:34.06873+00:00"
+    },
+    {
+        "id": "fc880549-e41d-4bea-a8c2-e916f39bce1c",
+        "user_id": "10ef0f60-dfa6-4ec1-9597-f82d2334fced",
+        "title": "未做-人",
+        "root": {
+            "id": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+            "icon": "👐",
+            "level": 0,
+            "images": [],
+            "content": "",
+            "children": [
+                {
+                    "id": "dc17bc86-1c7c-431d-88f1-2f67d12ce86b",
+                    "level": 1,
+                    "images": [],
+                    "content": "阅读==幽哥==文章，温故而知新",
+                    "children": [],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770674565233,
+                    "updatedAt": 1770674615264
+                },
+                {
+                    "id": "66265673-c297-460c-adec-832fa3c5b224",
+                    "level": 1,
+                    "images": [],
+                    "content": "星球进去白嫖提示词？ai助理有什么用？娱乐性？",
+                    "children": [
+                        {
+                            "id": "e24f405d-411c-49b2-9d02-de0572dce236",
+                            "level": 2,
+                            "images": [],
+                            "content": "好的提示词，确实需要时间尝试",
+                            "children": [],
+                            "parentId": "66265673-c297-460c-adec-832fa3c5b224",
+                            "collapsed": false,
+                            "createdAt": 1770674647778,
+                            "updatedAt": 1770674661204
+                        },
+                        {
+                            "id": "1506bc77-d1f9-4e3e-92cd-6f0d3e1c64cf",
+                            "level": 2,
+                            "images": [],
+                            "content": "",
+                            "children": [],
+                            "parentId": "66265673-c297-460c-adec-832fa3c5b224",
+                            "collapsed": false,
+                            "createdAt": 1770674662187,
+                            "updatedAt": 1770674662187
+                        }
+                    ],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770674619953,
+                    "updatedAt": 1770674662187
+                },
+                {
+                    "id": "22e01bbc-eaae-418c-9aa3-e13b6ec5ed8b",
+                    "level": 1,
+                    "images": [],
+                    "content": "做人第一性原理，活着，==做人==就是",
+                    "children": [
+                        {
+                            "id": "cbfecfcf-9bd5-4849-8e9b-94d710069679",
+                            "level": 2,
+                            "images": [],
+                            "content": "赚钱是为了活的好一点，有选择，不要为了赚钱而赚钱，要知道自己的界限",
+                            "children": [],
+                            "parentId": "22e01bbc-eaae-418c-9aa3-e13b6ec5ed8b",
+                            "collapsed": false,
+                            "createdAt": 1770674744542,
+                            "updatedAt": 1770674773552
+                        },
+                        {
+                            "id": "d996d45c-cc23-4356-a421-35ebe55ef034",
+                            "level": 2,
+                            "images": [],
+                            "content": "活着科技就会发展，以前做不到的，现在轻而易举",
+                            "children": [],
+                            "parentId": "22e01bbc-eaae-418c-9aa3-e13b6ec5ed8b",
+                            "collapsed": false,
+                            "createdAt": 1770675507996,
+                            "updatedAt": 1770675523059
+                        }
+                    ],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770674643986,
+                    "updatedAt": 1770675507996
+                },
+                {
+                    "id": "04b2bf41-016f-4e37-961c-5ffaf9c756b3",
+                    "level": 1,
+                    "images": [],
+                    "content": "赚钱第一性原理 是帮别人赚钱，例如解决生理需求，赚钱就不会想了",
+                    "children": [],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770674774497,
+                    "updatedAt": 1770675440945
+                },
+                {
+                    "id": "58a7f360-43b8-46ca-8dfd-ad8490ea1058",
+                    "level": 1,
+                    "images": [],
+                    "content": "自媒体的第一性原理，我是有价值的人  so 被关注",
+                    "children": [],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770675442703,
+                    "updatedAt": 1770675457202
+                },
+                {
+                    "id": "8cb9e036-4c5e-494b-baaa-424d406b6b02",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770674947709,
+                    "updatedAt": 1770674947709
+                },
+                {
+                    "id": "37106f9e-e9bc-4631-8f99-bf53a583ef60",
+                    "level": 1,
+                    "images": [],
+                    "content": "1.  新获得的价格 - 预期价值 + 更换成本 ",
+                    "children": [],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770674947885,
+                    "updatedAt": 1770675031065
+                },
+                {
+                    "id": "49fae924-4713-4df6-8be9-477ff1463c50",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770677002528,
+                    "updatedAt": 1770677002528
+                },
+                {
+                    "id": "340f5cde-0f8b-406c-bd70-e822842dc34a",
+                    "level": 1,
+                    "images": [],
+                    "content": "假发/ 毛娘沟通  - 颜值号 - 擦边号 -事业号 - 娱乐号 至少4个号",
+                    "children": [],
+                    "parentId": "d1a1e323-1305-4a2e-a838-6eaf34907fba",
+                    "collapsed": false,
+                    "createdAt": 1770677002712,
+                    "updatedAt": 1770677034323
+                }
+            ],
+            "parentId": null,
+            "collapsed": false,
+            "createdAt": 1770674565233,
+            "updatedAt": 1770677002712
+        },
+        "metadata": {
+            "icon": "👐",
+            "version": "1.0.0",
+            "createdAt": 1770674565233,
+            "updatedAt": 1770677002712
+        },
+        "created_at": "2026-02-09T22:02:45.233+00:00",
+        "updated_at": "2026-03-15T17:17:47.943137+00:00"
+    },
+    {
+        "id": "794beaa6-5ce9-468e-ae88-b66b8ef6682b",
+        "user_id": "10ef0f60-dfa6-4ec1-9597-f82d2334fced",
+        "title": "未做-非人test",
+        "root": {
+            "id": "fc20c77a-e291-4d5a-901e-c052767ef868",
+            "icon": "📓",
+            "tags": [
+                "AI",
+                "对话系统",
+                "内容创作"
+            ],
+            "level": 0,
+            "images": [],
+            "content": "🤚 智能体对话与内容创作",
+            "children": [
+                {
+                    "id": "15520b0e-ab55-47ee-8768-ecd01f61d68f",
+                    "tags": [
+                        "智能对话",
+                        "模拟教学"
+                    ],
+                    "level": 1,
+                    "images": [],
+                    "content": "智能体对话 两个 模拟教",
+                    "children": [
+                        {
+                            "id": "5570b049-1507-40d8-9036-c6f67c7ec407",
+                            "tags": [
+                                "家教",
+                                "内容输出"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "家教内容，输出",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "15520b0e-ab55-47ee-8768-ecd01f61d68f",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        }
+                    ],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770751800031,
+                    "updatedAt": 1770751800031,
+                    "isSubHeader": true
+                },
+                {
+                    "id": "4fa5e991-d841-4b0f-b7a6-52cfc099112b",
+                    "tags": [
+                        "项目验收"
+                    ],
+                    "level": 1,
+                    "images": [],
+                    "content": "验收",
+                    "children": [],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770751800031,
+                    "updatedAt": 1770751800031,
+                    "isSubHeader": true
+                },
+                {
+                    "id": "0df30342-1258-49ea-bfc1-c295b8961f7f",
+                    "tags": [
+                        "AI备课",
+                        "课程开发"
+                    ],
+                    "level": 1,
+                    "images": [],
+                    "content": "ai备课备所有的课",
+                    "children": [],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770751800031,
+                    "updatedAt": 1770751800031,
+                    "isSubHeader": true
+                },
+                {
+                    "id": "a634e07f-884a-41fc-aa55-49170e928c3a",
+                    "tags": [
+                        "内容抄袭",
+                        "家教"
+                    ],
+                    "level": 1,
+                    "images": [],
+                    "content": "抄课-家卫",
+                    "children": [
+                        {
+                            "id": "d890138b-02fd-4da7-8eef-e274ca66e5f2",
+                            "tags": [
+                                "课件转换"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "anygen 课件 转化为",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "a634e07f-884a-41fc-aa55-49170e928c3a",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        }
+                    ],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770751800031,
+                    "updatedAt": 1770751800031,
+                    "isSubHeader": true
+                },
+                {
+                    "id": "1ceb7f99-6589-4f7c-a476-14263cfe4d56",
+                    "tags": [
+                        "洗脑",
+                        "教育理念"
+                    ],
+                    "level": 1,
+                    "images": [],
+                    "content": "洗脑-如果一定有洗脑与被洗脑 希望你是洗别人脑那个",
+                    "children": [
+                        {
+                            "id": "b7e2189b-501d-42f5-9733-c55e2960c453",
+                            "tags": [
+                                "读书",
+                                "命运改变"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "读书是可以改变命运",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "1ceb7f99-6589-4f7c-a476-14263cfe4d56",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        },
+                        {
+                            "id": "5104025f-9b74-4619-95bc-a107bcac7f59",
+                            "tags": [
+                                "读书",
+                                "赚钱"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "读书可以赚大钱",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "1ceb7f99-6589-4f7c-a476-14263cfe4d56",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        },
+                        {
+                            "id": "1f268c4f-2c1b-41f8-b1d6-4c309072a214",
+                            "tags": [
+                                "教育环境",
+                                "学校氛围"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "读书读到好的学校和差的学校是两码事，氛围不同，被氛围影响",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "1ceb7f99-6589-4f7c-a476-14263cfe4d56",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        },
+                        {
+                            "id": "7390c97b-01f2-4a5a-83ef-aa7103544ccd",
+                            "tags": [
+                                "职业目标",
+                                "赚钱"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "我做的事情，是帮人赚钱",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "1ceb7f99-6589-4f7c-a476-14263cfe4d56",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        },
+                        {
+                            "id": "9d818807-3492-4f6b-ace2-071593783c04",
+                            "tags": [
+                                "职业目的",
+                                "赚钱"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "所有的职业，都是帮人赚钱",
+                            "children": [
+                                {
+                                    "id": "a85fdbdf-c266-475b-8ed0-563c9d85a0d0",
+                                    "tags": [
+                                        "生活态度",
+                                        "赚钱"
+                                    ],
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "早餐，不吃饱，怎么去赚钱；旅游，不休息，怎么去赚钱",
+                                    "children": [],
+                                    "isHeader": false,
+                                    "isItalic": false,
+                                    "parentId": "9d818807-3492-4f6b-ace2-071593783c04",
+                                    "collapsed": false,
+                                    "createdAt": 1770751800031,
+                                    "updatedAt": 1770751800031,
+                                    "isSubHeader": false
+                                },
+                                {
+                                    "id": "805e5f58-ba44-40af-b602-2b2f0e2f8258",
+                                    "tags": [
+                                        "教育",
+                                        "赚钱"
+                                    ],
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "读书，读到好大学好专业，就赚钱",
+                                    "children": [],
+                                    "isHeader": false,
+                                    "isItalic": false,
+                                    "parentId": "9d818807-3492-4f6b-ace2-071593783c04",
+                                    "collapsed": false,
+                                    "createdAt": 1770751800031,
+                                    "updatedAt": 1770751800031,
+                                    "isSubHeader": false
+                                },
+                                {
+                                    "id": "6fe763f9-1039-483a-acb5-00fd7a9b0e47",
+                                    "tags": [
+                                        "赚钱原则",
+                                        "人性"
+                                    ],
+                                    "level": 3,
+                                    "images": [],
+                                    "content": "第一性原理，帮人赚钱，人一爱美二爱钱",
+                                    "children": [],
+                                    "isHeader": false,
+                                    "isItalic": false,
+                                    "parentId": "9d818807-3492-4f6b-ace2-071593783c04",
+                                    "collapsed": false,
+                                    "createdAt": 1770751800031,
+                                    "updatedAt": 1770751800031,
+                                    "isSubHeader": false
+                                }
+                            ],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "1ceb7f99-6589-4f7c-a476-14263cfe4d56",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770755776773,
+                            "isSubHeader": false
+                        }
+                    ],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770751800031,
+                    "updatedAt": 1770751800031,
+                    "isSubHeader": true
+                },
+                {
+                    "id": "08cbeed9-f630-4bf1-8981-163fa247fd68",
+                    "tags": [
+                        "视频制作",
+                        "内容创作"
+                    ],
+                    "level": 1,
+                    "images": [],
+                    "content": "录视频，唱歌（低音）录够一个星期的量；录弹琴， 别人火什么，你录什么，背景不好让ai修，直接抄",
+                    "children": [
+                        {
+                            "id": "b99a898c-0d67-45d3-9108-6854197e663d",
+                            "tags": [
+                                "赚钱",
+                                "广告",
+                                "媒体"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "1. 赚钱可能性 2.给未来老婆看，免费广告不打白不打，这也是媒体，再少的流量也是流量，100个人中一定有一个人喜欢你",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "08cbeed9-f630-4bf1-8981-163fa247fd68",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        }
+                    ],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770751800031,
+                    "updatedAt": 1770751800031,
+                    "isSubHeader": true
+                },
+                {
+                    "id": "638b82f0-441c-4145-be8a-c165e54da83b",
+                    "tags": [
+                        "公众号运营",
+                        "内容洗稿"
+                    ],
+                    "level": 1,
+                    "images": [],
+                    "content": "教怎么做公众号，洗稿别人的就行了",
+                    "children": [
+                        {
+                            "id": "b2681795-0710-4535-b559-721de74301ef",
+                            "tags": [
+                                "内容测试",
+                                "用户吸引"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "先输出点垃圾内容，看到底吸引什么人群",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "638b82f0-441c-4145-be8a-c165e54da83b",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        },
+                        {
+                            "id": "97b5cabf-5c2f-4a6e-9606-1d87683eb014",
+                            "tags": [
+                                "课程销售"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "卖课",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "638b82f0-441c-4145-be8a-c165e54da83b",
+                            "collapsed": false,
+                            "createdAt": 1770751800031,
+                            "updatedAt": 1770751800031,
+                            "isSubHeader": false
+                        }
+                    ],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770751800031,
+                    "updatedAt": 1770751800031,
+                    "isSubHeader": true
+                },
+                {
+                    "id": "78925f46-ecaf-4ec7-b30a-988f045fedc0",
+                    "tags": [
+                        "文案分析",
+                        "数据爬取"
+                    ],
+                    "level": 1,
+                    "images": [],
+                    "content": "melody张 ‘ 爬取所有文案，分析",
+                    "children": [
+                        {
+                            "id": "c545073f-34b2-4cb8-9ca5-8b1c9514c48c",
+                            "tags": [
+                                "学习经验",
+                                "真实案例"
+                            ],
+                            "level": 2,
+                            "images": [],
+                            "content": "真实的人，在里面，才是学会",
+                            "children": [],
+                            "isHeader": false,
+                            "isItalic": false,
+                            "parentId": "78925f46-ecaf-4ec7-b30a-988f045fedc0",
+                            "collapsed": false,
+                            "createdAt": 1770751800032,
+                            "updatedAt": 1770751800032,
+                            "isSubHeader": false
+                        },
+                        {
+                            "id": "8c8ca8de-6c22-4f63-9e0b-09844d1b65b3",
+                            "level": 2,
+                            "images": [],
+                            "content": "",
+                            "children": [],
+                            "parentId": "78925f46-ecaf-4ec7-b30a-988f045fedc0",
+                            "collapsed": false,
+                            "createdAt": 1770804765539,
+                            "updatedAt": 1770804765539
+                        }
+                    ],
+                    "isHeader": false,
+                    "isItalic": false,
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770751800032,
+                    "updatedAt": 1770804766890,
+                    "isSubHeader": true
+                },
+                {
+                    "id": "b01eadb2-9cf1-41ab-82db-1bbbc694e93b",
+                    "level": 1,
+                    "images": [],
+                    "content": "",
+                    "children": [],
+                    "parentId": "fc20c77a-e291-4d5a-901e-c052767ef868",
+                    "collapsed": false,
+                    "createdAt": 1770804765916,
+                    "updatedAt": 1770804765916
+                }
+            ],
+            "isHeader": true,
+            "isItalic": false,
+            "parentId": null,
+            "collapsed": false,
+            "createdAt": 1770751800031,
+            "updatedAt": 1770804766890,
+            "isSubHeader": false
+        },
+        "metadata": {
+            "icon": "📓",
+            "version": "1.0.0",
+            "createdAt": 1770751800031,
+            "updatedAt": 1770804766890
+        },
+        "created_at": "2026-02-10T19:30:00.031+00:00",
+        "updated_at": "2026-03-07T08:13:04.562406+00:00"
+    }
+]

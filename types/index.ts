@@ -93,31 +93,34 @@ export interface TreeDocument {
     deletedAt?: number | null
     icon?: string
   }
-  updatedAt: number
-  _dirty?: number
+  updatedAt: number;
+  icon?: string;
+  deletedAt?: number | null;
+  _dirty?: number;
 }
 
 // ─── Diary App ───────────────────────────────────────────
 
+export interface DiaryContent {
+  original: string;
+  structured?: string;
+  final?: string;
+}
+
 export interface DiaryEntry {
-  id: string
-  title: string
-  content: string
-  preview: string
-  date: string
-  originalContent?: string
-  structuredVersion?: string
-  finalVersion?: string
-  tags?: string[]
-  isSynced?: boolean
-  createdAt: string
-  updatedAt: string
-  aiAnalysis?: {
-    sentiment?: string
-    tags?: string[]
-    summary?: string
-  }
-  deletedAt?: string | null
+  id: string;
+  userId: string;
+  title: string;
+  content: DiaryContent;
+  date: string;
+  tags?: string[];
+  images?: string[];
+  footerImages?: string[];
+  aiAnalysis?: any;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+  _dirty?: number;
 }
 
 export interface WeeklySummary {

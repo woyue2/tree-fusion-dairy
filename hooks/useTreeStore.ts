@@ -1,14 +1,15 @@
 /**
- * [INPUT]:    lib/db (Dexie), app/actions/sync (Supabase)
- * [OUTPUT]:   Knowledge Tree state and actions
- * [POS]:      hooks/useTreeStore.ts - Tree Logic Center
- * [PROTOCOL]: Ported from tree-index, updated for offline-first sync.
+ * [INPUT]:    依赖 lib/db (Dexie), app/actions/sync
+ * [OUTPUT]:   管理知识树文档列表、节点操作及离线同步变动
+ * [POS]:      hooks/useTreeStore.ts - 知识树领域 Logic Center
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { StoredOutlineNode, OutlineNode, TreeDocument } from '@/types';
 import { db } from '@/lib/db';
+import { fetchUserDataAction } from '@/app/actions/sync';
 import { useAppStore } from './useAppStore';
 
 interface TreeStore {
@@ -17,6 +18,9 @@ interface TreeStore {
   documentId: string;
   title: string;
   focusedNodeId: string | null;
+  documents: TreeDocument[];
+  activeDoc: TreeDocument | null;
+  isLoading: boolean;
 
   // Actions
   setFocusedNodeId: (id: string | null) => void;
@@ -29,10 +33,20 @@ interface TreeStore {
   indentNode: (nodeId: string) => void;
   outdentNode: (nodeId: string) => void;
   
+  // Document Management
+  renameDocument: (id: string, title: string) => Promise<void>;
+  deleteDocument: (id: string) => Promise<void>;
+  moveToTrash: (id: string) => Promise<void>;
+  restoreDocument: (id: string) => Promise<void>;
+  emptyTrash: () => Promise<void>;
+  
   // Persistence
   loadDocument: (doc: TreeDocument) => void;
   saveDocument: () => Promise<void>;
   initializeNew: () => void;
+  loadDocuments: () => Promise<void>;
+  pullDocuments: () => Promise<void>;
+  setDocuments: (docs: TreeDocument[]) => void;
 }
 
 export const useTreeStore = create<TreeStore>()(
@@ -42,6 +56,9 @@ export const useTreeStore = create<TreeStore>()(
     documentId: '',
     title: '未命名文档',
     focusedNodeId: null,
+    documents: [],
+    activeDoc: null,
+    isLoading: false,
 
     setFocusedNodeId: (id) => set({ focusedNodeId: id }),
 
@@ -177,6 +194,31 @@ export const useTreeStore = create<TreeStore>()(
       get().saveDocument();
     },
 
+    renameDocument: async (id, title) => {
+      await (db.documents as any).update(id, { title, updatedAt: Date.now(), _dirty: 1 });
+      if (get().documentId === id) set({ title });
+    },
+
+    deleteDocument: async (id) => {
+      await db.documents.delete(id);
+      if (get().documentId === id) set({ documentId: '' });
+    },
+
+    moveToTrash: async (id) => {
+      await (db.documents as any).update(id, { deletedAt: Date.now(), _dirty: 1 });
+    },
+
+    restoreDocument: async (id) => {
+      await (db.documents as any).update(id, { deletedAt: null, _dirty: 1 });
+    },
+
+    emptyTrash: async () => {
+      const trash = await db.documents.filter(d => !!d.deletedAt).toArray();
+      for (const doc of trash) {
+        await db.documents.delete(doc.id);
+      }
+    },
+
     loadDocument: (doc) => {
       const nodes: Record<string, StoredOutlineNode> = {};
       const flatten = (node: OutlineNode, parentId: string | null = null) => {
@@ -250,6 +292,43 @@ export const useTreeStore = create<TreeStore>()(
         focusedNodeId: rootId
       });
       get().saveDocument();
-    }
+    },
+
+    loadDocuments: async () => {
+      set(state => { state.isLoading = true; });
+      const docs = await db.documents.where('userId').equals('u1').and(d => !d.deletedAt).toArray();
+      set(state => {
+        state.documents = docs as any;
+        state.activeDoc = docs.length > 0 ? docs[0] as any : null;
+        state.isLoading = false;
+      });
+    },
+
+    pullDocuments: async () => {
+      set(state => { state.isLoading = true; });
+      try {
+        const { documents } = await fetchUserDataAction('u1');
+        if (documents && documents.length > 0) {
+          const localFormatDocs = documents.map((d: any) => ({
+            id: d.id,
+            userId: d.user_id,
+            title: d.title,
+            icon: d.icon,
+            root: d.nodes,
+            metadata: d.metadata,
+            updatedAt: new Date(d.updated_at).getTime(),
+            _dirty: 0
+          }));
+          await db.documents.bulkPut(localFormatDocs);
+          await get().loadDocuments();
+        }
+      } catch (err) {
+        console.error('[TreeStore] Pull failed:', err);
+      } finally {
+        set(state => { state.isLoading = false; });
+      }
+    },
+
+    setDocuments: (documents) => set(state => { state.documents = documents; })
   }))
 );

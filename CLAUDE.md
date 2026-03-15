@@ -40,12 +40,18 @@ anti-huihuan-kaifa/
 │   │
 │   └── auth/
 │       └── callback/route.ts       ← Supabase OAuth 回调
+│   │
+│   └── (private)/                  ← ⭐ 核心私有业务路由
+│       ├── layout.tsx              ← 私有域总入口 & Sync 初始化
+│       ├── diary/                  ← 结构化日记
+│       ├── tree/                   ← 知识树
+│       └── ...                     ← todo, stats, settings
 │
 ├── components/                     ← 公共 UI 组件（跨路由复用）
 │   └── ui/                         ← 原子组件（Button, Input, Modal...）
 │
 ├── hooks/                          ← 自定义 React Hooks
-│   ├── useSyncWorker.ts            ← 离线同步引擎 Hook
+│   ├── useSyncEngine.ts            ← 离线同步引擎 Hook
 │   └── useAppStore.ts              ← 全局状态（在线状态/同步状态）
 ├── lib/                            ← 业务逻辑 + 外部服务
 │   ├── db.ts                       ← Dexie.js (IDB) 本地数据库定义

@@ -6,7 +6,7 @@
  */
 
 import Dexie, { type Table } from 'dexie';
-import { TreeDocument } from '@/types';
+import { TreeDocument, DiaryEntry } from '@/types';
 
 export interface LocalMood {
   id: string; // UUID
@@ -63,6 +63,7 @@ export class TreeFusionDatabase extends Dexie {
   documents!: Table<LocalTreeDocument>;
   statuses!: Table<LocalStatus>;
   contexts!: Table<LocalContext>;
+  diaries!: Table<DiaryEntry & { _dirty?: number }>;
 
   constructor() {
     super('tree-fusion-db');
@@ -71,7 +72,8 @@ export class TreeFusionDatabase extends Dexie {
       tasks: 'id, userId, statusId, contextId, _dirty, deletedAt',
       documents: 'id, userId, _dirty, deletedAt',
       statuses: 'id, userId, _dirty',
-      contexts: 'id, userId, _dirty'
+      contexts: 'id, userId, _dirty',
+      diaries: 'id, userId, date, _dirty, deletedAt'
     });
   }
 }

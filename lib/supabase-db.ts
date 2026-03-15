@@ -1,8 +1,9 @@
-// INPUT: createSupabaseServerClient()（服务端 client）
-// OUTPUT: supabaseDb — 数据操作封装对象（CRUD 函数集）
-// POS: lib/supabase-db.ts — GEB L3 · Supabase 数据操作层
-// DEPS: lib/supabase-server · types/index
-// ⭐ 所有 Supabase 表操作封装在此，Server Actions 通过本模块访问数据
+/**
+ * [INPUT]:    依赖 createSupabaseServerClient()（服务端 client）
+ * [OUTPUT]:   supabaseDb — 数据操作封装对象（CRUD 函数集）
+ * [POS]:      lib/supabase-db.ts - Supabase 数据操作抽象层
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 // [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
 import { createSupabaseServerClient } from '@/lib/supabase-server'
@@ -22,6 +23,17 @@ export const supabaseDb = {
         updated_at: new Date().toISOString()
       })
       .select()
+    if (error) throw error
+    return data
+  },
+
+  async fetchMoods(userId: string) {
+    const supabase = createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('moods')
+      .select('*')
+      .eq('user_id', userId)
+      .order('date', { ascending: false })
     if (error) throw error
     return data
   },
@@ -106,16 +118,53 @@ export const supabaseDb = {
   async fetchUserData(userId: string) {
     const supabase = createSupabaseServerClient()
     
-    const [moods, tasks, docs] = await Promise.all([
+    const [moods, tasks, docs, diaries, statuses, contexts] = await Promise.all([
       supabase.from('moods').select('*').eq('user_id', userId),
       supabase.from('todo_tasks').select('*').eq('user_id', userId),
-      supabase.from('tree_documents').select('*').eq('user_id', userId)
+      supabase.from('tree_documents').select('*').eq('user_id', userId),
+      supabase.from('diaries').select('*').eq('user_id', userId),
+      supabase.from('todo_statuses').select('*').eq('user_id', userId),
+      supabase.from('todo_contexts').select('*').eq('user_id', userId)
     ])
 
     return {
       moods: moods.data || [],
       tasks: tasks.data || [],
-      documents: docs.data || []
+      documents: docs.data || [],
+      diaries: diaries.data || [],
+      statuses: statuses.data || [],
+      contexts: contexts.data || []
     }
+  },
+
+  async upsertDiary(diary: any) {
+    const supabase = createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('diaries')
+      .upsert({
+        id: diary.id,
+        user_id: diary.userId,
+        date: diary.date,
+        title: diary.title,
+        content: diary.content,
+        images: diary.images,
+        analysis: diary.aiAnalysis,
+        updated_at: new Date(diary.updatedAt || Date.now()).toISOString(),
+        deleted_at: diary.deletedAt
+      })
+      .select()
+    if (error) throw error
+    return data
+  },
+
+  async fetchDiaries(userId: string) {
+    const supabase = createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('diaries')
+      .select('*')
+      .eq('user_id', userId)
+      .order('date', { ascending: false })
+    if (error) throw error
+    return data
   }
 }

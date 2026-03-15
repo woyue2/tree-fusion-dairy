@@ -1,6 +1,13 @@
+/**
+ * [INPUT]:    依赖 lib/db (Dexie) 和 app/actions/sync (Server Actions)
+ * [OUTPUT]:   管理情绪分数列表、计算滚动平均、处理云端拉取同步
+ * [POS]:      hooks/useMoodStore.ts - 情绪领域状态管理
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 import { create } from 'zustand'
 import { Mood } from '@/types'
 import { db } from '@/lib/db'
+import { pullMoodsAction } from '@/app/actions/sync'
 
 interface MoodState {
   moods: Mood[]
@@ -11,6 +18,7 @@ interface MoodState {
   setMoods: (moods: Mood[]) => void
   addMood: (mood: Omit<Mood, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => Promise<void>
   loadMoods: () => Promise<void>
+  pullMoods: () => Promise<void>
   
   // Requirement B: Rolling Averages
   getRollingAverage: (days: number) => number
@@ -27,6 +35,32 @@ export const useMoodStore = create<MoodState>((set, get) => ({
     set({ isLoading: true })
     const moods = await db.moods.where('userId').equals(get().userId).toArray()
     set({ moods: moods as any, isLoading: false })
+  },
+
+  pullMoods: async () => {
+    set({ isLoading: true })
+    try {
+      const cloudMoods = await pullMoodsAction(get().userId)
+      if (cloudMoods && cloudMoods.length > 0) {
+        // Bulk merge into Dexie (Dexie.put is upsert)
+        const localFormatMoods = cloudMoods.map((m: any) => ({
+          id: m.id,
+          userId: m.user_id,
+          date: m.date,
+          score: m.score,
+          note: m.note,
+          createdAt: m.created_at,
+          updatedAt: m.updated_at,
+          _dirty: 0
+        }))
+        await db.moods.bulkPut(localFormatMoods)
+        await get().loadMoods()
+      }
+    } catch (err) {
+      console.error('[MoodStore] Pull failed:', err)
+    } finally {
+      set({ isLoading: false })
+    }
   },
   
   addMood: async (newMood) => {

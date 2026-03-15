@@ -110,7 +110,7 @@ export default function TreeSidebar({ documents, activeDocId, onSelectDoc, onNew
               >
                 {doc.title}
               </div>
-              <div className="doc-meta">{doc.updatedAt.split('T')[0]}</div>
+              <div className="doc-meta">{new Date(doc.updatedAt).toISOString().split('T')[0]}</div>
             </div>
             {isTrashView ? (
               <div style={{ display: 'flex', gap: '8px' }}>

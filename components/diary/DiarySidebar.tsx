@@ -1,7 +1,9 @@
-// INPUT: entries, activeEntryId, actions
-// OUTPUT: 渲染日记侧边栏组件
-// POS: components/diary/DiarySidebar.tsx - 日记列表和操作侧边栏
-// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+/**
+ * [INPUT]:    依赖 diaryEntries (Array) 和 activeEntryId
+ * [OUTPUT]:   渲染日记列表侧边栏，支持过滤和项选择
+ * [POS]:      components/diary/DiarySidebar.tsx - 导航辅助组件
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 'use client'
 
 import React from 'react'
@@ -87,7 +89,7 @@ export default function DiarySidebar({
             )}
             <div className="diary-item-date">{entry.createdAt.split('T')[0]}</div>
             <div className="diary-item-title">{entry.title}</div>
-            <div className="diary-item-preview">{entry.content.substring(0, 30)}...</div>
+            <div className="diary-item-preview">{entry.content.original.substring(0, 30)}...</div>
           </div>
         ))}
       </div>

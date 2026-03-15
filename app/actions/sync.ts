@@ -20,3 +20,19 @@ export async function syncTaskAction(task: any) {
 export async function syncDocAction(doc: any) {
   return await supabaseDb.upsertDocument(doc)
 }
+
+export async function syncDiaryAction(diary: any) {
+  return await supabaseDb.upsertDiary(diary)
+}
+
+export async function pullMoodsAction(userId: string) {
+  return await supabaseDb.fetchMoods(userId)
+}
+
+export async function pullDiariesAction(userId: string) {
+  return await supabaseDb.fetchDiaries(userId)
+}
+
+export async function fetchUserDataAction(userId: string) {
+  return await supabaseDb.fetchUserData(userId)
+}

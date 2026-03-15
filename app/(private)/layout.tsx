@@ -1,7 +1,9 @@
-// INPUT: React Node (children)
-// OUTPUT: 渲染后的带有侧边栏的私有布局
-// POS: app/(private)/layout.tsx - 整体应用的私有路由布局层
-// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+/**
+ * [INPUT]:    React Node (children), store hooks (Sync/Todo/Mood)
+ * [OUTPUT]:   带侧边栏及同步引擎初始化的私有布局
+ * [POS]:      app/(private)/layout.tsx - 整体私有域流量入口, 负责水和与同步引导
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -9,6 +11,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ToastContainer from '@/components/ui/ToastContainer'
 import { useAppStore } from '@/hooks/useAppStore'
+import { useSyncEngine } from '@/hooks/syncEngine'
+import { useTodoStore } from '@/hooks/useTodoStore'
+import { useMoodStore } from '@/hooks/useMoodStore'
 
 interface PrivateLayoutProps {
   children: React.ReactNode
@@ -21,11 +26,10 @@ export default function PrivateLayout({ children }: PrivateLayoutProps) {
   const syncStatus = useAppStore(s => s.syncStatus)
   const [isCollapsed, setIsCollapsed] = useState(false)
 
-  // Initialize background sync worker
-  require('@/hooks/useSyncWorker').useSyncWorker()
-
-  const loadTodo = require('@/hooks/useTodoStore').useTodoStore((s: any) => s.loadAll)
-  const loadMoods = require('@/hooks/useMoodStore').useMoodStore((s: any) => s.loadMoods)
+  // [FIX] 根因: Render 体内 require 会阻塞 Hydration，改为标准 Hook 调用
+  useSyncEngine()
+  const loadTodo = useTodoStore((s: any) => s.loadAll)
+  const loadMoods = useMoodStore((s: any) => s.loadMoods)
 
   useEffect(() => {
     loadTodo()

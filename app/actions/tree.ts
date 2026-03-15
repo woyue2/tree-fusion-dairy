@@ -1,8 +1,10 @@
+/**
+ * [INPUT]:    依赖 lib/supabase-server 获取服务端凭证
+ * [OUTPUT]:   导出针对目录树节点的业务级变更 Action
+ * [POS]:      app/actions/tree.ts - 知识树模块服务端操作
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 'use server'
-// INPUT: CreateNodeInput | node id
-// OUTPUT: void（成功）或 throw Error（失败）
-// POS: app/actions/tree.ts — GEB L3 · Tree-Index 模块 Server Actions
-// DEPS: lib/supabase-server · lib/supabase-db · next/cache
 // [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
 import { revalidatePath } from 'next/cache'
@@ -10,7 +12,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 // NOTE: tree-index 采用 Zustand + Dexie 本地优先策略
 // Server Actions 仅作为"同步引擎"的推送端点，不做实时 UI 响应
-// 客户端 useSyncWorker 负责将 _dirty 记录批量 upsert 此处
+// 客户端 useSyncEngine 负责将 _dirty 记录批量 upsert 此处
 
 export async function upsertTreeNode(input: {
   id: string

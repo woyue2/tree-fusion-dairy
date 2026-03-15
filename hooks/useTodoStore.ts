@@ -1,10 +1,13 @@
-// INPUT: 无
-// OUTPUT: Todo 全局状态和更新方法
-// POS: hooks/useTodoStore.ts - Todo 模块的状态管理层
-// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+/**
+ * [INPUT]:    依赖 lib/db (Dexie), useAppStore, app/actions/sync
+ * [OUTPUT]:   管理任务、状态和上下文的全量同步与状态更新
+ * [POS]:      hooks/useTodoStore.ts - Todo 模块核心 Store
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 import { create } from 'zustand'
 import { TodoTask, TodoStatus, TodoContext, TodoStatusId } from '@/types'
 import { db } from '@/lib/db'
+import { fetchUserDataAction } from '@/app/actions/sync'
 
 interface TodoState {
   tasks: TodoTask[]
@@ -23,6 +26,7 @@ interface TodoState {
   setEditingTaskId: (id: string | null) => void
   
   loadAll: () => Promise<void>
+  pullAll: () => Promise<void>
   addTask: (task: Omit<TodoTask, 'id' | 'userId' | 'orderIndex' | 'createdAt' | 'updatedAt'>) => Promise<void>
   updateTask: (id: string, updates: Partial<TodoTask>) => Promise<void>
   deleteTask: (id: string) => Promise<void>
@@ -84,6 +88,63 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     }
 
     set({ tasks: tasks as any, isLoading: false })
+  },
+
+  pullAll: async () => {
+    set({ isLoading: true })
+    try {
+      const { tasks, statuses, contexts } = await fetchUserDataAction(get().userId)
+      
+      if (tasks.length > 0) {
+        const localTasks = tasks.map((t: any) => ({
+          id: t.id,
+          userId: t.user_id,
+          title: t.title,
+          statusId: t.status_id,
+          contextId: t.context_id,
+          color: t.color,
+          tags: t.tags,
+          orderIndex: t.order_index,
+          createdAt: t.created_at,
+          updatedAt: t.updated_at,
+          deletedAt: t.deleted_at,
+          _dirty: 0
+        }))
+        await db.tasks.bulkPut(localTasks)
+      }
+
+      if (statuses.length > 0) {
+        const localStatuses = statuses.map((s: any) => ({
+          id: s.id,
+          userId: s.user_id,
+          title: s.title,
+          color: s.color,
+          collapsed: s.collapsed,
+          orderIndex: s.order_index,
+          _dirty: 0
+        }))
+        await db.statuses.bulkPut(localStatuses)
+      }
+
+      if (contexts.length > 0) {
+        const localContexts = contexts.map((c: any) => ({
+          id: c.id,
+          userId: c.user_id,
+          title: c.title,
+          color: c.color,
+          collapsed: c.collapsed,
+          orderIndex: c.order_index,
+          _dirty: 0
+        }))
+        await db.contexts.bulkPut(localContexts)
+      }
+
+      await get().loadAll()
+    } catch (err) {
+      console.error('[TodoStore] Pull failed:', err)
+    } finally {
+      set({ isLoading: false })
+    }
   },
 
   addTask: async (task) => {
