@@ -21,6 +21,7 @@ export interface TodoStatus {
   title: string
   color?: string
   collapsed?: boolean
+  belowOf?: string | null
   orderIndex?: number
 }
 
@@ -29,6 +30,7 @@ export interface TodoContext {
   title: string
   color?: string
   collapsed?: boolean
+  belowOf?: string | null
   orderIndex?: number
 }
 

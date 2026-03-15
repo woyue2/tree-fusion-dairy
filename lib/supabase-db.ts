@@ -7,20 +7,80 @@
 
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 
-// TODO: 按业务需要添加 CRUD 函数
-// 示例结构：
-//
-// export async function listItems(userId: string) {
-//   const supabase = createSupabaseServerClient()
-//   const { data, error } = await supabase
-//     .from('items')
-//     .select('*')
-//     .eq('user_id', userId)
-//     .order('created_at', { ascending: false })
-//   if (error) throw error
-//   return data
-// }
-
 export const supabaseDb = {
-  // CRUD 函数将在此对象中添加
+  // ── Moods ──────────────────────────────────────────────────
+  async upsertMood(mood: any) {
+    const supabase = createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('moods')
+      .upsert({
+        id: mood.id,
+        user_id: mood.userId,
+        date: mood.date,
+        score: mood.score,
+        note: mood.note,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+    if (error) throw error
+    return data
+  },
+
+  // ── Tasks ──────────────────────────────────────────────────
+  async upsertTask(task: any) {
+    const supabase = createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('todo_tasks')
+      .upsert({
+        id: task.id,
+        user_id: task.userId,
+        title: task.title,
+        status_id: task.statusId,
+        context_id: task.contextId,
+        color: task.color,
+        tags: task.tags,
+        order_index: task.orderIndex,
+        deleted_at: task.deletedAt,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+    if (error) throw error
+    return data
+  },
+
+  // ── Documents (Tree) ───────────────────────────────────────
+  async upsertDocument(doc: any) {
+    const supabase = createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('tree_documents')
+      .upsert({
+        id: doc.id,
+        user_id: doc.userId,
+        title: doc.title,
+        icon: doc.icon,
+        nodes: doc.nodes,
+        deleted_at: doc.deletedAt,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+    if (error) throw error
+    return data
+  },
+
+  // ── Batch Fetch (Initial Sync) ─────────────────────────────
+  async fetchUserData(userId: string) {
+    const supabase = createSupabaseServerClient()
+    
+    const [moods, tasks, docs] = await Promise.all([
+      supabase.from('moods').select('*').eq('user_id', userId),
+      supabase.from('todo_tasks').select('*').eq('user_id', userId),
+      supabase.from('tree_documents').select('*').eq('user_id', userId)
+    ])
+
+    return {
+      moods: moods.data || [],
+      tasks: tasks.data || [],
+      documents: docs.data || []
+    }
+  }
 }
