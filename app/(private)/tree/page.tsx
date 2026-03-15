@@ -5,15 +5,14 @@
 // [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
 import { Metadata } from 'next'
+import TreeContainer from '@/components/tree/TreeContainer'
 
 export const metadata: Metadata = {
   title: 'Tree · Tree-Fusion-Diary',
   description: '知识树索引 — 整理你的碎片化思考',
 }
 
-import TreeContainer from '@/components/tree/TreeContainer'
-
-export default async function TreePage() {
+export default function TreePage() {
   return (
     <TreeContainer />
   )

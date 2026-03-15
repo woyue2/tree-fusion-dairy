@@ -1,261 +1,255 @@
-// INPUT: 无
-// OUTPUT: 知识树全局状态和节点操作方法
-// POS: hooks/useTreeStore.ts - 知识树模块的状态管理层
-// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
-import { create } from 'zustand'
-import { TreeDocument, OutlineNode } from '@/types'
+/**
+ * [INPUT]:    lib/db (Dexie), app/actions/sync (Supabase)
+ * [OUTPUT]:   Knowledge Tree state and actions
+ * [POS]:      hooks/useTreeStore.ts - Tree Logic Center
+ * [PROTOCOL]: Ported from tree-index, updated for offline-first sync.
+ */
 
-interface TreeState {
-  documents: TreeDocument[]
-  activeDoc: TreeDocument | null
-  isLoading: boolean
-  
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
+import { StoredOutlineNode, OutlineNode, TreeDocument } from '@/types';
+import { db } from '@/lib/db';
+import { useAppStore } from './useAppStore';
+
+interface TreeStore {
+  nodes: Record<string, StoredOutlineNode>;
+  rootId: string;
+  documentId: string;
+  title: string;
+  focusedNodeId: string | null;
+
   // Actions
-  setDocuments: (docs: TreeDocument[]) => void
-  setActiveDoc: (doc: TreeDocument | null) => void
-  addDocument: (title: string) => void
-  renameDocument: (id: string, newTitle: string) => void
-  deleteDocument: (id: string) => void
-  moveToTrash: (id: string) => void
-  restoreDocument: (id: string) => void
-  emptyTrash: () => void
+  setFocusedNodeId: (id: string | null) => void;
+  setTitle: (title: string) => void;
+  updateNodeContent: (id: string, content: string) => void;
+  toggleCollapse: (id: string) => void;
+  addChildNode: (parentId: string) => string;
+  addSiblingNode: (nodeId: string) => string;
+  deleteNode: (nodeId: string) => void;
+  indentNode: (nodeId: string) => void;
+  outdentNode: (nodeId: string) => void;
   
-  updateNode: (docId: string, nodeId: string, updates: Partial<OutlineNode>) => void
-  addNode: (docId: string, parentId: string | null, afterNodeId: string) => void
-  deleteNode: (docId: string, nodeId: string) => void
-  
-  indentNode: (docId: string, nodeId: string, direction: 'in' | 'out') => void
+  // Persistence
+  loadDocument: (doc: TreeDocument) => void;
+  saveDocument: () => Promise<void>;
+  initializeNew: () => void;
 }
 
-const MOCK_NODES: Record<string, OutlineNode> = {
-  'root': { id: 'root', docId: 'doc1', content: '', isRoot: true, children: ['n1', 'n2', 'n3'] },
-  'n1': { id: 'n1', docId: 'doc1', content: 'Tree-Fusion-Diary 项目架构设计', children: ['n1-1', 'n1-2', 'n1-3'], isExpanded: true },
-  'n1-1': { id: 'n1-1', docId: 'doc1', content: 'Next.js App Router', children: [], parentId: 'n1' },
-  'n1-2': { id: 'n1-2', docId: 'doc1', content: 'Zustand 状态管理 (取代 Redux)', children: [], parentId: 'n1' },
-  'n1-3': { id: 'n1-3', docId: 'doc1', content: 'Tailwind CSS (响应式)', children: [], parentId: 'n1' },
-  'n2': { id: 'n2', docId: 'doc1', content: '核心模块划分', children: ['n2-1', 'n2-2', 'n2-3'], isExpanded: true },
-  'n2-1': { id: 'n2-1', docId: 'doc1', content: '🗂️ 知识树 (Tree-Index)', children: [], parentId: 'n2' },
-  'n2-2': { id: 'n2-2', docId: 'doc1', content: '✅ 任务看板 (Fusion-Todo)', children: [], parentId: 'n2' },
-  'n2-3': { id: 'n2-3', docId: 'doc1', content: '📓 结构化日记 (Diary-App)', children: [], parentId: 'n2' },
-  'n3': { id: 'n3', docId: 'doc1', content: '痛点解决', children: ['n3-1', 'n3-2'], isExpanded: true },
-  'n3-1': { id: 'n3-1', docId: 'doc1', content: '碎片化知识点自动关联 日记 模块', children: [], parentId: 'n3' },
-  'n3-2': { id: 'n3-2', docId: 'doc1', content: '日历视图串联 Todo 与 Daily Notes', children: [], parentId: 'n3' }
-}
+export const useTreeStore = create<TreeStore>()(
+  immer((set, get) => ({
+    nodes: {},
+    rootId: '',
+    documentId: '',
+    title: '未命名文档',
+    focusedNodeId: null,
 
-const MOCK_DOCS: TreeDocument[] = [
-  { id: 'doc1', title: 'Tree-Fusion 架构笔记', userId: 'u1', emoji: '🏗️', isArchived: false, nodes: MOCK_NODES, rootNodeId: 'root', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'doc2', title: '每周复盘模板', userId: 'u1', emoji: '📅', isArchived: false, nodes: { 'root': { id: 'root', docId: 'doc2', content: '', isRoot: true, children: [] } }, rootNodeId: 'root', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'doc3', title: 'React 性能优化指南', userId: 'u1', emoji: '⚡', isArchived: false, nodes: { 'root': { id: 'root', docId: 'doc3', content: '', isRoot: true, children: [] } }, rootNodeId: 'root', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
-]
+    setFocusedNodeId: (id) => set({ focusedNodeId: id }),
 
-export const useTreeStore = create<TreeState>((set) => ({
-  documents: MOCK_DOCS,
-  activeDoc: MOCK_DOCS[0],
-  isLoading: false,
+    updateNodeContent: (id, content) => {
+      set(state => {
+        if (state.nodes[id]) {
+          state.nodes[id].content = content;
+          state.nodes[id].updatedAt = Date.now();
+        }
+      });
+      get().saveDocument();
+    },
 
-  setDocuments: (documents) => set({ documents }),
-  setActiveDoc: (activeDoc) => set({ activeDoc }),
+    toggleCollapse: (id) => {
+      set(state => {
+        if (state.nodes[id]) {
+          state.nodes[id].collapsed = !state.nodes[id].collapsed;
+          state.nodes[id].updatedAt = Date.now();
+        }
+      });
+      get().saveDocument();
+    },
 
-  updateNode: (docId, nodeId, updates) => set((state) => {
-    if (!state.activeDoc || state.activeDoc.id !== docId) return state
-    
-    const nodes = { ...state.activeDoc.nodes }
-    if (!nodes[nodeId]) return state
-    
-    nodes[nodeId] = { ...nodes[nodeId], ...updates }
-    
-    return { 
-      activeDoc: { ...state.activeDoc, nodes } 
-    }
-  }),
+    addChildNode: (parentId) => {
+      const newId = crypto.randomUUID();
+      const now = Date.now();
+      set(state => {
+        const parent = state.nodes[parentId];
+        if (!parent) return;
+        state.nodes[newId] = {
+          id: newId,
+          parentId,
+          content: '',
+          level: parent.level + 1,
+          children: [],
+          images: [],
+          collapsed: false,
+          createdAt: now,
+          updatedAt: now,
+        };
+        parent.children.push(newId);
+        parent.collapsed = false;
+        parent.updatedAt = now;
+      });
+      set({ focusedNodeId: newId });
+      get().saveDocument();
+      return newId;
+    },
 
-  addNode: (docId, parentId, afterNodeId) => set((state) => {
-    if (!state.activeDoc || state.activeDoc.id !== docId || !parentId) return state
-    
-    let updatedNodes = { ...state.activeDoc.nodes }
-    const parent = updatedNodes[parentId]
-    if (!parent) return state
+    addSiblingNode: (nodeId) => {
+      const newId = crypto.randomUUID();
+      const now = Date.now();
+      set(state => {
+        const node = state.nodes[nodeId];
+        if (!node || !node.parentId) return;
+        const parent = state.nodes[node.parentId];
+        if (!parent) return;
+        
+        state.nodes[newId] = {
+          id: newId,
+          parentId: node.parentId,
+          content: '',
+          level: (node.level ?? 0),
+          children: [],
+          images: [],
+          collapsed: false,
+          createdAt: now,
+          updatedAt: now,
+        };
+        const index = parent.children.indexOf(nodeId);
+        parent.children.splice(index + 1, 0, newId);
+        parent.updatedAt = now;
+      });
+      set({ focusedNodeId: newId });
+      get().saveDocument();
+      return newId;
+    },
 
-    const newNodeId = 'n_' + Date.now()
-    const newNode: OutlineNode = {
-      id: newNodeId,
-      docId,
-      parentId,
-      content: '',
-      level: parent.level ? parent.level + 1 : 1,
-      children: []
-    }
+    setTitle: (title) => {
+      set({ title });
+      get().saveDocument();
+    },
 
-    updatedNodes[newNodeId] = newNode
+    deleteNode: (nodeId) => {
+      set(state => {
+        const node = state.nodes[nodeId];
+        if (!node || !node.parentId) return;
+        const parent = state.nodes[node.parentId];
+        if (parent) {
+          parent.children = parent.children.filter(id => id !== nodeId);
+        }
+        delete state.nodes[nodeId];
+      });
+      get().saveDocument();
+    },
 
-    // Insert into parent's children array
-    const newChildren = [...parent.children]
-    if (afterNodeId) {
-      const idx = newChildren.indexOf(afterNodeId)
-      if (idx !== -1) {
-        newChildren.splice(idx + 1, 0, newNodeId)
-      } else {
-        newChildren.push(newNodeId) // fallback
+    indentNode: (nodeId) => {
+      set(state => {
+        const node = state.nodes[nodeId];
+        if (!node || !node.parentId) return;
+        const parent = state.nodes[node.parentId];
+        const index = parent.children.indexOf(nodeId);
+        if (index <= 0) return;
+
+        const prevSiblingId = parent.children[index - 1];
+        const prevSibling = state.nodes[prevSiblingId];
+        if (!prevSibling) return;
+        
+        parent.children.splice(index, 1);
+        prevSibling.children.push(nodeId);
+        node.parentId = prevSiblingId;
+        node.level = (prevSibling.level ?? 0) + 1;
+      });
+      get().saveDocument();
+    },
+
+    outdentNode: (nodeId) => {
+      set(state => {
+        const node = state.nodes[nodeId];
+        if (!node || !node.parentId) return;
+        const parent = state.nodes[node.parentId];
+        if (!parent.parentId) return;
+
+        const grandParent = state.nodes[parent.parentId];
+        if (!grandParent) return;
+        
+        parent.children = parent.children.filter(id => id !== nodeId);
+        const parentIndex = grandParent.children.indexOf(parent.id);
+        grandParent.children.splice(parentIndex + 1, 0, nodeId);
+        node.parentId = grandParent.id;
+        node.level = (grandParent.level ?? 0) + 1;
+      });
+      get().saveDocument();
+    },
+
+    loadDocument: (doc) => {
+      const nodes: Record<string, StoredOutlineNode> = {};
+      const flatten = (node: OutlineNode, parentId: string | null = null) => {
+        const { children, ...rest } = node;
+        nodes[node.id] = { 
+          ...rest, 
+          children: (children || []).map(c => c.id), 
+          parentId 
+        } as StoredOutlineNode;
+        (children || []).forEach(c => flatten(c, node.id));
+      };
+      flatten(doc.root);
+      set({ nodes, rootId: doc.root.id, documentId: doc.id, title: doc.title });
+    },
+
+    saveDocument: async () => {
+      const state = get();
+      if (!state.documentId) return;
+
+      const buildTree = (id: string): OutlineNode => {
+        const node = state.nodes[id];
+        if (!node) throw new Error(`Node ${id} not found`);
+        const { children, ...rest } = node;
+        return {
+          ...rest,
+          children: (children || []).map(buildTree)
+        } as OutlineNode;
+      };
+
+      try {
+        const root = buildTree(state.rootId);
+        const docRecord: TreeDocument = {
+          id: state.documentId,
+          userId: 'default-user',
+          title: state.title,
+          root,
+          metadata: { 
+            createdAt: Date.now(), 
+            updatedAt: Date.now(), 
+            version: '1.0.0' 
+          },
+          updatedAt: Date.now(),
+          _dirty: 1
+        };
+        await db.documents.put(docRecord);
+      } catch (e) {
+        console.error('Failed to save tree document:', e);
       }
-    } else {
-      newChildren.unshift(newNodeId)
-    }
+    },
 
-    updatedNodes[parentId] = { ...parent, children: newChildren }
-
-    const newActiveDoc = { ...state.activeDoc, nodes: updatedNodes }
-    return { 
-      activeDoc: newActiveDoc,
-      documents: state.documents.map(d => d.id === docId ? newActiveDoc : d)
+    initializeNew: () => {
+      const rootId = crypto.randomUUID();
+      const docId = crypto.randomUUID();
+      const now = Date.now();
+      const rootNode: StoredOutlineNode = {
+        id: rootId,
+        parentId: null,
+        content: '新文档',
+        level: 0,
+        children: [],
+        images: [],
+        collapsed: false,
+        createdAt: now,
+        updatedAt: now,
+      };
+      set({
+        nodes: { [rootId]: rootNode },
+        rootId,
+        documentId: docId,
+        title: '新文档',
+        focusedNodeId: rootId
+      });
+      get().saveDocument();
     }
-  }),
-
-  deleteNode: (docId, nodeId) => set((state) => {
-    if (!state.activeDoc || state.activeDoc.id !== docId || nodeId === 'root') return state
-    
-    let updatedNodes = { ...state.activeDoc.nodes }
-    const nodeToDelete = updatedNodes[nodeId]
-    if (!nodeToDelete) return state
-
-    // 1. Remove from parent's children array
-    if (nodeToDelete.parentId && updatedNodes[nodeToDelete.parentId]) {
-      const parent = updatedNodes[nodeToDelete.parentId]
-      updatedNodes[nodeToDelete.parentId] = {
-        ...parent,
-        children: parent.children.filter(id => id !== nodeId)
-      }
-    }
-
-    // 2. Recursively delete self and all children
-    const deleteRecursively = (id: string) => {
-      const node = updatedNodes[id]
-      if (node && node.children) {
-        node.children.forEach(deleteRecursively)
-      }
-      delete updatedNodes[id]
-    }
-    
-    deleteRecursively(nodeId)
-
-    const newActiveDoc = { ...state.activeDoc, nodes: updatedNodes }
-    return { 
-      activeDoc: newActiveDoc,
-      documents: state.documents.map(d => d.id === docId ? newActiveDoc : d)
-    }
-  }),
-
-  addDocument: (title: string) => set((state) => {
-    const newDocId = 'doc_' + Date.now()
-    const newDoc: TreeDocument = {
-      id: newDocId,
-      userId: 'u1',
-      title,
-      icon: '📄',
-      isArchived: false,
-      nodes: {
-        'root': { id: 'root', docId: newDocId, content: '', isRoot: true, children: [] }
-      },
-      rootNodeId: 'root',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
-    return {
-      documents: [newDoc, ...state.documents],
-      activeDoc: newDoc
-    }
-  }),
-
-  renameDocument: (id: string, newTitle: string) => set((state) => {
-    const updatedDocs = state.documents.map(d => d.id === id ? { ...d, title: newTitle } : d)
-    return {
-      documents: updatedDocs,
-      activeDoc: state.activeDoc?.id === id ? { ...state.activeDoc, title: newTitle } : state.activeDoc
-    }
-  }),
-
-  deleteDocument: (id: string) => set((state) => {
-    const filteredDocs = state.documents.filter(d => d.id !== id)
-    return {
-      documents: filteredDocs,
-      activeDoc: state.activeDoc?.id === id ? filteredDocs.find(d => !d.deletedAt) || null : state.activeDoc
-    }
-  }),
-
-  moveToTrash: (id: string) => set((state) => {
-    const updatedDocs = state.documents.map(d => d.id === id ? { ...d, deletedAt: new Date().toISOString() } : d)
-    return {
-      documents: updatedDocs,
-      activeDoc: state.activeDoc?.id === id ? updatedDocs.find(d => !d.deletedAt) || null : state.activeDoc
-    }
-  }),
-
-  restoreDocument: (id: string) => set((state) => {
-    const updatedDocs = state.documents.map(d => d.id === id ? { ...d, deletedAt: null } : d)
-    return {
-      documents: updatedDocs
-    }
-  }),
-
-  emptyTrash: () => set((state) => ({
-    documents: state.documents.filter(d => !d.deletedAt)
-  })),
-
-  indentNode: (docId, nodeId, direction) => set((state) => {
-    if (!state.activeDoc || state.activeDoc.id !== docId || nodeId === 'root') return state
-    
-    let nodes = { ...state.activeDoc.nodes }
-    const node = { ...nodes[nodeId] }
-    if (!node.parentId || !nodes[node.parentId]) return state
-    
-    const parent = { ...nodes[node.parentId] }
-    const idx = parent.children.indexOf(nodeId)
-    
-    if (direction === 'in') {
-      // Must have a previous sibling to indent under
-      if (idx > 0) {
-        const prevSiblingId = parent.children[idx - 1]
-        const prevSibling = { ...nodes[prevSiblingId] }
-        
-        // Remove from parent
-        parent.children = parent.children.filter(id => id !== nodeId)
-        
-        // Add to prevSibling
-        prevSibling.children = [...prevSibling.children, nodeId]
-        
-        // Update node
-        node.parentId = prevSiblingId
-        // Update new parent expanded state to show the newly added child
-        prevSibling.isExpanded = true
-        
-        nodes[parent.id] = parent
-        nodes[prevSibling.id] = prevSibling
-        nodes[node.id] = node
-      }
-    } else if (direction === 'out') {
-      // Must not be a top-level node (child of root)
-      if (parent.id !== 'root' && parent.parentId) {
-        const grandParent = { ...nodes[parent.parentId] }
-        
-        // Remove from parent
-        parent.children = parent.children.filter(id => id !== nodeId)
-        
-        // Add to grandParent after parent
-        const parentIdx = grandParent.children.indexOf(parent.id)
-        const newChildren = [...grandParent.children]
-        newChildren.splice(parentIdx + 1, 0, nodeId)
-        grandParent.children = newChildren
-        
-        // Update node
-        node.parentId = grandParent.id
-        
-        nodes[parent.id] = parent
-        nodes[grandParent.id] = grandParent
-        nodes[node.id] = node
-      }
-    }
-    
-    return {
-      activeDoc: { ...state.activeDoc, nodes }
-    }
-  })
-}))
+  }))
+);

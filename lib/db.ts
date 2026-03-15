@@ -6,6 +6,7 @@
  */
 
 import Dexie, { type Table } from 'dexie';
+import { TreeDocument } from '@/types';
 
 export interface LocalMood {
   id: string; // UUID
@@ -34,17 +35,7 @@ export interface LocalTask {
   deletedAt?: string | null;
 }
 
-export interface LocalTreeDocument {
-  id: string; // UUID
-  userId: string;
-  title: string;
-  icon?: string;
-  nodes: any; // JSONB structure
-  createdAt: string;
-  updatedAt: string;
-  _dirty?: number;
-  deletedAt?: string | null;
-}
+export type LocalTreeDocument = TreeDocument;
 
 export interface LocalStatus {
   id: string;

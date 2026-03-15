@@ -8,7 +8,7 @@
 import { useEffect, useRef } from 'react';
 import { db } from '@/lib/db';
 import { useAppStore } from './useAppStore';
-import { syncMoodAction, syncTaskAction, syncDocAction, syncStatusAction, syncContextAction } from '@/app/actions/sync';
+import { syncMoodAction, syncTaskAction, syncDocAction, syncStatusAction, syncContextAction, syncTreeAction } from '@/app/actions/sync';
 
 export function useSyncWorker() {
   const isOnline = useAppStore(s => s.isOnline);
@@ -37,7 +37,8 @@ export function useSyncWorker() {
       // 3. Sync Documents
       const dirtyDocs = await db.documents.where('_dirty').equals(1).toArray();
       for (const doc of dirtyDocs) {
-        await syncDocAction(doc);
+        // cast to any to avoid circular reference detection if the tree is deep
+        await syncDocAction(doc as any);
         await db.documents.update(doc.id, { _dirty: 0 });
       }
 

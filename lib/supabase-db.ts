@@ -48,7 +48,6 @@ export const supabaseDb = {
     return data
   },
 
-  // ── Documents (Tree) ───────────────────────────────────────
   async upsertDocument(doc: any) {
     const supabase = createSupabaseServerClient()
     const { data, error } = await supabase
@@ -57,10 +56,9 @@ export const supabaseDb = {
         id: doc.id,
         user_id: doc.userId,
         title: doc.title,
-        icon: doc.icon,
-        nodes: doc.nodes,
-        deleted_at: doc.deletedAt,
-        updated_at: new Date().toISOString()
+        root: doc.root,
+        metadata: doc.metadata,
+        updated_at: new Date(doc.updatedAt || Date.now()).toISOString()
       })
       .select()
     if (error) throw error

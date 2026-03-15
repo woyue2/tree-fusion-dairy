@@ -49,36 +49,52 @@ export interface TodoTask {
 
 // ─── Tree Index ──────────────────────────────────────────
 
+export interface ImageAttachment {
+  id: string
+  url: string
+  thumbnail?: string
+  width: number
+  height: number
+  alt?: string
+  caption?: string
+  uploadedAt: number
+}
+
 export interface OutlineNode {
   id: string
-  docId: string
-  parentId?: string | null
+  parentId: string | null
   content: string
-  level?: number
-  children: string[] // Array of child node IDs
-  images?: string[]
-  collapsed?: boolean
-  isExpanded?: boolean
-  isRoot?: boolean
+  level: number
+  children: OutlineNode[]
+  images: ImageAttachment[]
+  collapsed: boolean
+  createdAt: number
+  updatedAt: number
   isHeader?: boolean
   isSubHeader?: boolean
+  tags?: string[]
   isItalic?: boolean
   icon?: string
-  tags?: string[]
+}
+
+export interface StoredOutlineNode extends Omit<OutlineNode, 'children'> {
+  children: string[]
 }
 
 export interface TreeDocument {
   id: string
   userId: string
   title: string
-  icon?: string
-  emoji?: string
-  isArchived?: boolean
-  nodes: Record<string, OutlineNode> // Flattened tree nodes
-  rootNodeId?: string
-  createdAt: string
-  updatedAt: string
-  deletedAt?: string | null
+  root: OutlineNode
+  metadata: {
+    createdAt: number
+    updatedAt: number
+    version: string
+    deletedAt?: number | null
+    icon?: string
+  }
+  updatedAt: number
+  _dirty?: number
 }
 
 // ─── Diary App ───────────────────────────────────────────

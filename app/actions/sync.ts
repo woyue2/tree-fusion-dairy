@@ -20,11 +20,3 @@ export async function syncTaskAction(task: any) {
 export async function syncDocAction(doc: any) {
   return await supabaseDb.upsertDocument(doc)
 }
-
-export async function syncStatusAction(status: any) {
-  return await supabaseDb.upsertStatus(status)
-}
-
-export async function syncContextAction(context: any) {
-  return await supabaseDb.upsertContext(context)
-}
