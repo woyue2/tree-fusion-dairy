@@ -10,20 +10,23 @@ import { immer } from 'zustand/middleware/immer';
 import { StoredOutlineNode, OutlineNode, TreeDocument } from '@/types';
 import { db } from '@/lib/db';
 import { fetchUserDataAction } from '@/app/actions/sync';
-import { useAppStore } from './useAppStore';
 
 interface TreeStore {
+  // Active Document State
   nodes: Record<string, StoredOutlineNode>;
   rootId: string;
   documentId: string;
   title: string;
   focusedNodeId: string | null;
+  activeDocId: string | null;
+  
+  // List State
   documents: TreeDocument[];
-  activeDoc: TreeDocument | null;
   isLoading: boolean;
 
   // Actions
   setFocusedNodeId: (id: string | null) => void;
+  setActiveDoc: (id: string | null) => void;
   setTitle: (title: string) => void;
   updateNodeContent: (id: string, content: string) => void;
   toggleCollapse: (id: string) => void;
@@ -43,7 +46,7 @@ interface TreeStore {
   // Persistence
   loadDocument: (doc: TreeDocument) => void;
   saveDocument: () => Promise<void>;
-  initializeNew: () => void;
+  initializeNew: (id?: string) => void;
   loadDocuments: () => Promise<void>;
   pullDocuments: () => Promise<void>;
   setDocuments: (docs: TreeDocument[]) => void;
@@ -56,11 +59,41 @@ export const useTreeStore = create<TreeStore>()(
     documentId: '',
     title: '未命名文档',
     focusedNodeId: null,
+    activeDocId: null,
     documents: [],
-    activeDoc: null,
     isLoading: false,
 
     setFocusedNodeId: (id) => set({ focusedNodeId: id }),
+
+    setActiveDoc: (id) => {
+      set(state => {
+        state.activeDocId = id;
+        if (id) {
+          const doc = state.documents.find(d => d.id === id);
+          if (doc) {
+            const nodesMap: Record<string, StoredOutlineNode> = {};
+            const flatten = (node: OutlineNode, parentId: string | null = null) => {
+              const { children, ...rest } = node;
+              nodesMap[node.id] = { 
+                ...rest, 
+                children: (children || []).map(c => c.id), 
+                parentId 
+              } as StoredOutlineNode;
+              (children || []).forEach(c => flatten(c, node.id));
+            };
+            flatten(doc.root);
+            state.nodes = nodesMap;
+            state.rootId = doc.root.id;
+            state.documentId = doc.id;
+            state.title = doc.title;
+          }
+        } else {
+          state.documentId = '';
+          state.nodes = {};
+          state.rootId = '';
+        }
+      });
+    },
 
     updateNodeContent: (id, content) => {
       set(state => {
@@ -92,7 +125,7 @@ export const useTreeStore = create<TreeStore>()(
           id: newId,
           parentId,
           content: '',
-          level: parent.level + 1,
+          level: (parent.level || 0) + 1,
           children: [],
           images: [],
           collapsed: false,
@@ -196,20 +229,33 @@ export const useTreeStore = create<TreeStore>()(
 
     renameDocument: async (id, title) => {
       await (db.documents as any).update(id, { title, updatedAt: Date.now(), _dirty: 1 });
-      if (get().documentId === id) set({ title });
+      set(state => {
+        if (state.documentId === id) state.title = title;
+        const idx = state.documents.findIndex(d => d.id === id);
+        if (idx !== -1) state.documents[idx].title = title;
+      });
     },
 
     deleteDocument: async (id) => {
       await db.documents.delete(id);
-      if (get().documentId === id) set({ documentId: '' });
+      set(state => {
+        if (state.documentId === id) {
+          state.documentId = '';
+          state.activeDocId = null;
+        }
+        state.documents = state.documents.filter(d => d.id !== id);
+      });
     },
 
     moveToTrash: async (id) => {
       await (db.documents as any).update(id, { deletedAt: Date.now(), _dirty: 1 });
+      await get().loadDocuments();
+      if (get().activeDocId === id) get().setActiveDoc(null);
     },
 
     restoreDocument: async (id) => {
       await (db.documents as any).update(id, { deletedAt: null, _dirty: 1 });
+      await get().loadDocuments();
     },
 
     emptyTrash: async () => {
@@ -217,13 +263,14 @@ export const useTreeStore = create<TreeStore>()(
       for (const doc of trash) {
         await db.documents.delete(doc.id);
       }
+      await get().loadDocuments();
     },
 
     loadDocument: (doc) => {
-      const nodes: Record<string, StoredOutlineNode> = {};
+      const nodesMap: Record<string, StoredOutlineNode> = {};
       const flatten = (node: OutlineNode, parentId: string | null = null) => {
         const { children, ...rest } = node;
-        nodes[node.id] = { 
+        nodesMap[node.id] = { 
           ...rest, 
           children: (children || []).map(c => c.id), 
           parentId 
@@ -231,7 +278,7 @@ export const useTreeStore = create<TreeStore>()(
         (children || []).forEach(c => flatten(c, node.id));
       };
       flatten(doc.root);
-      set({ nodes, rootId: doc.root.id, documentId: doc.id, title: doc.title });
+      set({ nodes: nodesMap, rootId: doc.root.id, documentId: doc.id, title: doc.title, activeDocId: doc.id });
     },
 
     saveDocument: async () => {
@@ -252,7 +299,7 @@ export const useTreeStore = create<TreeStore>()(
         const root = buildTree(state.rootId);
         const docRecord: TreeDocument = {
           id: state.documentId,
-          userId: 'default-user',
+          userId: 'user-1',
           title: state.title,
           root,
           metadata: { 
@@ -264,14 +311,15 @@ export const useTreeStore = create<TreeStore>()(
           _dirty: 1
         };
         await db.documents.put(docRecord);
+        get().loadDocuments();
       } catch (e) {
         console.error('Failed to save tree document:', e);
       }
     },
 
-    initializeNew: () => {
+    initializeNew: (id) => {
       const rootId = crypto.randomUUID();
-      const docId = crypto.randomUUID();
+      const docId = id || crypto.randomUUID();
       const now = Date.now();
       const rootNode: StoredOutlineNode = {
         id: rootId,
@@ -284,39 +332,70 @@ export const useTreeStore = create<TreeStore>()(
         createdAt: now,
         updatedAt: now,
       };
-      set({
-        nodes: { [rootId]: rootNode },
-        rootId,
-        documentId: docId,
+      
+      const newDoc: TreeDocument = {
+        id: docId,
+        userId: 'user-1',
         title: '新文档',
-        focusedNodeId: rootId
+        root: {
+          id: rootId,
+          parentId: null,
+          content: '新文档',
+          level: 0,
+          children: [],
+          images: [],
+          collapsed: false,
+          createdAt: now,
+          updatedAt: now
+        },
+        metadata: { createdAt: now, updatedAt: now, version: '1.0.0' },
+        updatedAt: now,
+        _dirty: 1
+      };
+
+      set(state => {
+        state.nodes = { [rootId]: rootNode };
+        state.rootId = rootId;
+        state.documentId = docId;
+        state.title = '新文档';
+        state.focusedNodeId = rootId;
+        state.activeDocId = docId;
+        state.documents.unshift(newDoc);
       });
-      get().saveDocument();
+      
+      db.documents.put(newDoc);
     },
 
     loadDocuments: async () => {
       set(state => { state.isLoading = true; });
-      const docs = await db.documents.where('userId').equals('u1').and(d => !d.deletedAt).toArray();
+      const docs = await db.documents.where('userId').equals('user-1').and(d => !d.deletedAt).toArray();
       set(state => {
         state.documents = docs as any;
-        state.activeDoc = docs.length > 0 ? docs[0] as any : null;
         state.isLoading = false;
+        // If nothing active, select first
+        if (!state.activeDocId && docs.length > 0) {
+          // We can't call setActiveDoc here easily in immer, will handle in component or via get()
+        }
       });
+      // Handle auto-select outside immer if needed
+      if (!get().activeDocId && docs.length > 0) {
+        get().setActiveDoc(docs[0].id);
+      }
     },
 
     pullDocuments: async () => {
       set(state => { state.isLoading = true; });
       try {
-        const { documents } = await fetchUserDataAction('u1');
+        const { documents } = await fetchUserDataAction('user-1');
         if (documents && documents.length > 0) {
           const localFormatDocs = documents.map((d: any) => ({
             id: d.id,
             userId: d.user_id,
             title: d.title,
             icon: d.icon,
-            root: d.nodes,
+            root: d.root || d.nodes,
             metadata: d.metadata,
-            updatedAt: new Date(d.updated_at).getTime(),
+            updatedAt: new Date(d.updated_at || Date.now()).getTime(),
             _dirty: 0
           }));
           await db.documents.bulkPut(localFormatDocs);

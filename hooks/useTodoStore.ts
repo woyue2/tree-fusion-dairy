@@ -70,7 +70,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
         { id: 'doing', userId: get().userId, title: 'In Progress', color: '#0079bf', collapsed: false, orderIndex: 1 },
         { id: 'done', userId: get().userId, title: 'Done', color: '#61bd4f', collapsed: false, orderIndex: 2 }
       ]
-      await db.statuses.bulkAdd(defaults)
+      await db.statuses.bulkPut(defaults) // [FIX] 根因: 使用 bulkPut 避免 userId 变更后语义化 ID 冲突
       set({ statuses: defaults })
     } else {
       set({ statuses: statuses as any })
@@ -81,7 +81,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
         { id: 'c1', userId: get().userId, title: '💼 工作', color: '#0079bf', collapsed: false, orderIndex: 0 },
         { id: 'c2', userId: get().userId, title: '🏠 个人', color: '#61bd4f', collapsed: false, orderIndex: 1 }
       ]
-      await db.contexts.bulkAdd(defaults)
+      await db.contexts.bulkPut(defaults) // [FIX] 根因: 使用 bulkPut 避免 userId 变更后语义化 ID 冲突
       set({ contexts: defaults })
     } else {
       set({ contexts: contexts as any })
