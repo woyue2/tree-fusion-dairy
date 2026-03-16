@@ -1,9 +1,10 @@
-'use server'
-
 /**
- * AI Server Actions for Diary Analysis
- * Ported from diary-app with GLM-4 prompts
+ * [INPUT]:    AI Prompts, ZHIPU_AI_API_KEY
+ * [OUTPUT]:   Server-side AI analysis & structure optimization
+ * [POS]:      app/actions/ai.ts - AI Logic Layer
+ * [PROTOCOL]: Ported from diary-app, using GLM-4 for transformation.
  */
+'use server'
 
 const ZHIPU_API_KEY = process.env.ZHIPU_AI_API_KEY
 const BASE_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
