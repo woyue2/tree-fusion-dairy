@@ -1,7 +1,9 @@
-// INPUT: documents, activeDocId, interactions
-// OUTPUT: 渲染知识树侧边栏 (文档列表 + 回收站)
-// POS: components/tree/TreeSidebar.tsx - 知识树导航侧边栏组件
-// [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+/**
+ * [INPUT]:    documents, activeDocId, onSelectDoc, onNewDoc
+ * [OUTPUT]:   Knowledge Tree Sidebar (Doc List + Trash)
+ * [POS]:      components/tree/TreeSidebar.tsx - Tree Navigation Sidebar
+ * [PROTOCOL]: Handles search and selection for the tree module.
+ */
 'use client'
 
 import React, { useState } from 'react'
@@ -22,13 +24,16 @@ export default function TreeSidebar({ documents, activeDocId, onSelectDoc, onNew
   
   const { moveToTrash, restoreDocument, emptyTrash } = useTreeStore()
 
-  const activeDocs = documents.filter(d => !d.deletedAt && d.title.toLowerCase().includes(searchQuery.toLowerCase()))
+  const activeDocs = documents
+    .filter(d => !d.deletedAt && d.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+  
   const trashDocs = documents.filter(d => d.deletedAt && d.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
   const docsToRender = isTrashView ? trashDocs : activeDocs
 
   return (
-    <div className="tree-sidebar">
+    <div className="tree-sidebar group/sidebar">
       <div className="tree-sidebar-header">
         {isTrashView ? (
           <>
@@ -37,8 +42,8 @@ export default function TreeSidebar({ documents, activeDocId, onSelectDoc, onNew
             </button>
             <h2 style={{ flex: 1, marginLeft: '8px' }}>回收站</h2>
             <button 
-              className="tree-btn error" 
-              style={{ fontSize: '11px', padding: '3px 8px' }}
+              className="tree-btn" 
+              style={{ fontSize: '11px', padding: '3px 8px', color: '#ff4d4f', borderColor: '#ffa39e' }}
               onClick={() => {
                 if (confirm(`清空回收站 (${trashDocs.length}个)?`)) emptyTrash()
               }}
@@ -55,110 +60,91 @@ export default function TreeSidebar({ documents, activeDocId, onSelectDoc, onNew
               className="tree-btn primary" 
               style={{ fontSize: '11px', padding: '3px 8px' }}
               onClick={onNewDoc}
+              title="新建文档"
             >
-              <Plus size={14} />
+               + 
             </button>
           </>
         )}
       </div>
       
-      <div style={{ position: 'relative', margin: '0 16px 12px' }}>
+      <div style={{ position: 'relative' }}>
         <input 
           className="tree-search-box" 
           type="text" 
           placeholder="🔍 搜索文档..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ width: '100%', paddingRight: searchQuery ? '24px' : '8px' }}
         />
         {searchQuery && (
           <button 
             onClick={() => setSearchQuery('')}
-            style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#999' }}
+            style={{ position: 'absolute', right: '18px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#999' }}
           >
             <X size={14} />
           </button>
         )}
       </div>
       
-      <div className="tree-doc-list" style={{ flex: 1, overflowY: 'auto' }}>
-        {docsToRender.map((doc) => (
-          <div 
-            key={doc.id}
-            onClick={() => onSelectDoc(doc.id)}
-            className={`tree-doc-item ${doc.id === activeDocId ? 'active' : ''}`}
-          >
-            <div style={{ fontSize: '16px' }}>{doc.icon || '📄'}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div 
-                className="doc-name"
-                contentEditable
-                suppressContentEditableWarning
-                onClick={(e) => {
-                  e.stopPropagation() // Prevent triggering select when trying to edit
-                }}
-                onBlur={(e) => {
-                  // @ts-ignore
-                  useTreeStore.getState().renameDocument(doc.id, e.currentTarget.textContent || doc.title)
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    e.currentTarget.blur()
-                  }
-                }}
-              >
-                {doc.title}
-              </div>
-              <div className="doc-meta">{new Date(doc.updatedAt).toISOString().split('T')[0]}</div>
-            </div>
-            {isTrashView ? (
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button 
-                  title="恢复文档"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    restoreDocument(doc.id)
-                  }}
-                  className="text-gray-400 hover:text-green-500 cursor-pointer hidden group-hover:block"
-                >
-                  <RefreshCw size={14} />
-                </button>
-                <button
-                  title="永久删除"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    // @ts-ignore
-                    if (confirm('确定永久删除？')) useTreeStore.getState().deleteDocument(doc.id)
-                  }}
-                  className="text-gray-400 hover:text-red-500 cursor-pointer hidden group-hover:block"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            ) : (
-              <button
-                title="移至回收站"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  moveToTrash(doc.id)
-                }}
-                className="text-gray-400 hover:text-red-500 cursor-pointer hidden group-hover:block ml-2"
-              >
-                <Trash2 size={14} />
-              </button>
-            )}
+      <div className="tree-doc-list">
+        {docsToRender.length === 0 ? (
+          <div className="p-8 text-center text-muted-foreground text-xs italic">
+            {isTrashView ? '回收站是空的' : '没有找到相关文档'}
           </div>
-        ))}
+        ) : (
+          docsToRender.map((doc) => (
+            <div 
+              key={doc.id}
+              onClick={() => onSelectDoc(doc.id)}
+              className={`tree-doc-item group ${doc.id === activeDocId ? 'active' : ''}`}
+            >
+              <div style={{ fontSize: '16px', flexShrink: 0 }}>{doc.icon || '📄'}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="doc-name">{doc.title || '未命名文档'}</div>
+                <div className="doc-meta">
+                  {new Date(doc.updatedAt).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
+                </div>
+              </div>
+              
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                {isTrashView ? (
+                  <>
+                    <button 
+                      title="恢复"
+                      onClick={(e) => { e.stopPropagation(); restoreDocument(doc.id); }}
+                      className="p-1 hover:text-green-600"
+                    >
+                      <RefreshCw size={12} />
+                    </button>
+                    <button
+                      title="永久删除"
+                      onClick={(e) => { e.stopPropagation(); if (confirm('确定永久删除？')) useTreeStore.getState().deleteDocument(doc.id); }}
+                      className="p-1 hover:text-red-600"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    title="移至回收站"
+                    onClick={(e) => { e.stopPropagation(); moveToTrash(doc.id); }}
+                    className="p-1 hover:text-red-500"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {!isTrashView && (
         <div 
           onClick={() => setIsTrashView(true)}
-          style={{ padding: '12px 20px', borderTop: '1px solid #eee', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '13px' }}
-          className="hover:bg-gray-50 transition-colors"
+          className="p-3 border-t border-slate-100 flex items-center gap-2 text-muted-foreground text-xs hover:bg-slate-50 cursor-pointer transition-colors"
         >
-          <Trash2 size={16} />
+          <Trash2 size={14} />
           <span>回收站 ({trashDocs.length})</span>
         </div>
       )}

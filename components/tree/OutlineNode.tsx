@@ -9,7 +9,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useTreeStore } from '@/hooks/useTreeStore';
-import { ChevronRight, ChevronDown, ListCheck } from 'lucide-react';
+import { ChevronRight, ChevronDown, ListCheck, Plus, Trash2 } from 'lucide-react';
 
 interface Props {
   nodeId: string;
@@ -42,7 +42,7 @@ export const OutlineNodeComponent: React.FC<Props> = ({ nodeId }) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (e.ctrlKey) {
+      if (e.ctrlKey || e.shiftKey) {
         addChildNode(nodeId);
       } else {
         addSiblingNode(nodeId);
@@ -61,21 +61,17 @@ export const OutlineNodeComponent: React.FC<Props> = ({ nodeId }) => {
   };
 
   return (
-    <div className="group flex flex-col w-full animate-in fade-in slide-in-from-left-2 duration-300">
-      <div className="flex items-center w-full py-1 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded transition-colors group">
-        {/* Indent Spacer */}
-        <div style={{ width: `${node.level * 24}px` }} className="flex-shrink-0" />
-
-        {/* Bullet & Collapse */}
-        <div className="flex items-center justify-center w-6 h-6 mr-1 flex-shrink-0 cursor-pointer text-slate-400 hover:text-blue-500 transition-all">
-          {node.children.length > 0 ? (
-            <div onClick={() => toggleCollapse(nodeId)}>
-              {node.collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-            </div>
-          ) : (
-            <div className="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full group-hover:bg-blue-400 group-hover:scale-125 transition-all" />
-          )}
+    <div className="flex flex-col w-full">
+      <div className="node-row group">
+        {/* Toggle / Bullets */}
+        <div 
+          className={`node-toggle ${node.children.length === 0 ? 'empty' : (node.collapsed ? '' : 'open')}`}
+          onClick={() => node.children.length > 0 && toggleCollapse(nodeId)}
+        >
+          {node.children.length > 0 && <ChevronRight size={10} />}
         </div>
+        
+        <div className="node-bullet" />
 
         {/* Content Input */}
         <input
@@ -85,16 +81,24 @@ export const OutlineNodeComponent: React.FC<Props> = ({ nodeId }) => {
           onChange={(e) => updateNodeContent(nodeId, e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => setFocusedNodeId(nodeId)}
-          className={`flex-1 bg-transparent border-none outline-none py-1 text-slate-700 dark:text-slate-200 placeholder:text-slate-300 transition-all font-inter ${
-            node.content === '' ? 'placeholder:opacity-50' : ''
-          }`}
-          placeholder="输入内容..."
+          className={`node-text ${node.level === 1 ? 'h1' : node.level === 2 ? 'h2' : ''}`}
+          placeholder={node.level === 0 ? "文档根节点..." : "输入内容..."}
         />
+
+        {/* Action Buttons */}
+        <div className="node-actions">
+          <button className="p-1 hover:text-green-600" onClick={() => addChildNode(nodeId)} title="添加子节点">
+            <Plus size={12} />
+          </button>
+          <button className="p-1 hover:text-red-500" onClick={() => deleteNode(nodeId)} title="删除">
+            <Trash2 size={12} />
+          </button>
+        </div>
       </div>
 
-      {/* Children Recursion */}
+      {/* Children Recursion with Vertical Line Styling */}
       {!node.collapsed && node.children.length > 0 && (
-        <div className="flex flex-col">
+        <div className="node-children">
           {node.children.map((childId) => (
             <OutlineNodeComponent key={childId} nodeId={childId} />
           ))}
