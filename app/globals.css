@@ -8,9 +8,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
-/* ── Design Tokens (fusion-todo light palette) ── */
+/* ── Design Tokens ── */
 :root {
+  /* Core Foundation */
   --app-bg: #f4f5f7;
   --sidebar-bg: #ffffff;
   --sidebar-border: #dfe1e6;
@@ -21,22 +21,57 @@
   --text-muted: #5e6c84;
   --text-secondary: #5e6c84;
   --nav-hover: #091e4214;
+  
+  /* Status Colors */
   --status-todo: #dfe1e6;
   --status-doing: #0079bf;
   --status-done: #61bd4f;
   --status-whenfree: #9e9e9e;
+  
+  /* Accent Colors (Contrast Fixed) */
   --accent: #0079bf;
   --accent-hover: #005582;
+  --accent-foreground: #ffffff;
   --danger: #eb5a46;
-  /* module accents */
+  
+  /* Module Accents */
   --todo-accent: #0079bf;
   --tree-accent: #00875a;
   --diary-accent: #c9481d;
+  
+  /* Layout & Animation */
   --radius: 8px;
   --radius-sm: 4px;
   --shadow: 0 1px 2px rgba(9,30,66,.25);
   --transition: .18s ease;
+
+  /* ── Shadcn-compatible Semantic Tokens ── */
+  --background: var(--app-bg);
+  --foreground: var(--app-text);
+  --card: var(--card-bg);
+  --card-foreground: var(--app-text);
+  --popover: #ffffff;
+  --popover-foreground: var(--app-text);
+  --primary: var(--accent);
+  --primary-foreground: #ffffff;
+  --secondary: #f1f2f4;
+  --secondary-foreground: var(--app-text);
+  --muted: #f1f2f4;
+  --muted-foreground: var(--text-muted);
+  --destructive: var(--danger);
+  --destructive-foreground: #ffffff;
+  --border: var(--sidebar-border);
+  --input: var(--sidebar-border);
+  --ring: var(--accent);
+  
+  /* Sidebar Specific (Contrast Optimized) */
+  --sidebar: #ffffff;
+  --sidebar-foreground: var(--app-text);
+  --sidebar-primary: var(--accent);
+  --sidebar-accent: #e4f0f6;
+  --sidebar-accent-foreground: var(--accent);
 }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -68,7 +103,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   border: none; background: transparent; font-size: 14px; text-align: left;
 }
 .nav-item:hover { background: var(--nav-hover); color: var(--app-text); }
-.nav-item.active { background: #e4f0f6; color: var(--accent); font-weight: 600; }
+.nav-item.active { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 600; }
 .nav-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none;
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 .nav-spacer { flex: 1; }
@@ -84,8 +119,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .view.active { display: flex; }
 
 /* ════════════════════════════════
-   TODO MODULE  (fusion-todo style)
-════════════════════════════════ */
+   TODO MODULE (fusion-todo style)
+   ════════════════════════════════ */
 #view-todo { flex-direction: column; }
 .todo-header {
   padding: 12px 16px; border-bottom: 1px solid var(--sidebar-border);
@@ -196,7 +231,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 }
 .board-add-col:hover { background: rgba(255,255,255,.8); border-color: var(--accent); color: var(--accent); }
 
-/* —— Priority/Color 色块（对应原版 CARD_COLORS 交互）—— */
+/* —— Priority/Color 色块 (对应原版 CARD_COLORS 交互) —— */
 .color-swatch {
   width: 26px; height: 26px; border-radius: 50%;
   border: 2px solid transparent;
@@ -204,7 +239,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
 }
 .color-swatch:hover { transform: scale(1.15); }
-/* selected 状态：放大 + 灰色圈（原版 border-[#5e6c84] ring-2 ring-black/10 scale-110） */
+/* selected 状态：放大 + 灰色圈 (原版 border-[#5e6c84] ring-2 ring-black/10 scale-110) */
 .color-swatch.selected {
   border-color: #5e6c84; transform: scale(1.12);
   box-shadow: 0 0 0 3px rgba(9,30,66,.12);
@@ -212,8 +247,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 /* ════════════════════════════════
    TREE MODULE
-════════════════════════════════ */
-/* #view-tree 暂无额外样式，继承全局 .view 布局 */
+   ════════════════════════════════ */
 .tree-sidebar {
   width: 240px; min-width: 200px; height: 100%;
   background: #fff; border-right: 1px solid var(--sidebar-border);
@@ -243,7 +277,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .tree-doc-item.active .doc-name { color: var(--tree-accent); font-weight: 600; }
 .doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .doc-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-.tree-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.tree-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
 .tree-toolbar {
   padding: 10px 16px; border-bottom: 1px solid var(--sidebar-border);
   display: flex; align-items: center; gap: 8px; background: #fff; flex-shrink: 0;
@@ -260,7 +294,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .tree-help { font-size: 11px; color: var(--text-muted); background: #f1f8f4;
   border-radius: 4px; padding: 3px 8px; }
 .outline-area { flex: 1; overflow-y: auto; padding: 12px 16px; }
-/* .outline-node 暂无额外样式，内部 .node-row 控制布局 */
 .node-row {
   display: flex; align-items: flex-start; gap: 4px; padding: 2px 6px;
   border-radius: 4px; cursor: default; transition: background var(--transition);
@@ -274,149 +307,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   transition: transform var(--transition); user-select: none;
 }
 .node-toggle.open { transform: rotate(90deg); }
-.node-toggle.@theme {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-
-  /* —— Design Tokens from Prototype —— */
-  --app-bg: #f4f5f7;
-  --sidebar-width: 220px;
-  --tree-accent: #00875a;
-  --diary-accent: #c9481d;
-  --col-bg: #ebecf0;
-  --card-bg: #ffffff;
-  --radius-sm: 4px;
-}
-
-/* —— Tree/Outliner Specific Styles —— */
-.tree-sidebar {
-  width: 240px; min-width: 200px; height: 100%;
-  background: #fff; border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-}
-.tree-sidebar-header {
-  padding: 12px 12px 8px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
-}
-.tree-sidebar-header h2 { font-size: 14px; font-weight: 700; flex: 1; color: var(--tree-accent); }
-
-.tree-search-box {
-  margin: 8px 10px; padding: 7px 10px; border-radius: 4px;
-  background: var(--app-bg); border: 1px solid var(--border);
-  color: var(--foreground); font-size: 13px; outline: none;
-}
-
-.tree-doc-list { flex: 1; overflow-y: auto; padding: 4px 6px; }
-.tree-doc-item {
-  padding: 7px 10px; border-radius: 4px; cursor: pointer;
-  display: flex; gap: 8px; align-items: flex-start;
-  border: 1px solid transparent; margin-bottom: 2px;
-  transition: all 0.2s ease;
-}
-.tree-doc-item:hover { background: rgba(0,0,0,0.05); }
-.tree-doc-item.active { background: #e3f5ed; border-color: #b7dfcc; }
-.tree-doc-item.active .doc-name { color: var(--tree-accent); font-weight: 600; }
-.doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.doc-meta { font-size: 11px; color: var(--muted-foreground); margin-top: 1px; }
-
-.tree-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
-.tree-toolbar {
-  padding: 10px 16px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px; background: #fff; flex-shrink: 0;
-}
-.tree-doc-title-label { font-size: 15px; font-weight: 700; flex: 1; color: var(--foreground); }
-
-.outline-area { flex: 1; overflow-y: auto; padding: 12px 16px; }
-
-.node-row {
-  display: flex; align-items: flex-start; gap: 4px; padding: 2px 6px;
-  border-radius: 4px; cursor: default; transition: background 0.2s;
-  position: relative;
-}
-.node-row:hover { background: rgba(0,135,90,.06); }
-
-.node-toggle {
-  width: 18px; height: 22px; display: flex; align-items: center; justify-content: center;
-  color: var(--muted-foreground); font-size: 10px; flex-shrink: 0; cursor: pointer;
-}
-.node-toggle.open { transform: rotate(90deg); }
 .node-toggle.empty { cursor: default; }
-
-.node-bullet { width: 6px; height: 6px; border-radius: 50%;
-  background: var(--tree-accent); flex-shrink: 0; margin-top: 9px; }
-
-.node-text {
-  font-size: 14px; line-height: 1.65; flex: 1; outline: none;
-  border-radius: 3px; padding: 1px 4px; min-width: 0;
-}
-.node-text.h1 { font-size: 18px; font-weight: 700; color: var(--tree-accent); }
-.node-text.h2 { font-size: 15px; font-weight: 600; }
-
-.node-children { margin-left: 22px; border-left: 2px solid #dfe1e6; padding-left: 8px; }
-
-.node-actions { opacity: 0; display: flex; gap: 2px; flex-shrink: 0; margin-top: 2px; transition: opacity 0.2s; }
-.node-row:hover .node-actions { opacity: 1; }
-
-/* —— Diary Specific Styles —— */
-.diary-sidebar {
-  width: 240px; min-width: 200px; height: 100%;
-  background: #fff; border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-}
-.diary-sidebar-header {
-  padding: 12px 12px 8px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
-}
-.diary-sidebar-header h2 { font-size: 14px; font-weight: 700; flex: 1; color: var(--diary-accent); }
-
-.diary-item {
-  padding: 9px 10px; border-radius: 4px; cursor: pointer;
-  border: 1px solid transparent; margin-bottom: 3px;
-  transition: all 0.2s;
-}
-.diary-item:hover { background: rgba(0,0,0,0.05); }
-.diary-item.active { background: #fdeee9; border-color: #f5c5b5; }
-.diary-item.active .diary-item-title { color: var(--diary-accent); }
-
-.diary-item-date { font-size: 11px; color: var(--muted-foreground); margin-bottom: 2px; }
-.diary-item-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.diary-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
 .node-bullet { width: 6px; height: 6px; border-radius: 50%;
   background: var(--tree-accent); flex-shrink: 0; margin-top: 9px; }
 .node-text {
@@ -427,19 +318,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .node-text:focus { background: #e3f5ed; }
 .node-text.h1 { font-size: 18px; font-weight: 700; color: var(--tree-accent); }
 .node-text.h2 { font-size: 15px; font-weight: 600; }
-.node-actions { opacity: 0; display: flex; gap: 2px; flex-shrink: 0; margin-top: 2px; }
+.node-children { margin-left: 22px; border-left: 2px solid #dfe1e6; padding-left: 8px; }
+.node-actions { opacity: 0; display: flex; gap: 2px; flex-shrink: 0; margin-top: 2px; transition: opacity 0.2s; }
 .node-act-btn {
   padding: 2px 5px; border-radius: 3px; font-size: 11px; cursor: pointer;
   border: none; background: transparent; color: var(--text-muted);
   transition: var(--transition);
 }
 .node-act-btn:hover { background: var(--nav-hover); color: var(--app-text); }
-.node-children { margin-left: 22px; border-left: 2px solid #dfe1e6; padding-left: 8px; }
 
 /* ════════════════════════════════
    DIARY MODULE
-════════════════════════════════ */
-/* #view-diary 暂无额外样式，继承全局 .view 布局 */
+   ════════════════════════════════ */
 .diary-sidebar {
   width: 240px; min-width: 200px; height: 100%;
   background: #fff; border-right: 1px solid var(--sidebar-border);
@@ -464,11 +354,101 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 }
 .diary-btn-secondary:hover { background: var(--nav-hover); color: var(--app-text); }
 
+.diary-sidebar-tabs { display: flex; border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0; }
+.diary-sidebar-tab {
+  flex: 1; padding: 8px; text-align: center; font-size: 12px; font-weight: 600;
+  cursor: pointer; color: var(--text-muted); transition: var(--transition);
+  border-bottom: 2px solid transparent;
+}
+.diary-sidebar-tab.active { color: var(--diary-accent); border-bottom-color: var(--diary-accent); }
+.diary-sidebar-tab:hover:not(.active) { background: var(--nav-hover); }
+.diary-list-inner { flex: 1; overflow-y: auto; padding: 6px; }
+.diary-item {
+  padding: 9px 10px; border-radius: 4px; cursor: pointer;
+  transition: var(--transition); border: 1px solid transparent; margin-bottom: 3px;
+}
+.diary-item:hover { background: var(--nav-hover); }
+.diary-item.active { background: #fdeee9; border-color: #f5c5b5; }
+.diary-item.active .diary-item-title { color: var(--diary-accent); }
+.diary-item-date { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+.diary-item-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.diary-item-preview { font-size: 11px; color: var(--text-muted); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.diary-item-check { float: right; margin-top: 2px; width: 14px; height: 14px;
+  cursor: pointer; accent-color: var(--diary-accent); }
+.diary-select-bar {
+  padding: 6px 8px; background: #fdeee9; border-bottom: 1px solid #f5c5b5;
+  font-size: 12px; color: var(--diary-accent); display: flex;
+  align-items: center; gap: 8px; flex-shrink: 0;
+}
+.diary-select-bar button {
+  padding: 3px 8px; border-radius: 4px; border: 1px solid var(--diary-accent);
+  background: #fff; color: var(--diary-accent); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+}
+.diary-select-bar button:hover { background: var(--diary-accent); color: #fff; }
+
+.diary-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
+.diary-editor-header {
+  padding: 10px 16px; border-bottom: 1px solid var(--sidebar-border);
+  background: #fff; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.diary-title-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-size: 16px; font-weight: 700; color: var(--app-text);
+}
+.diary-toolbar {
+  padding: 6px 16px; border-bottom: 1px solid var(--sidebar-border);
+  display: flex; gap: 4px; align-items: center; flex-wrap: wrap; background: #fff; flex-shrink: 0;
+}
+.toolbar-btn {
+  padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;
+  border: 1px solid var(--sidebar-border); background: #fff;
+  color: var(--text-muted); transition: var(--transition);
+}
+.toolbar-btn:hover { background: var(--nav-hover); color: var(--app-text); }
+.toolbar-sep { width: 1px; height: 16px; background: var(--sidebar-border); margin: 0 2px; }
+.diary-editor-body { flex: 1; overflow-y: auto; padding: 20px 28px; display: flex; flex-direction: column; }
+.diary-textarea {
+  width: 100%; flex: 1; height: 100%; min-height: 0; background: transparent; border: none; outline: none;
+  color: var(--app-text); font-size: 15px; line-height: 1.8; resize: none; font-family: inherit;
+}
+.diary-textarea::placeholder { color: var(--text-muted); }
+.diary-editor-footer {
+  padding: 8px 16px; border-top: 1px solid var(--sidebar-border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fff; flex-shrink: 0;
+}
+.word-count { font-size: 12px; color: var(--text-muted); }
+.diary-actions { display: flex; gap: 6px; }
+.btn-diary { padding: 6px 14px; border-radius: 4px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: var(--transition); }
+.btn-diary-primary { background: var(--diary-accent); color: #fff; }
+.btn-diary-primary:hover { filter: brightness(1.1); }
+.btn-diary-ghost { background: transparent; border: 1px solid var(--sidebar-border);
+  color: var(--text-secondary); }
+.btn-diary-ghost:hover { background: var(--nav-hover); color: var(--app-text); }
+.ai-panel {
+  position: absolute; right: 16px; bottom: 64px; width: 340px;
+  background: #fff; border: 1px solid var(--sidebar-border);
+  border-radius: var(--radius); padding: 14px;
+  box-shadow: 0 8px 28px rgba(9,30,66,.2);
+  display: none; z-index: 50;
+}
+.ai-panel.open { display: block; animation: slideUp .2s ease; }
+@keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.ai-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ai-panel-title { font-size: 13px; font-weight: 700; color: var(--diary-accent); }
+.ai-close { border: none; background: transparent; color: var(--text-muted);
+  font-size: 16px; cursor: pointer; }
+.ai-content { font-size: 13px; line-height: 1.7; color: var(--app-text); }
+.ai-tag { display: inline-block; background: #fdeee9; color: var(--diary-accent);
+  padding: 2px 8px; border-radius: 10px; font-size: 11px; margin: 2px 2px 0 0; }
+
 /* ════════════════════════════════
    STATS MODULE (Mood Heatmap)
-   抽取自 Life-Coach-AI-codexHelloAgentTest
-   舍弃笔记逻辑，保留红绿色情绪分布展示
- ════════════════════════════════ */
+   ════════════════════════════════ */
 #view-stats {
   padding: 24px;
   overflow-y: auto;
@@ -525,7 +505,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   filter: brightness(1.05);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-/* 当格有背景色时，自动切换文字为白色/深色 */
 .mood-cell.vivid-color .mood-val,
 .mood-cell.vivid-color .mood-date {
   color: #fff;
@@ -592,103 +571,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   width: 100%;
 }
 
-.diary-sidebar-tabs { display: flex; border-bottom: 1px solid var(--sidebar-border);
-  flex-shrink: 0; }
-.diary-sidebar-tab {
-  flex: 1; padding: 8px; text-align: center; font-size: 12px; font-weight: 600;
-  cursor: pointer; color: var(--text-muted); transition: var(--transition);
-  border-bottom: 2px solid transparent;
-}
-.diary-sidebar-tab.active { color: var(--diary-accent); border-bottom-color: var(--diary-accent); }
-.diary-sidebar-tab:hover:not(.active) { background: var(--nav-hover); }
-.diary-list-inner { flex: 1; overflow-y: auto; padding: 6px; }
-.diary-item {
-  padding: 9px 10px; border-radius: 4px; cursor: pointer;
-  transition: var(--transition); border: 1px solid transparent; margin-bottom: 3px;
-}
-.diary-item:hover { background: var(--nav-hover); }
-.diary-item.active { background: #fdeee9; border-color: #f5c5b5; }
-.diary-item.active .diary-item-title { color: var(--diary-accent); }
-.diary-item-date { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
-.diary-item-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.diary-item-preview { font-size: 11px; color: var(--text-muted); margin-top: 2px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.diary-item-check { float: right; margin-top: 2px; width: 14px; height: 14px;
-  cursor: pointer; accent-color: var(--diary-accent); }
-/* Weekly select mode */
-.diary-select-bar {
-  padding: 6px 8px; background: #fdeee9; border-bottom: 1px solid #f5c5b5;
-  font-size: 12px; color: var(--diary-accent); display: flex;
-  align-items: center; gap: 8px; flex-shrink: 0;
-}
-.diary-select-bar button {
-  padding: 3px 8px; border-radius: 4px; border: 1px solid var(--diary-accent);
-  background: #fff; color: var(--diary-accent); font-size: 11px; font-weight: 600;
-  cursor: pointer; transition: var(--transition);
-}
-.diary-select-bar button:hover { background: var(--diary-accent); color: #fff; }
-/* Editor */
-.diary-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.diary-editor-header {
-  padding: 10px 16px; border-bottom: 1px solid var(--sidebar-border);
-  background: #fff; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-}
-.diary-title-input {
-  flex: 1; background: transparent; border: none; outline: none;
-  font-size: 16px; font-weight: 700; color: var(--app-text);
-}
-.diary-toolbar {
-  padding: 6px 16px; border-bottom: 1px solid var(--sidebar-border);
-  display: flex; gap: 4px; align-items: center; flex-wrap: wrap; background: #fff; flex-shrink: 0;
-}
-.toolbar-btn {
-  padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;
-  border: 1px solid var(--sidebar-border); background: #fff;
-  color: var(--text-muted); transition: var(--transition);
-}
-.toolbar-btn:hover { background: var(--nav-hover); color: var(--app-text); }
-.toolbar-sep { width: 1px; height: 16px; background: var(--sidebar-border); margin: 0 2px; }
-.diary-editor-body { flex: 1; overflow-y: auto; padding: 20px 28px; display: flex; flex-direction: column; }
-.diary-textarea {
-  width: 100%; flex: 1; height: 100%; min-height: 0; background: transparent; border: none; outline: none;
-  color: var(--app-text); font-size: 15px; line-height: 1.8; resize: none; font-family: inherit;
-}
-.diary-textarea::placeholder { color: var(--text-muted); }
-.diary-editor-footer {
-  padding: 8px 16px; border-top: 1px solid var(--sidebar-border);
-  display: flex; align-items: center; justify-content: space-between;
-  background: #fff; flex-shrink: 0;
-}
-.word-count { font-size: 12px; color: var(--text-muted); }
-.diary-actions { display: flex; gap: 6px; }
-.btn-diary { padding: 6px 14px; border-radius: 4px; font-size: 13px; font-weight: 600;
-  cursor: pointer; border: none; transition: var(--transition); }
-.btn-diary-primary { background: var(--diary-accent); color: #fff; }
-.btn-diary-primary:hover { filter: brightness(1.1); }
-.btn-diary-ghost { background: transparent; border: 1px solid var(--sidebar-border);
-  color: var(--text-secondary); }
-.btn-diary-ghost:hover { background: var(--nav-hover); color: var(--app-text); }
-/* AI panel */
-.ai-panel {
-  position: absolute; right: 16px; bottom: 64px; width: 340px;
-  background: #fff; border: 1px solid var(--sidebar-border);
-  border-radius: var(--radius); padding: 14px;
-  box-shadow: 0 8px 28px rgba(9,30,66,.2);
-  display: none; z-index: 50;
-}
-.ai-panel.open { display: block; animation: slideUp .2s ease; }
-@keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-.ai-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.ai-panel-title { font-size: 13px; font-weight: 700; color: var(--diary-accent); }
-.ai-close { border: none; background: transparent; color: var(--text-muted);
-  font-size: 16px; cursor: pointer; }
-.ai-content { font-size: 13px; line-height: 1.7; color: var(--app-text); }
-.ai-tag { display: inline-block; background: #fdeee9; color: var(--diary-accent);
-  padding: 2px 8px; border-radius: 10px; font-size: 11px; margin: 2px 2px 0 0; }
-
 /* ════════════════════════════════
    SETTINGS
-════════════════════════════════ */
+   ════════════════════════════════ */
 #view-settings { flex-direction: column; align-items: center; overflow-y: auto; padding: 32px 16px; }
 .settings-inner { width: 100%; max-width: 520px; }
 .settings-inner h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
@@ -740,27 +625,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   background: transparent; color: var(--text-muted); border-radius: 4px;
   font-size: 13px; cursor: pointer; }
 .btn-modal-ghost:hover { background: var(--nav-hover); color: var(--app-text); }
-/* weekly modal */
-.weekly-diary-list { max-height: 260px; overflow-y: auto; border: 1px solid var(--sidebar-border);
-  border-radius: 4px; margin-top: 8px; }
-.weekly-diary-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px;
-  border-bottom: 1px solid var(--sidebar-border); cursor: pointer; transition: var(--transition); }
-.weekly-diary-row:last-child { border-bottom: none; }
-.weekly-diary-row:hover { background: var(--nav-hover); }
-.weekly-diary-row input[type=checkbox] { flex-shrink: 0; accent-color: var(--diary-accent); }
-.weekly-diary-row-title { font-size: 13px; font-weight: 500; flex: 1; }
-.weekly-diary-row-date { font-size: 11px; color: var(--text-muted); }
-.weekly-progress-bar-wrap { background: #eee; border-radius: 4px; height: 6px; margin: 12px 0 4px; overflow: hidden; }
-.weekly-progress-bar { height: 100%; background: linear-gradient(90deg,var(--diary-accent),#e8845a);
-  border-radius: 4px; transition: width .4s ease; }
-.weekly-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
-.weekly-tab { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
-  cursor: pointer; border: 1px solid var(--sidebar-border); background: #fff; color: var(--text-muted);
-  transition: var(--transition); }
-.weekly-tab.active { background: var(--diary-accent); color: #fff; border-color: var(--diary-accent); }
-.weekly-result-content { background: #fdeee9; border-radius: 4px; padding: 14px;
-  font-size: 14px; line-height: 1.8; white-space: pre-wrap; max-height: 280px; overflow-y: auto;
-  border-left: 3px solid var(--diary-accent); }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -768,46 +632,32 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 ::-webkit-scrollbar-thumb { background: #c1c7d0; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #97a0af; }
 
-/* ── Drag & Drop 视觉样式 (SortableJS) ──────────────────────────
-   对应真实实现中 @dnd-kit 的 DragOverlay + isDragging opacity
-   ──────────────────────────────────────────────────────────── */
-
-/* 列拖拽：被抓取的列 (dragClass) → 倾斜缩放，对应 isDragging ? 0.6 */
+/* ── Drag & Drop 视觉样式 ── */
 .col-drag-active {
   opacity: 0.5;
   transform: rotate(1.5deg) scale(1.02);
   box-shadow: 0 8px 24px rgba(9,30,66,.25);
   cursor: grabbing;
 }
-
-/* 列拖拽：原位 ghost 占位 (ghostClass) → 蓝色描边 */
 .col-drag-ghost {
   opacity: 0.35;
   background: #e4f0f6 !important;
   border: 2px dashed var(--accent) !important;
 }
-
-/* 卡片拖拽：被抓取的卡片 (dragClass) → 对应 DragOverlay TaskCard */
 .card-drag-active {
   opacity: 0.45;
   transform: rotate(1deg) scale(1.03);
   box-shadow: 0 6px 20px rgba(9,30,66,.22);
   cursor: grabbing;
 }
-
-/* 卡片拖拽：原位 ghost 占位 (ghostClass) → 虚线边框 */
 .card-drag-ghost {
   opacity: 0.3;
   background: #e4f0f6 !important;
   border: 1.5px dashed var(--accent) !important;
   border-left: 4px dashed var(--accent) !important;
 }
-
-/* col-header 作为列拖拽手柄的光标提示 */
 .col-header { cursor: grab; }
 .col-header:active { cursor: grabbing; }
-.col-title-input { cursor: pointer; }
-.col-title-input:focus { cursor: text; }
 
 /* ── Toast ── */
 .toast {
