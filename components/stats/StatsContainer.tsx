@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { useMoodStore } from '@/hooks/useMoodStore'
 import { ChevronDown } from 'lucide-react'
+import { MoodInput } from './MoodInput'
 
 export default function StatsContainer() {
   const moods = useMoodStore(s => s.moods)
@@ -16,6 +17,24 @@ export default function StatsContainer() {
     return '#10ac84'
   }
 
+  // Requirement: Display last 30 days including placeholders
+  const last30Days = useMemo(() => {
+    const days = []
+    const now = new Date()
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now)
+      d.setDate(now.getDate() - i)
+      const dateStr = d.toISOString().split('T')[0]
+      const mood = moods.find(m => m.date === dateStr)
+      days.push({
+        date: dateStr,
+        displayDate: dateStr.slice(5),
+        mood: mood || null
+      })
+    }
+    return days
+  }, [moods])
+
   const averageScore = useMemo(() => {
     if (moods.length === 0) return 0
     return (moods.reduce((acc, m) => acc + m.score, 0) / moods.length).toFixed(1)
@@ -25,48 +44,72 @@ export default function StatsContainer() {
     <div id="view-stats" className="view active" style={{ display: 'flex' }}>
       <div className="stats-container">
         
+        {/* Mood Input Section */}
+        <MoodInput />
+
         {/* Heatmap Card */}
         <div className="stats-card">
-          <h2>
-            <span style={{ fontSize: '20px' }}>📈</span> 情绪趋势 (红绿阶分布)
-          </h2>
-          <div className="mood-grid-container">
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-              <div className="modern-select-wrapper">
-                <select className="modern-select">
-                  <option>2026年3月</option>
-                  <option>2026年2月</option>
-                  <option>2026年1月</option>
-                </select>
-                <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} />
-              </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2 style={{ margin: 0 }}>
+              <span style={{ fontSize: '20px' }}>📈</span> 情绪趋势 (最近 30 天)
+            </h2>
+            <div className="modern-select-wrapper">
+              <select className="modern-select">
+                <option>最近 30 天</option>
+                <option>2026年3月</option>
+                <option>2026年2月</option>
+              </select>
+              <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} />
             </div>
-            
-            <div className="mood-heatmap">
-              {moods.map((mood) => (
+          </div>
+
+          <div className="mood-grid-container">
+            <div className="mood-heatmap" style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))',
+              gap: '8px'
+            }}>
+              {last30Days.map(({ date, displayDate, mood }) => (
                 <div 
-                  key={mood.id}
-                  className="mood-cell vivid-color"
-                  style={{ backgroundColor: getColorForScore(mood.score) }}
-                  title={`${mood.date}: ${mood.score}分`}
+                  key={date}
+                  className={`mood-cell ${mood ? 'vivid-color active' : 'empty-placeholder'}`}
+                  style={{ 
+                    backgroundColor: mood ? getColorForScore(mood.score) : 'rgba(0,0,0,0.03)',
+                    borderRadius: '8px',
+                    aspectRatio: '1/1',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '10px',
+                    transition: 'all 0.2s ease',
+                    border: mood ? 'none' : '1px dashed rgba(0,0,0,0.05)',
+                    cursor: mood ? 'pointer' : 'default',
+                    opacity: mood ? 1 : 0.6
+                  }}
+                  title={mood ? `${date}: ${mood.score}分` : `${date}: 未记录`}
                 >
-                  <div className="mood-val">{mood.score}</div>
-                  <div className="mood-date">{mood.date.slice(5)}</div>
+                  <div className="mood-val" style={{ fontWeight: 800, fontSize: '14px', color: mood ? 'white' : 'var(--text-muted)' }}>
+                    {mood ? mood.score : ''}
+                  </div>
+                  <div className="mood-date" style={{ fontSize: '8px', marginTop: '2px', color: mood ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)' }}>
+                    {displayDate}
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="mood-legend">
-              <span style={{ fontWeight: 600 }}>图例:</span>
+            <div className="mood-legend" style={{ marginTop: '24px', display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '11px' }}>
+              <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>评分对照:</span>
               {[
-                { label: '焦虑/低落 (≤2)', color: '#ff4757' },
-                { label: '平淡 (3-4)', color: '#ffa502' },
-                { label: '还不错 (5-6)', color: '#eccc68' },
-                { label: '开心 (7-8)', color: '#2ed573' },
-                { label: '极度愉悦 (≥9)', color: '#10ac84' }
+                { label: '焦虑/低落', color: '#ff4757' },
+                { label: '平淡', color: '#ffa502' },
+                { label: '还不错', color: '#eccc68' },
+                { label: '开心', color: '#2ed573' },
+                { label: '极度愉悦', color: '#10ac84' }
               ].map(item => (
-                <div key={item.label} className="legend-item">
-                  <div className="legend-square" style={{ backgroundColor: item.color }}></div>
+                <div key={item.label} className="legend-item" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div className="legend-square" style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: item.color }}></div>
                   {item.label}
                 </div>
               ))}
