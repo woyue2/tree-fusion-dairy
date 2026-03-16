@@ -12,15 +12,16 @@ export const supabaseDb = {
   // ── Moods ──────────────────────────────────────────────────
   async upsertMood(mood: any) {
     const supabase = createSupabaseServerClient()
+    const userId = mood.userId || 'user-1'
     const { data, error } = await supabase
       .from('moods')
       .upsert({
         id: mood.id,
-        user_id: mood.userId,
+        user_id: userId,
         date: mood.date,
         score: mood.score,
         note: mood.note,
-        updated_at: new Date().toISOString()
+        updated_at: new Date(mood.updatedAt || Date.now()).toISOString()
       })
       .select()
     if (error) throw error
@@ -41,11 +42,12 @@ export const supabaseDb = {
   // ── Tasks ──────────────────────────────────────────────────
   async upsertTask(task: any) {
     const supabase = createSupabaseServerClient()
+    const userId = task.userId || 'user-1'
     const { data, error } = await supabase
       .from('todo_tasks')
       .upsert({
         id: task.id,
-        user_id: task.userId,
+        user_id: userId,
         title: task.title,
         status_id: task.statusId,
         context_id: task.contextId,
@@ -53,7 +55,7 @@ export const supabaseDb = {
         tags: task.tags,
         order_index: task.orderIndex,
         deleted_at: task.deletedAt,
-        updated_at: new Date().toISOString()
+        updated_at: new Date(task.updatedAt || Date.now()).toISOString()
       })
       .select()
     if (error) throw error
@@ -62,11 +64,12 @@ export const supabaseDb = {
 
   async upsertDocument(doc: any) {
     const supabase = createSupabaseServerClient()
+    const userId = doc.userId || 'user-1'
     const { data, error } = await supabase
       .from('tree_documents')
       .upsert({
         id: doc.id,
-        user_id: doc.userId,
+        user_id: userId,
         title: doc.title,
         root: doc.root,
         metadata: doc.metadata,
@@ -80,16 +83,17 @@ export const supabaseDb = {
   // ── Board Config (Statuses/Contexts) ───────────────────────
   async upsertStatus(status: any) {
     const supabase = createSupabaseServerClient()
+    const userId = status.userId || 'user-1'
     const { data, error } = await supabase
       .from('todo_statuses')
       .upsert({
         id: status.id,
-        user_id: status.userId,
+        user_id: userId,
         title: status.title,
         color: status.color,
         collapsed: status.collapsed,
         order_index: status.orderIndex,
-        updated_at: new Date().toISOString()
+        updated_at: new Date(status.updatedAt || Date.now()).toISOString()
       })
       .select()
     if (error) throw error
@@ -98,16 +102,17 @@ export const supabaseDb = {
 
   async upsertContext(context: any) {
     const supabase = createSupabaseServerClient()
+    const userId = context.userId || 'user-1'
     const { data, error } = await supabase
       .from('todo_contexts')
       .upsert({
         id: context.id,
-        user_id: context.userId,
+        user_id: userId,
         title: context.title,
         color: context.color,
         collapsed: context.collapsed,
         order_index: context.orderIndex,
-        updated_at: new Date().toISOString()
+        updated_at: new Date(context.updatedAt || Date.now()).toISOString()
       })
       .select()
     if (error) throw error
@@ -139,11 +144,12 @@ export const supabaseDb = {
 
   async upsertDiary(diary: any) {
     const supabase = createSupabaseServerClient()
+    const userId = diary.userId || 'user-1'
     const { data, error } = await supabase
       .from('diaries')
       .upsert({
         id: diary.id,
-        user_id: diary.userId,
+        user_id: userId,
         date: diary.date,
         title: diary.title,
         content: diary.content,

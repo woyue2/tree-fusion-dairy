@@ -1,5 +1,6 @@
 -- [POS]: 根目录 / supabase_schema.sql
 -- [DESC]: 用于在 Supabase SQL Editor 中运行以创建所有必需的表和 RLS 策略
+-- [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
 -- 1. 开启必要扩展
 create extension if not exists "uuid-ossp";
@@ -36,7 +37,7 @@ create table if not exists tree_documents (
   user_id text not null,
   title text not null,
   icon text,
-  nodes jsonb default '[]'::jsonb,
+  root jsonb default '{}'::jsonb, -- [IMPL] 修正: 统一为 root 以匹配 types/index.ts
   metadata jsonb default '{}'::jsonb,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
