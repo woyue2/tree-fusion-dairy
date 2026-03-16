@@ -17,6 +17,7 @@ interface MoodState {
   // Actions
   setMoods: (moods: Mood[]) => void
   addMood: (mood: Omit<Mood, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  updateMood: (id: string, updates: Partial<Mood>) => Promise<void>
   loadMoods: () => Promise<void>
   pullMoods: () => Promise<void>
   
@@ -74,7 +75,23 @@ export const useMoodStore = create<MoodState>((set, get) => ({
       _dirty: 1
     }
     
-    await db.moods.add(moodEntry as any)
+    // @ts-ignore
+    await db.moods.add(moodEntry)
+    await get().loadMoods()
+  },
+
+  updateMood: async (id, updates) => {
+    const existing = await db.moods.get(id)
+    if (!existing) return
+
+    const updatedEntry = {
+      ...existing,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+      _dirty: 1
+    }
+
+    await db.moods.put(updatedEntry)
     await get().loadMoods()
   },
 
