@@ -47,7 +47,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
   viewMode: 'status',
   isLoading: false,
   editingTaskId: null,
-  userId: 'user-1',
+  userId: 'default-user',
 
   setTasks: (tasks) => set({ tasks }),
   setStatuses: (statuses) => set({ statuses }),
@@ -58,9 +58,9 @@ export const useTodoStore = create<TodoState>((set, get) => ({
   loadAll: async () => {
     set({ isLoading: true })
     const [tasks, statuses, contexts] = await Promise.all([
-      db.tasks.where('userId').equals(get().userId).and(t => !t.deletedAt).toArray(),
-      db.statuses.where('userId').equals(get().userId).toArray(),
-      db.contexts.where('userId').equals(get().userId).toArray()
+      db.tasks.where('userId').equals('default-user').and(t => !t.deletedAt).toArray(),
+      db.statuses.where('userId').equals('default-user').toArray(),
+      db.contexts.where('userId').equals('default-user').toArray()
     ])
     
     // Seed default statuses/contexts if empty
@@ -93,12 +93,12 @@ export const useTodoStore = create<TodoState>((set, get) => ({
   pullAll: async () => {
     set({ isLoading: true })
     try {
-      const { tasks, statuses, contexts } = await fetchUserDataAction(get().userId)
+      const { tasks, statuses, contexts } = await fetchUserDataAction('default-user')
       
       if (tasks.length > 0) {
         const localTasks = tasks.map((t: any) => ({
           id: t.id,
-          userId: t.user_id,
+          userId: 'default-user',
           title: t.title,
           statusId: t.status_id,
           contextId: t.context_id,

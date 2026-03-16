@@ -12,7 +12,7 @@ export const supabaseDb = {
   // ── Moods ──────────────────────────────────────────────────
   async upsertMood(mood: any) {
     const supabase = createSupabaseServerClient()
-    const userId = mood.userId || 'user-1'
+    const userId = mood.userId || 'default-user'
     const { data, error } = await supabase
       .from('moods')
       .upsert({
@@ -42,7 +42,7 @@ export const supabaseDb = {
   // ── Tasks ──────────────────────────────────────────────────
   async upsertTask(task: any) {
     const supabase = createSupabaseServerClient()
-    const userId = task.userId || 'user-1'
+    const userId = task.userId || 'default-user'
     const { data, error } = await supabase
       .from('todo_tasks')
       .upsert({
@@ -64,7 +64,7 @@ export const supabaseDb = {
 
   async upsertDocument(doc: any) {
     const supabase = createSupabaseServerClient()
-    const userId = doc.userId || 'user-1'
+    const userId = doc.userId || 'default-user'
     const { data, error } = await supabase
       .from('tree_documents')
       .upsert({
@@ -83,7 +83,7 @@ export const supabaseDb = {
   // ── Board Config (Statuses/Contexts) ───────────────────────
   async upsertStatus(status: any) {
     const supabase = createSupabaseServerClient()
-    const userId = status.userId || 'user-1'
+    const userId = status.userId || 'default-user'
     const { data, error } = await supabase
       .from('todo_statuses')
       .upsert({
@@ -102,7 +102,7 @@ export const supabaseDb = {
 
   async upsertContext(context: any) {
     const supabase = createSupabaseServerClient()
-    const userId = context.userId || 'user-1'
+    const userId = context.userId || 'default-user'
     const { data, error } = await supabase
       .from('todo_contexts')
       .upsert({

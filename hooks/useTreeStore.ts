@@ -335,7 +335,7 @@ export const useTreeStore = create<TreeStore>()(
       
       const newDoc: TreeDocument = {
         id: docId,
-        userId: 'user-1',
+        userId: 'default-user',
         title: '新文档',
         root: {
           id: rootId,
@@ -368,7 +368,7 @@ export const useTreeStore = create<TreeStore>()(
 
     loadDocuments: async () => {
       set(state => { state.isLoading = true; });
-      const docs = await db.documents.where('userId').equals('user-1').and(d => !d.deletedAt).toArray();
+      const docs = await db.documents.where('userId').equals('default-user').and(d => !d.deletedAt).toArray();
       set(state => {
         state.documents = docs as any;
         state.isLoading = false;
@@ -386,7 +386,7 @@ export const useTreeStore = create<TreeStore>()(
     pullDocuments: async () => {
       set(state => { state.isLoading = true; });
       try {
-        const { documents } = await fetchUserDataAction('user-1');
+        const { documents } = await fetchUserDataAction('default-user');
         if (documents && documents.length > 0) {
           const localFormatDocs = documents.map((d: any) => ({
             id: d.id,

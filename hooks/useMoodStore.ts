@@ -28,7 +28,7 @@ interface MoodState {
 export const useMoodStore = create<MoodState>((set, get) => ({
   moods: [],
   isLoading: false,
-  userId: 'user-1', // Shared default for now
+  userId: 'default-user', // Shared default for now
 
   setMoods: (moods) => set({ moods }),
 
