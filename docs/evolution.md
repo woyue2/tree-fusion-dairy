@@ -14,6 +14,10 @@
 ### 原因 异步状态竞争导致 destructing undefined；Next.js 缓存与多端口冲突引起资源加载失败
 ### 影响 增强 `useTreeStore` 防御性检查；清理 `.next` 缓存并重启服务至可用状态；完善 GEB L2/L3 文档以防范代码异味
 
+## 变动 统一全项目身份标识 (userId) 并清理 UI 冗余
+### 原因 降低本地开发同步复杂度；消除 CSS 历史债务
+### 影响 统一 `userId` 为 `default-user`；重构拖拽视觉效果；大幅缩减 `globals.css` 体积至核心样式
+
 # 2026-03-16
 
 ## 变动 补全看板配置同步逻辑，发布云端数据库 Schema
