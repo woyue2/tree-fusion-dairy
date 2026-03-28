@@ -1,8 +1,8 @@
 /**
- * [INPUT]:    None
+ * [INPUT]:    依赖 useTreeStore
  * [OUTPUT]:   Client-side Knowledge Tree Container
  * [POS]:      components/tree/TreeContainer.tsx
- * [PROTOCOL]: Initializes useTreeStore if empty.
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
 'use client';
@@ -13,22 +13,16 @@ import TreeSidebar from '@/components/tree/TreeSidebar';
 import { useTreeStore } from '@/hooks/useTreeStore';
 
 export default function TreeContainer() {
-  const { initializeNew, rootId, documents, activeDocId, setActiveDoc } = useTreeStore();
-
-  useEffect(() => {
-    if (documents.length === 0) {
-      // initializeNew(); // Don't auto-initialize if we want it clean
-    }
-  }, [documents.length, initializeNew]);
+  const { documents, activeDocId, setActiveDoc, canUndo, canRedo } = useTreeStore();
 
   const activeDoc = documents.find((d: any) => d.id === activeDocId);
 
   return (
     <div className="h-full flex overflow-hidden bg-white">
-      {/* Column 1 & 2: Sidebar + Doc List */}
-      <TreeSidebar 
-        documents={documents} 
-        activeDocId={activeDocId || undefined} 
+      {/* Sidebar */}
+      <TreeSidebar
+        documents={documents}
+        activeDocId={activeDocId || undefined}
         onSelectDoc={setActiveDoc}
         onNewDoc={() => {
           const id = crypto.randomUUID();
@@ -36,31 +30,29 @@ export default function TreeContainer() {
         }}
       />
 
-      {/* Column 3: Main Editor Area */}
+      {/* Main Editor Area */}
       <div className="tree-main">
         {activeDoc ? (
           <>
             <div className="tree-toolbar">
               <div className="tree-doc-title-label" id="tree-doc-title">{activeDoc.title}</div>
               <span className="tree-help">Tab缩进 · Shift+Tab反缩进 · Enter换行</span>
-              <button 
-                className="tree-btn" 
-                onClick={() => {
-                  // [FIX] 根因: 原先未绑定撤销动作
-                  useTreeStore.getState().undo?.();
-                }}
-              >↩ 撤销</button>
-              <button 
-                className="tree-btn primary"
-                onClick={() => {
-                  // [FIX] 根因: 原先未绑定保存动作
-                  // Zustand store state updates automatically, but we can show a toast
-                  // or trigger an explicit backend sync here if needed.
-                  const active = useTreeStore.getState().documents.find(d => d.id === activeDocId);
-                  if (active) useTreeStore.getState().updateDocument(active.id, { updatedAt: Date.now() });
-                  alert('已保存'); // Placeholder for proper toast
-                }}
-              >保存</button>
+              <button
+                className="tree-btn"
+                disabled={!canUndo}
+                onClick={() => useTreeStore.getState().undo()}
+                title="撤销 (Ctrl+Z)"
+              >
+                ↩ 撤销
+              </button>
+              <button
+                className="tree-btn"
+                disabled={!canRedo}
+                onClick={() => useTreeStore.getState().redo()}
+                title="重做 (Ctrl+Y)"
+              >
+                ↪ 重做
+              </button>
             </div>
             <div className="outline-area">
               <OutlineTree />
@@ -70,7 +62,7 @@ export default function TreeContainer() {
           <div className="flex-1 flex items-center justify-center text-muted-foreground flex-col gap-4">
             <div className="text-6xl">🌳</div>
             <p>请选择或创建一个文档开始记录</p>
-            <button 
+            <button
               className="tree-btn primary"
               onClick={() => {
                 const id = crypto.randomUUID();

@@ -13,7 +13,8 @@
 | `supabase.ts` | 浏览器端 Supabase client 单例 | 仅用于客户端 Auth / Realtime |
 | `supabase-server.ts` | 服务端 Supabase client 工厂函数 | Server Actions / SSR 取数专用 |
 | `supabase-db.ts` | Supabase 数据操作封装（CRUD） | 所有表操作集中于此 |
-| `constants.ts` | 全局常量（路由、配置等） | |
+| `constants.ts` | 全局常量（路由、配置、行间距） | 新增 `LineSpacingType`, `LINE_SPACING_CONFIG` |
+| `utils.ts` | Markdown 渲染工具 | `renderMarkdown`, `sanitizeHTML`（DOMPurify） |
 | `api-utils.ts` | Route Handler 统一响应格式 | `createSuccessResponse` / `handleApiError` |
 | `validation.ts` | Zod schema 集中管理 | 表单 + API 参数验证 |
 
