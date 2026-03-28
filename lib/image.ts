@@ -1,5 +1,5 @@
 /**
- * [INPUT]:    依赖 process.env.ImgURL_Upload_URL 及其 Token
+ * [INPUT]:    依赖 process.env.ImgURL_Upload_URL 及其 Token（Authorization Bearer）
  * [OUTPUT]:   uploadToImgURL — 执行图床上传并返回图片 URL
  * [POS]:      lib/image.ts - 图床交互服务入口
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -26,13 +26,14 @@ export async function uploadToImgURL(file: File) {
 
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('token', token);
 
   try {
     const response = await fetch(uploadUrl, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
       body: formData,
-      // 注意：ImgURL 如果是标准接口，通常不需要显式设置 Content-Type，让浏览器/fetch 自动处理 multipart boundary
     });
 
     if (!response.ok) {

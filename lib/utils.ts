@@ -1,6 +1,6 @@
 /**
  * [INPUT]:    text strings
- * [OUTPUT]:   sanitized HTML for safe rendering
+ * [OUTPUT]:   sanitized HTML for safe rendering; stripImageLines for AI pre-processing
  * [POS]:      lib/utils.ts - Markdown rendering utilities
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -12,8 +12,8 @@ export function sanitizeHTML(html: string): string {
     return html;
   }
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['strong', 'em', 'mark', 'u', 'p', 'br', 'span'],
-    ALLOWED_ATTR: ['class'],
+    ALLOWED_TAGS: ['strong', 'em', 'mark', 'u', 'p', 'br', 'span', 'img'],
+    ALLOWED_ATTR: ['class', 'src', 'alt'],
   });
 }
 
@@ -21,6 +21,12 @@ export function renderMarkdown(text: string): string {
   if (!text) return '';
 
   let html = text;
+
+  // 图片行 img:url
+  html = html.replace(
+    /^img:(.+)$/gm,
+    '<img src="$1" alt="" class="max-w-full rounded-lg my-2" />'
+  );
 
   // 荧光笔 ==text==
   html = html.replace(/==(.+?)==/g, '<mark class="bg-yellow-200 dark:bg-yellow-900/50 px-1 rounded">$1</mark>');
@@ -31,5 +37,16 @@ export function renderMarkdown(text: string): string {
   // 斜体 *text* (避免匹配 **)
   html = html.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
 
+  // 换行
+  html = html.replace(/\n/g, '<br />');
+
   return sanitizeHTML(html);
+}
+
+export function stripImageLines(content: string): string {
+  return content
+    .split('\n')
+    .filter(line => !line.trim().startsWith('img:'))
+    .join('\n')
+    .trim();
 }

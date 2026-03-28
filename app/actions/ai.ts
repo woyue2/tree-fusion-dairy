@@ -1,10 +1,12 @@
 /**
- * [INPUT]:    AI Prompts, ZHIPU_AI_API_KEY
- * [OUTPUT]:   Server-side AI analysis & structure optimization
+ * [INPUT]:    AI Prompts, ZHIPU_AI_API_KEY, stripImageLines
+ * [OUTPUT]:   Server-side AI analysis & structure optimization（图片行预处理后送 AI）
  * [POS]:      app/actions/ai.ts - AI Logic Layer
- * [PROTOCOL]: Ported from diary-app, using GLM-4 for transformation.
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 'use server'
+
+import { stripImageLines } from '@/lib/utils'
 
 const ZHIPU_API_KEY = process.env.ZHIPU_AI_API_KEY
 const BASE_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
@@ -75,7 +77,8 @@ export async function analyzeDiaryAction(content: string) {
 - 遇到形如 img:...png 的图片标记文本时，请保持原样，不要改写或删除`
 
   try {
-    const result = await callZhipuAI(systemPrompt, content)
+    const cleaned = stripImageLines(content)
+    const result = await callZhipuAI(systemPrompt, cleaned)
     return JSON.parse(result)
   } catch (error: any) {
     console.error('AI Analysis Error:', error)
@@ -111,7 +114,8 @@ export async function optimizeStructureAction(content: string) {
 仅输出以上三部分内容，不要包含JSON或代码块。`
 
   try {
-    return await callZhipuAI(systemPrompt, content)
+    const cleaned = stripImageLines(content)
+    return await callZhipuAI(systemPrompt, cleaned)
   } catch (error: any) {
     console.error('AI Structure Error:', error)
     throw new Error(error.message)
