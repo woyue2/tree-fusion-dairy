@@ -1,6 +1,6 @@
 /**
- * [INPUT]:    依赖 diaryEntry, onClose, navigation actions
- * [OUTPUT]:   全屏沉浸式阅读器组件，支持排版调整
+ * [INPUT]:    依赖 diaryEntry, onClose, navigation actions, renderMarkdown
+ * [OUTPUT]:   全屏沉浸式阅读器组件，支持排版调整和图片渲染
  * [POS]:      components/diary/DiaryViewer.tsx - 沉浸式消费层
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -12,6 +12,7 @@ import { X, ChevronLeft, ChevronRight, Type, BookOpen, Clock, Calendar, Download
 import { DiaryEntry, DiaryContent } from '@/types';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
+import { renderMarkdown } from '@/lib/utils';
 
 interface DiaryViewerProps {
   diary: DiaryEntry;
@@ -115,9 +116,10 @@ export function DiaryViewer({ diary, onClose, onPrev, onNext }: DiaryViewerProps
               {diary.content.structured}
             </pre>
           ) : (
-            <div className="text-slate-800 dark:text-slate-200 leading-relaxed font-serif whitespace-pre-wrap first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left first-letter:mt-1">
-              {diary.content[activeTab]}
-            </div>
+            <div
+              className="text-slate-800 dark:text-slate-200 leading-relaxed font-serif first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left first-letter:mt-1"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(diary.content[activeTab] || '') }}
+            />
           )}
 
           {/* Footer Metadata */}

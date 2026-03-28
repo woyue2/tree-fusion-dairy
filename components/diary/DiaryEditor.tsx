@@ -1,21 +1,22 @@
 /**
- * [INPUT]:    id, isOnline, useDiaryStore, analyzeDiaryAction
- * [OUTPUT]:   Interactive Diary Editor with AI Panel
+ * [INPUT]:    id, isOnline, useDiaryStore, analyzeDiaryAction, uploadImageAction
+ * [OUTPUT]:   Interactive Diary Editor with image upload + AI Panel
  * [POS]:      components/diary/DiaryEditor.tsx - Diary Editor View
- * [PROTOCOL]: Handles content updates, AI analysis triggers, and side-panel state.
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useDiaryStore } from '@/hooks/useDiaryStore';
-import { 
-  Save, Sparkles, Layout, FileText, CheckCircle2, 
-  Cloud, CloudOff, X, ArrowRight, Wand2, BookOpen, 
+import {
+  Save, Sparkles, Layout, FileText, CheckCircle2,
+  Cloud, CloudOff, X, ArrowRight, Wand2, BookOpen,
   Settings, Image as ImageIcon, Bold, Italic, Link, List, Quote,
-  Type, MessageSquare, ChevronLeft
+  Type, MessageSquare, ChevronLeft, Loader2
 } from 'lucide-react';
 import { DiaryEntry, DiaryContent } from '@/types';
 import { analyzeDiaryAction } from '@/app/actions/ai';
+import { uploadImageAction } from '@/app/actions/upload';
 import { toast } from 'sonner';
 
 interface DiaryEditorProps {
@@ -29,8 +30,10 @@ export function DiaryEditor({ id, isOnline }: DiaryEditorProps) {
   
   const [activeTab, setActiveTab] = useState<keyof DiaryContent>('original');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [showSidePanel, setShowSidePanel] = useState(true);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   if (!diary) return null;
 
@@ -59,6 +62,37 @@ export function DiaryEditor({ id, isOnline }: DiaryEditorProps) {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // reset input so same file can be re-selected
+    e.target.value = '';
+
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowed.includes(file.type.toLowerCase())) {
+      toast.error('不支持该图片格式');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const result = await uploadImageAction(formData);
+      if (!result.success || !result.data) {
+        throw new Error(result.error || '上传失败');
+      }
+      const imgLine = `\nimg:${result.data.url}`;
+      const newContent = { ...diary.content, original: (diary.content.original || '') + imgLine };
+      handleUpdate({ content: newContent });
+      toast.success('图片上传成功');
+    } catch (err: any) {
+      toast.error('图片上传失败: ' + err.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className="flex flex-1 overflow-hidden">
       {/* Editor Area */}
@@ -75,15 +109,24 @@ export function DiaryEditor({ id, isOnline }: DiaryEditorProps) {
             <button className="toolbar-btn" title="标题" onClick={() => { document.execCommand('formatBlock', false, 'H2'); }}><Type size={16} /></button>
           </div>
           <div className="flex items-center gap-1">
-            <button className="toolbar-btn" title="插入图片">
-              <label className="cursor-pointer">
-                <ImageIcon size={16} />
-                <input type="file" className="hidden" accept="image/*" />
-              </label>
+            <button
+              className="toolbar-btn"
+              title={isUploading ? '上传中...' : '插入图片'}
+              disabled={isUploading}
+              onClick={() => imageInputRef.current?.click()}
+            >
+              {isUploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
             </button>
-            <button className="toolbar-btn" title="链接" onClick={() => { 
-              const url = prompt('输入链接地址:'); 
-              if(url) document.execCommand('createLink', false, url); 
+            <input
+              ref={imageInputRef}
+              type="file"
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+            <button className="toolbar-btn" title="链接" onClick={() => {
+              const url = prompt('输入链接地址:');
+              if(url) document.execCommand('createLink', false, url);
             }}><Link size={16} /></button>
           </div>
           
