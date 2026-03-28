@@ -45,6 +45,7 @@ anti-huihuan-kaifa/
 │       ├── layout.tsx              ← 私有域总入口 & Sync 初始化
 │       ├── diary/                  ← 结构化日记
 │       ├── tree/                   ← 知识树
+│       ├── frogs/                  ← 青蛙没关系（任务追踪 + 番茄钟）
 │       └── ...                     ← todo, stats, settings
 │
 ├── components/                     ← 公共 UI 组件（跨路由复用）

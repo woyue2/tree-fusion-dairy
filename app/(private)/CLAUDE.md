@@ -13,6 +13,7 @@
 | `todo/` | Fusion Todo 路由 | `useTodoStore` | 多视图任务管理（看板/列表） |
 | `tree/` | 知识树路由 | `useTreeStore`, `lib/db` | 分层文件夹管理, 知识切片, 脑网可视化 |
 | `stats/` | 情绪统计路由 | `useMoodStore` | 情绪曲线走势, 数据可视化可视化分析 |
+| `frogs/` | 青蛙没关系路由 | `useFrogStore`, `useTodoStore` | 每日高价值任务追踪, 番茄钟手动记录, 明细日志面板 |
 | `settings/` | 应用设置路由 | `useAppStore` | 账户管理, 数据导入导出, 主题配置 |
 
 ---
