@@ -1,33 +1,25 @@
-// INPUT: 无（前端 showDirectoryPicker 由客户端组件触发）
-// OUTPUT: 历史数据导入工具页面
+// INPUT: 无（前端 File API 由客户端组件触发）
+// OUTPUT: 历史数据导入工具页面（读取 import-bundle.json → 写入 Dexie）
 // POS: app/(private)/settings/import/page.tsx — GEB L3 · Legacy Data Importer
-// DEPS: 无（Client Component 中使用 File System Access API）
 // [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
 import { Metadata } from 'next'
+import { BundleImporter } from './BundleImporter'
 
 export const metadata: Metadata = {
   title: '导入历史数据 · Tree-Fusion-Diary',
-  description: '将旧版 diary-app 的本地数据导入云端',
+  description: '将旧版数据（todo/diary/tree）导入本地 Dexie',
 }
 
 export default function ImportPage() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">历史数据导入</h1>
-      <p className="mt-2 text-sm text-[var(--app-muted)]">
-        请使用下方工具将旧版 diary-app（diary.json / weekly.json）导入 Supabase 云端。
+    <div className="p-6 max-w-2xl">
+      <h1 className="text-2xl font-bold mb-1">历史数据导入</h1>
+      <p className="text-sm text-slate-500 mb-6">
+        选择由脚本生成的 <code className="bg-slate-100 px-1 rounded">import-bundle.json</code>，
+        一键写入本地 IndexedDB（不覆盖已有数据，跳过 id 冲突项）。
       </p>
-      {/* TODO: 安装此页面后实现 LegacyImporter Client Component
-          流程：
-          1. window.showDirectoryPicker() 让用户选择 MyDiary 文件夹
-          2. 递归读取 diary.json / weekly.json 及图片
-          3. 图片上传至 Supabase Storage user-assets 桶
-          4. 日记条目通过 supabase client 批量 upsert（自动注入 user_id）
-      */}
-      <div className="mt-6 rounded-lg border border-dashed border-[var(--app-border)] p-8 text-center text-[var(--app-muted)]">
-        LegacyImporter 组件占位 — 待实现
-      </div>
+      <BundleImporter />
     </div>
   )
 }
