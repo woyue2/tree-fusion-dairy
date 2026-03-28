@@ -6,6 +6,17 @@
 -->
 # Evolution Log
  
+## 2026-03-29
+### [FEATURE] 青蛙没关系 (Frog Tracker) & Mood UI Refinement
+- **Mood Heatmap**: Redesigned to exactly match prototype aesthetics (Vivid colors, aspect-ratio 1:1, dashed placeholders). Added rolling averages (7d, 30d, 60d, 180d).
+- **Frog Tracker**: New module "/frogs" for tracking daily high-value tasks ("Frogs").
+- **Integration**: Automated counting of `done` tasks from `fusion-todo` merged with manual Pomodoro increments.
+- **Architecture**: Extended Lexie schema with `pomodoros` table; introduced `useFrogStore` for cross-module statistics extraction.
+
+## 变动 青蛙明细日志系统上线
+### 原因 日记需求要求表格右侧有可滚动明细 div，记录每次番茄增减历史（含自动任务联动）
+### 影响 新增 LocalFrogLog 接口与 frogLogs Dexie 表 (version 2)；useFrogStore 新增 loadLogs/addTaskLog；FrogContainer 右侧增加 256px 明细面板，点击行切换日期实时刷新
+
 # 2026-03-28
 
 ## 变动 修复全站 12+ 处非交互 UI 按钮并补齐 Store 接口
