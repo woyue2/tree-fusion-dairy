@@ -57,6 +57,24 @@ export interface LocalContext {
   _dirty?: number;
 }
 
+export interface LocalPomodoro {
+  id: string; // ISO date (YYYY-MM-DD) + userId
+  userId: string;
+  date: string;
+  count: number;
+  _dirty?: number;
+}
+
+export interface LocalFrogLog {
+  id: string; // UUID
+  userId: string;
+  date: string; // YYYY-MM-DD
+  time: string; // ISO timestamp
+  type: 'task' | 'pomodoro'; // task = todo完成/撤销, pomodoro = 手动增减
+  delta: number; // +1 or -1
+  label: string; // 任务标题 or '番茄钟'
+}
+
 export class TreeFusionDatabase extends Dexie {
   moods!: Table<LocalMood>;
   tasks!: Table<LocalTask>;
@@ -64,6 +82,8 @@ export class TreeFusionDatabase extends Dexie {
   statuses!: Table<LocalStatus>;
   contexts!: Table<LocalContext>;
   diaries!: Table<DiaryEntry & { _dirty?: number }>;
+  pomodoros!: Table<LocalPomodoro>;
+  frogLogs!: Table<LocalFrogLog>;
 
   constructor() {
     super('tree-fusion-db');
@@ -73,7 +93,11 @@ export class TreeFusionDatabase extends Dexie {
       documents: 'id, userId, _dirty, deletedAt',
       statuses: 'id, userId, _dirty',
       contexts: 'id, userId, _dirty',
-      diaries: 'id, userId, date, _dirty, deletedAt'
+      diaries: 'id, userId, date, _dirty, deletedAt',
+      pomodoros: 'id, userId, date, [userId+date], _dirty'
+    });
+    this.version(2).stores({
+      frogLogs: 'id, userId, date, time'
     });
   }
 }
