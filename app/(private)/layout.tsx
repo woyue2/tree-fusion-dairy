@@ -14,6 +14,7 @@ import { useAppStore } from '@/hooks/useAppStore'
 import { useSyncEngine } from '@/hooks/syncEngine'
 import { useTodoStore } from '@/hooks/useTodoStore'
 import { useMoodStore } from '@/hooks/useMoodStore'
+import { useFrogStore } from '@/hooks/useFrogStore'
 
 interface PrivateLayoutProps {
   children: React.ReactNode
@@ -30,11 +31,13 @@ export default function PrivateLayout({ children }: PrivateLayoutProps) {
   useSyncEngine()
   const loadTodo = useTodoStore((s: any) => s.loadAll)
   const loadMoods = useMoodStore((s: any) => s.loadMoods)
+  const loadPomodoros = useFrogStore((s: any) => s.loadPomodoros)
 
   useEffect(() => {
     loadTodo()
     loadMoods()
-  }, [loadTodo, loadMoods])
+    loadPomodoros()
+  }, [loadTodo, loadMoods, loadPomodoros])
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true)
@@ -99,6 +102,11 @@ export default function PrivateLayout({ children }: PrivateLayoutProps) {
           <Link href="/stats" className={`nav-item ${pathname.includes('stats') ? 'active' : ''}`} style={{ justifyContent: isCollapsed ? 'center' : 'flex-start', padding: isCollapsed ? '8px 0' : '8px 12px' }} title="情绪统计">
             <svg viewBox="0 0 24 24" style={{ margin: isCollapsed ? 0 : '0 10px 0 0' }}><path d="M18 20V10M12 20V4M6 20v-6" fill="none" strokeWidth="2"/></svg>
             {!isCollapsed && <span>情绪统计</span>}
+          </Link>
+          
+          <Link href="/frogs" className={`nav-item ${pathname.includes('frogs') ? 'active' : ''}`} style={{ justifyContent: isCollapsed ? 'center' : 'flex-start', padding: isCollapsed ? '8px 0' : '8px 12px' }} title="青蛙没关系">
+            <svg viewBox="0 0 24 24" style={{ margin: isCollapsed ? 0 : '0 10px 0 0' }} fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            {!isCollapsed && <span>青蛙没关系</span>}
           </Link>
         </div>
         
