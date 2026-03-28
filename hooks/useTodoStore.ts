@@ -193,8 +193,11 @@ export const useTodoStore = create<TodoState>((set, get) => ({
   },
 
   updateColumnBelowOf: async (id, viewMode, belowOf) => {
-    // This belowOf feature needs schema adjustment or handling in local
-    // For now we just update and reload
+    if (viewMode === 'status') {
+      await db.statuses.update(id, { belowOf, _dirty: 1 })
+    } else if (viewMode === 'context') {
+      await db.contexts.update(id, { belowOf, _dirty: 1 })
+    }
     await get().loadAll()
   },
 

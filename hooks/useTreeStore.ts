@@ -548,14 +548,26 @@ export const useTreeStore = create<TreeStore>()(
 
     initializeNew: (id) => {
       const rootId = crypto.randomUUID();
+      const firstChildId = crypto.randomUUID();
       const docId = id || crypto.randomUUID();
       const now = Date.now();
+      const firstChild: StoredOutlineNode = {
+        id: firstChildId,
+        parentId: rootId,
+        content: '',
+        level: 1,
+        children: [],
+        images: [],
+        collapsed: false,
+        createdAt: now,
+        updatedAt: now,
+      };
       const rootNode: StoredOutlineNode = {
         id: rootId,
         parentId: null,
         content: '新文档',
         level: 0,
-        children: [],
+        children: [firstChildId],
         images: [],
         collapsed: false,
         createdAt: now,
@@ -565,22 +577,22 @@ export const useTreeStore = create<TreeStore>()(
         id: docId,
         userId: 'default-user',
         title: '新文档',
-        root: { ...rootNode, children: [] },
+        root: { ...rootNode, children: [{ ...firstChild, children: [] } as any] },
         metadata: { createdAt: now, updatedAt: now, version: '1.0.0' },
         updatedAt: now,
         _dirty: 1
       };
       set(state => {
-        state.nodes = { [rootId]: rootNode };
+        state.nodes = { [rootId]: rootNode, [firstChildId]: firstChild };
         state.rootId = rootId;
         state.documentId = docId;
         state.title = '新文档';
-        state.focusedNodeId = rootId;
+        state.focusedNodeId = firstChildId;
         state.activeDocId = docId;
         state.documents.unshift(newDoc);
         state.history = {
           past: [],
-          present: { nodes: { [rootId]: JSON.parse(JSON.stringify(rootNode)) }, rootId, title: '新文档' },
+          present: { nodes: { [rootId]: JSON.parse(JSON.stringify(rootNode)), [firstChildId]: JSON.parse(JSON.stringify(firstChild)) }, rootId, title: '新文档' },
           future: [],
         };
         state.canUndo = false;

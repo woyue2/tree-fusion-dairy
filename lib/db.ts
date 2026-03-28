@@ -44,6 +44,7 @@ export interface LocalStatus {
   collapsed: boolean;
   orderIndex: number;
   color?: string;
+  belowOf?: string | null;
   _dirty?: number;
 }
 
@@ -54,6 +55,7 @@ export interface LocalContext {
   color?: string;
   collapsed: boolean;
   orderIndex: number;
+  belowOf?: string | null;
   _dirty?: number;
 }
 
@@ -98,6 +100,11 @@ export class TreeFusionDatabase extends Dexie {
     });
     this.version(2).stores({
       frogLogs: 'id, userId, date, time'
+    });
+    // Version 3: add belowOf field to statuses and contexts (no new index needed, field is read at query time)
+    this.version(3).stores({
+      statuses: 'id, userId, _dirty',
+      contexts: 'id, userId, _dirty',
     });
   }
 }

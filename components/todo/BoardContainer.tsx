@@ -339,14 +339,29 @@ export default function BoardContainer() {
     }
 
     if (active.data.current?.type === 'Task') {
+      const finalTask = optimisticTasks.find(t => t.id === active.id)
+      if (!finalTask) return
+
       const oldIdx = optimisticTasks.findIndex(t => t.id === active.id)
       const newIdx = optimisticTasks.findIndex(t => t.id === over.id)
-      if (oldIdx !== -1 && newIdx !== -1) {
-        const newTasks = arrayMove(optimisticTasks, oldIdx, newIdx)
+
+      if (oldIdx !== -1) {
+        const reordered = newIdx !== -1 && oldIdx !== newIdx
+          ? arrayMove(optimisticTasks, oldIdx, newIdx)
+          : optimisticTasks
+
         startTransition(() => {
-          setOptimisticTasks(newTasks)
-          setTasks(newTasks)
+          setOptimisticTasks(reordered)
+          setTasks(reordered)
         })
+
+        // Persist column change + order
+        useTodoStore.getState().moveTask(
+          finalTask.id,
+          finalTask.statusId,
+          finalTask.contextId,
+          newIdx !== -1 ? newIdx : oldIdx
+        )
       }
     }
   }
