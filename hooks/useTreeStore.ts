@@ -10,6 +10,7 @@ import { immer } from 'zustand/middleware/immer';
 import { StoredOutlineNode, OutlineNode, TreeDocument } from '@/types';
 import { db } from '@/lib/db';
 import { fetchUserDataAction } from '@/app/actions/sync';
+import { toast } from 'sonner';
 
 interface TreeStore {
   // Active Document State
@@ -37,11 +38,16 @@ interface TreeStore {
   outdentNode: (nodeId: string) => void;
   
   // Document Management
+  updateDocument: (id: string, updates: Partial<TreeDocument>) => Promise<void>;
   renameDocument: (id: string, title: string) => Promise<void>;
   deleteDocument: (id: string) => Promise<void>;
   moveToTrash: (id: string) => Promise<void>;
   restoreDocument: (id: string) => Promise<void>;
   emptyTrash: () => Promise<void>;
+  
+  // Undo/Redo (Stubs for future fully-fledged implementation)
+  undo?: () => void;
+  redo?: () => void;
   
   // Persistence
   loadDocument: (doc: TreeDocument) => void;
@@ -227,13 +233,29 @@ export const useTreeStore = create<TreeStore>()(
       get().saveDocument();
     },
 
-    renameDocument: async (id, title) => {
-      await (db.documents as any).update(id, { title, updatedAt: Date.now(), _dirty: 1 });
+    updateDocument: async (id, updates) => {
+      await (db.documents as any).update(id, { ...updates, updatedAt: Date.now(), _dirty: 1 });
       set(state => {
-        if (state.documentId === id) state.title = title;
+        if (state.documentId === id && updates.title) state.title = updates.title;
         const idx = state.documents.findIndex(d => d.id === id);
-        if (idx !== -1) state.documents[idx].title = title;
+        if (idx !== -1) {
+          state.documents[idx] = { ...state.documents[idx], ...updates };
+        }
       });
+    },
+
+    renameDocument: async (id, title) => {
+      await get().updateDocument(id, { title });
+    },
+
+    undo: () => {
+      // Stub for undo logic
+      toast.info('撤销功能暂未实现');
+    },
+
+    redo: () => {
+      // Stub for redo logic
+      toast.info('重做功能暂未实现');
     },
 
     deleteDocument: async (id) => {
@@ -299,7 +321,7 @@ export const useTreeStore = create<TreeStore>()(
         const root = buildTree(state.rootId);
         const docRecord: TreeDocument = {
           id: state.documentId,
-          userId: 'user-1',
+          userId: 'default-user',
           title: state.title,
           root,
           metadata: { 

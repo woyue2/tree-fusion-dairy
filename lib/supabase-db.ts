@@ -144,7 +144,7 @@ export const supabaseDb = {
 
   async upsertDiary(diary: any) {
     const supabase = createSupabaseServerClient()
-    const userId = diary.userId || 'user-1'
+    const userId = diary.userId || 'default-user'
     const { data, error } = await supabase
       .from('diaries')
       .upsert({
