@@ -46,10 +46,21 @@ export default function TreeContainer() {
               <button 
                 className="tree-btn" 
                 onClick={() => {
-                  // Undo functionality should be implemented in store
+                  // [FIX] 根因: 原先未绑定撤销动作
+                  useTreeStore.getState().undo?.();
                 }}
               >↩ 撤销</button>
-              <button className="tree-btn primary">保存</button>
+              <button 
+                className="tree-btn primary"
+                onClick={() => {
+                  // [FIX] 根因: 原先未绑定保存动作
+                  // Zustand store state updates automatically, but we can show a toast
+                  // or trigger an explicit backend sync here if needed.
+                  const active = useTreeStore.getState().documents.find(d => d.id === activeDocId);
+                  if (active) useTreeStore.getState().updateDocument(active.id, { updatedAt: Date.now() });
+                  alert('已保存'); // Placeholder for proper toast
+                }}
+              >保存</button>
             </div>
             <div className="outline-area">
               <OutlineTree />

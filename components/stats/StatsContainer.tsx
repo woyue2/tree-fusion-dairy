@@ -1,3 +1,9 @@
+/**
+ * [INPUT]:    useMoodStore states and actions.
+ * [OUTPUT]:   StatsContainer component for quantitative and mood visualization.
+ * [POS]:      components/stats/StatsContainer.tsx - Stats & Mood Dashboard View
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 'use client'
 
 import React, { useEffect, useMemo } from 'react'
@@ -72,6 +78,10 @@ export default function StatsContainer() {
               {last30Days.map(({ date, displayDate, mood }) => (
                 <div 
                   key={date}
+                  onClick={() => {
+                    // [FIX] 根因: 热力图格子原先无法点击，没有反馈
+                    if(mood) alert(`日期: ${date}\n分数: ${mood.score}\n笔记: ${mood.note || '无'}`);
+                  }}
                   className={`mood-cell ${mood ? 'vivid-color active' : 'empty-placeholder'}`}
                   style={{ 
                     backgroundColor: mood ? getColorForScore(mood.score) : 'rgba(0,0,0,0.03)',
