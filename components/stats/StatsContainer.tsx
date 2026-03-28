@@ -6,9 +6,8 @@
  */
 'use client'
 
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useMoodStore } from '@/hooks/useMoodStore'
-import { ChevronDown } from 'lucide-react'
 import { MoodInput } from './MoodInput'
 
 export default function StatsContainer() {
@@ -16,11 +15,11 @@ export default function StatsContainer() {
   const getRollingAverage = useMoodStore(s => s.getRollingAverage)
 
   const getColorForScore = (score: number) => {
-    if (score <= 2) return '#ff4757'
-    if (score <= 4) return '#ffa502'
-    if (score <= 6) return '#eccc68'
-    if (score <= 8) return '#2ed573'
-    return '#10ac84'
+    if (score <= 2) return '#ff4757' // Red
+    if (score <= 4) return '#ffa502' // Orange
+    if (score <= 6) return '#eccc68' // Yellow
+    if (score <= 8) return '#2ed573' // Green
+    return '#10ac84' // Emerald
   }
 
   // Requirement: Display last 30 days including placeholders
@@ -41,150 +40,113 @@ export default function StatsContainer() {
     return days
   }, [moods])
 
-  const averageScore = useMemo(() => {
-    if (moods.length === 0) return 0
-    return (moods.reduce((acc, m) => acc + m.score, 0) / moods.length).toFixed(1)
-  }, [moods])
+  const rollingStats = [
+    { label: '7天均值', days: 7 },
+    { label: '30天均值', days: 30 },
+    { label: '60天均值', days: 60 },
+    { label: '180天均值', days: 180 }
+  ].map(p => {
+    const avg = getRollingAverage(p.days)
+    const count = moods.filter(m => {
+      const d = new Date(m.date)
+      const cutoff = new Date()
+      cutoff.setDate(cutoff.getDate() - p.days)
+      return d >= cutoff
+    }).length
+    return { ...p, avg, count }
+  })
 
   return (
-    <div id="view-stats" className="view active" style={{ display: 'flex' }}>
-      <div className="stats-container">
+    <div id="view-stats" className="view active flex flex-col p-6 gap-6 overflow-y-auto bg-[#f4f5f7]">
+      <div className="stats-container max-w-[900px] mx-auto w-full">
         
         {/* Mood Input Section */}
-        <MoodInput />
+        <div className="mb-6">
+          <MoodInput />
+        </div>
 
-        {/* Heatmap Card */}
-        <div className="stats-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ margin: 0 }}>
-              <span style={{ fontSize: '20px' }}>📈</span> 情绪趋势 (最近 30 天)
-            </h2>
-            <div className="modern-select-wrapper">
-              <select className="modern-select">
-                <option>最近 30 天</option>
-                <option>2026年3月</option>
-                <option>2026年2月</option>
-              </select>
-              <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} />
-            </div>
-          </div>
-
-          <div className="mood-grid-container">
-            <div className="mood-heatmap" style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))',
-              gap: '8px'
-            }}>
+        {/* Mood Section */}
+        <div className="stats-card bg-white rounded-xl p-6 shadow-sm mb-6 border border-[#dfe1e6]">
+          <h2 className="text-lg font-bold mb-5 flex items-center gap-2 text-[#172b4d]">
+            📈 情绪趋势 (红绿阶分布)
+          </h2>
+          
+          <div className="mood-grid-container flex flex-col gap-3">
+            <div className="mood-heatmap grid grid-cols-7 gap-2">
               {last30Days.map(({ date, displayDate, mood }) => (
-                <div 
+                <div
                   key={date}
-                  onClick={() => {
-                    // [FIX] 根因: 热力图格子原先无法点击，没有反馈
-                    if(mood) alert(`日期: ${date}\n分数: ${mood.score}\n笔记: ${mood.note || '无'}`);
+                  className={`mood-cell relative aspect-square rounded-lg flex flex-col items-center justify-center gap-1 cursor-pointer transition-all hover:-translate-y-0.5 hover:brightness-105 hover:shadow-md border border-black/5`}
+                  style={{
+                    backgroundColor: mood ? getColorForScore(mood.score) : '#ffffff',
+                    borderStyle: mood ? 'solid' : 'dashed',
+                    borderColor: mood ? 'transparent' : '#ddd'
                   }}
-                  className={`mood-cell ${mood ? 'vivid-color active' : 'empty-placeholder'}`}
-                  style={{ 
-                    backgroundColor: mood ? getColorForScore(mood.score) : 'rgba(0,0,0,0.03)',
-                    borderRadius: '8px',
-                    aspectRatio: '1/1',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '10px',
-                    transition: 'all 0.2s ease',
-                    border: mood ? 'none' : '1px dashed rgba(0,0,0,0.05)',
-                    cursor: mood ? 'pointer' : 'default',
-                    opacity: mood ? 1 : 0.6
-                  }}
-                  title={mood ? `${date}: ${mood.score}分` : `${date}: 未记录`}
+                  title={mood?.note || (mood ? '无备注' : '未记录')}
                 >
-                  <div className="mood-val" style={{ fontWeight: 800, fontSize: '14px', color: mood ? 'white' : 'var(--text-muted)' }}>
-                    {mood ? mood.score : ''}
+                  <div 
+                    className="mood-val text-base font-extrabold leading-none"
+                    style={{ color: mood ? '#fff' : '#ccc' }}
+                  >
+                    {mood ? mood.score : '--'}
                   </div>
-                  <div className="mood-date" style={{ fontSize: '8px', marginTop: '2px', color: mood ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)' }}>
+                  <div 
+                    className="mood-date text-[10px] font-medium opacity-80"
+                    style={{ color: mood ? '#fff' : '#5e6c84' }}
+                  >
                     {displayDate}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="mood-legend" style={{ marginTop: '24px', display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '11px' }}>
-              <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>评分对照:</span>
-              {[
-                { label: '焦虑/低落', color: '#ff4757' },
-                { label: '平淡', color: '#ffa502' },
-                { label: '还不错', color: '#eccc68' },
-                { label: '开心', color: '#2ed573' },
-                { label: '极度愉悦', color: '#10ac84' }
-              ].map(item => (
-                <div key={item.label} className="legend-item" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <div className="legend-square" style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: item.color }}></div>
-                  {item.label}
+            {/* Legend */}
+            <div className="mood-legend flex justify-center flex-wrap gap-3 mt-5 p-2.5 bg-[#f8f9fa] rounded-lg text-xs text-[#5e6c84] border border-[#eee]">
+              <div className="legend-item flex items-center gap-1.5"><div className="w-3.5 h-3.5 rounded-sm" style={{background:'#ff4757'}}></div> ≤2分</div>
+              <div className="legend-item flex items-center gap-1.5"><div className="w-3.5 h-3.5 rounded-sm" style={{background:'#ffa502'}}></div> 3-4分</div>
+              <div className="legend-item flex items-center gap-1.5"><div className="w-3.5 h-3.5 rounded-sm" style={{background:'#eccc68'}}></div> 5-6分</div>
+              <div className="legend-item flex items-center gap-1.5"><div className="w-3.5 h-3.5 rounded-sm" style={{background:'#2ed573'}}></div> 7-8分</div>
+              <div className="legend-item flex items-center gap-1.5"><div className="w-3.5 h-3.5 rounded-sm" style={{background:'#10ac84'}}></div> ≥9分</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Rolling Averages Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+          <div className="stats-card bg-white rounded-xl p-6 shadow-sm border border-[#dfe1e6]">
+            <h2 className="text-lg font-bold mb-5 flex items-center gap-2 text-[#172b4d]">
+              📊 情绪均值统计 (Rolling Averages)
+            </h2>
+            <div className="grid grid-cols-2 gap-3">
+              {rollingStats.map(stat => (
+                <div key={stat.label} className="bg-[#f8f9fa] p-3 rounded-lg border border-[#eee]">
+                  <div className="text-[11px] text-[#5e6c84] font-semibold uppercase">{stat.label}</div>
+                  <div className="text-2xl font-extrabold text-[#172b4d] mt-1 whitespace-nowrap">
+                    {stat.avg === 0 ? '--' : stat.avg} <span className="text-xs font-normal text-[#5e6c84]">pts</span>
+                  </div>
+                  <div className="text-[10px] text-[#5e6c84] mt-1 font-medium opacity-70">样本: {stat.count}天</div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* 统计指标 Cards */}
-        <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-          
-          <div className="stats-card" style={{ flex: '1 1 300px', marginBottom: 0 }}>
-            <h3>📊 情绪均值统计</h3>
-            <div style={{ fontSize: '32px', fontWeight: 700, margin: '10px 0', color: 'var(--accent)' }}>
-              {averageScore} <span style={{ fontSize: '14px', fontWeight: 'normal', color: '#888' }}>本月平均分</span>
-            </div>
-            
-            <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', margin: '16px 0' }}>
-              {[
-                { label: '7天均值', days: 7 },
-                { label: '30天均值', days: 30 },
-                { label: '60天均值', days: 60 },
-                { label: '180天均值', days: 180 }
-              ].map(p => {
-                const avg = getRollingAverage(p.days)
-                const count = moods.filter(m => {
-                  const d = new Date(m.date)
-                  const cutoff = new Date()
-                  cutoff.setDate(cutoff.getDate() - p.days)
-                  return d >= cutoff
-                }).length
-                
-                return (
-                  <div key={p.label} style={{ background: '#f8f9fa', padding: '10px', borderRadius: '8px', border: '1px solid #eee' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>{p.label}</div>
-                    <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--app-text)', marginTop: '4px' }}>
-                      {avg === 0 ? '--' : avg} <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)' }}>pts</span>
-                    </div>
-                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>样本: {count}天</div>
-                  </div>
-                )
-              })}
-            </div>
-
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-              你的平均情绪处于稳步上升趋势，最近一周的专注力有明显提升。
-            </p>
-          </div>
-
-          <div className="stats-card" style={{ flex: '1 1 300px', marginBottom: 0 }}>
-            <h2><span style={{ fontSize: '20px' }}>🎯</span> 记录状态</h2>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
-              <div style={{ fontSize: '48px', fontWeight: 900, color: 'var(--diary-accent)', lineHeight: 1 }}>
-                24
+          <div className="stats-card bg-white rounded-xl p-6 shadow-sm border border-[#dfe1e6]">
+            <h2 className="text-lg font-bold mb-5 flex items-center gap-2 text-[#172b4d]">
+              🎯 记录状态
+            </h2>
+            <div className="flex items-baseline gap-2">
+              <div className="text-[48px] font-black text-[#c9481d] leading-none">
+                {moods.length}
               </div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '14px', paddingBottom: '6px', fontWeight: 600 }}>
-                连续记录天数
+              <div className="text-sm font-bold text-[#5e6c84]">
+                累计记录天数
               </div>
             </div>
-            <p style={{ marginTop: '16px', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              你已经坚持在这个模块记录了近一个月的情绪。继续保持！这种微习惯是长期成长的基石。
+            <p className="text-xs text-[#5e6c84] mt-4 leading-relaxed font-medium">
+              坚持记录是建立自我认知的开始。目前的记录量已能够反映出某种周期性模式。继续保持！
             </p>
           </div>
-
         </div>
-
       </div>
     </div>
   )
