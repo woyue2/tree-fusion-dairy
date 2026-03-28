@@ -90,9 +90,11 @@ export const OutlineNodeComponent: React.FC<Props> = ({ nodeId }) => {
           <button className="p-1 hover:text-green-600" onClick={() => addChildNode(nodeId)} title="添加子节点">
             <Plus size={12} />
           </button>
-          <button className="p-1 hover:text-red-500" onClick={() => deleteNode(nodeId)} title="删除">
-            <Trash2 size={12} />
-          </button>
+          {node.parentId && (
+            <button className="p-1 hover:text-red-500" onClick={() => deleteNode(nodeId)} title="删除">
+              <Trash2 size={12} />
+            </button>
+          )}
         </div>
       </div>
 

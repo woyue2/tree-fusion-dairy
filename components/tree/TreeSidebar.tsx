@@ -107,7 +107,7 @@ export default function TreeSidebar({ documents, activeDocId, onSelectDoc, onNew
               </div>
               
               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                {isTrashView ? (
+                {isTrashView && (
                   <>
                     <button 
                       title="恢复"
@@ -124,14 +124,6 @@ export default function TreeSidebar({ documents, activeDocId, onSelectDoc, onNew
                       <Trash2 size={12} />
                     </button>
                   </>
-                ) : (
-                  <button
-                    title="移至回收站"
-                    onClick={(e) => { e.stopPropagation(); moveToTrash(doc.id); }}
-                    className="p-1 hover:text-red-500"
-                  >
-                    <Trash2 size={12} />
-                  </button>
                 )}
               </div>
             </div>
