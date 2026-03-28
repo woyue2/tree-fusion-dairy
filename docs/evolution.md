@@ -5,6 +5,13 @@
 [PROTOCOL]: Update this log after every /git_commit
 -->
 # Evolution Log
+ 
+# 2026-03-28
+
+## 变动 修复全站 12+ 处非交互 UI 按钮并补齐 Store 接口
+### 原因 最近的功能迁移导致部分按钮（撤销/保存/格式化）仅有样式而无逻辑绑定
+### 影响 补齐 `TreeContainer` 的保存/撤销逻辑；激活 `DiaryEditor` 的加粗、链接、结构化提取等工具栏功能；为情绪热力图增加点击交互；同步完善 GEB L1-L3 文档契约
+
 
 # 2026-03-17
 
