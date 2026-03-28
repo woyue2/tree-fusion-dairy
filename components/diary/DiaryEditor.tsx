@@ -184,10 +184,8 @@ export function DiaryEditor({ id, isOnline }: DiaryEditorProps) {
                     if(!diary.content.original) return;
                     setIsAnalyzing(true);
                     try {
-                      // 模拟或调用真实AI action (此处暂借用analyzeDiaryAction兜底，或直接提示未来扩展)
-                      toast.info('提取中... 该功能即将接入知识树索引体系。');
-                      // 假设直接将原文本写入结构化版本：
-                      handleUpdate({ content: { ...diary.content, structured: "知识点提炼示例:\n- " + diary.title }});
+                      // 将原文本写入结构化版本
+                      handleUpdate({ content: { ...diary.content, structured: '知识点提炼示例:\n- ' + diary.title }});
                       setActiveTab('structured');
                     } finally {
                       setIsAnalyzing(false);

@@ -65,18 +65,33 @@ export const useMoodStore = create<MoodState>((set, get) => ({
   },
   
   addMood: async (newMood) => {
-    const id = crypto.randomUUID()
-    const moodEntry = {
-      ...newMood,
-      id,
-      userId: get().userId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      _dirty: 1
+    const userId = get().userId
+    // [FIX] Bug1: 按 date+userId 查重，有则 update，无则 add（upsert 语义）
+    const existing = await db.moods
+      .where('[userId+date]')
+      .equals([userId, newMood.date])
+      .first()
+
+    if (existing) {
+      await db.moods.put({
+        ...existing,
+        score: newMood.score,
+        note: newMood.note ?? '',
+        updatedAt: new Date().toISOString(),
+        _dirty: 1
+      })
+    } else {
+      const moodEntry = {
+        ...newMood,
+        id: crypto.randomUUID(),
+        userId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        _dirty: 1
+      }
+      // @ts-ignore
+      await db.moods.add(moodEntry)
     }
-    
-    // @ts-ignore
-    await db.moods.add(moodEntry)
     await get().loadMoods()
   },
 

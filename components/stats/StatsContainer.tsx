@@ -1,18 +1,21 @@
 /**
- * [INPUT]:    useMoodStore states and actions.
- * [OUTPUT]:   StatsContainer component for quantitative and mood visualization.
+ * [INPUT]:    useMoodStore states and actions, editingDate local state
+ * [OUTPUT]:   StatsContainer — 热力图点击触发编辑，支持历史日期修改
  * [POS]:      components/stats/StatsContainer.tsx - Stats & Mood Dashboard View
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useMoodStore } from '@/hooks/useMoodStore'
 import { MoodInput } from './MoodInput'
 
 export default function StatsContainer() {
   const moods = useMoodStore(s => s.moods)
   const getRollingAverage = useMoodStore(s => s.getRollingAverage)
+
+  // [FIX] Bug3: 新增选中日期状态，热力图格子点击后展示编辑面板
+  const [editingDate, setEditingDate] = useState<string | null>(null)
 
   const getColorForScore = (score: number) => {
     if (score <= 2) return '#ff4757' // Red
@@ -62,7 +65,15 @@ export default function StatsContainer() {
         
         {/* Mood Input Section */}
         <div className="mb-6">
-          <MoodInput />
+          {editingDate ? (
+            // [FIX] Bug3: 点击格子后显示对应日期的编辑面板
+            <MoodInput
+              defaultDate={editingDate}
+              onClose={() => setEditingDate(null)}
+            />
+          ) : (
+            <MoodInput onClose={() => setEditingDate(null)} />
+          )}
         </div>
 
         {/* Mood Section */}
@@ -76,7 +87,9 @@ export default function StatsContainer() {
               {last30Days.map(({ date, displayDate, mood }) => (
                 <div
                   key={date}
-                  className={`mood-cell relative aspect-square rounded-lg flex flex-col items-center justify-center gap-1 cursor-pointer transition-all hover:-translate-y-0.5 hover:brightness-105 hover:shadow-md border border-black/5`}
+                  // [FIX] Bug3: 绑定 onClick，点击格子切换 editingDate
+                  onClick={() => setEditingDate(date)}
+                  className={`mood-cell relative aspect-square rounded-lg flex flex-col items-center justify-center gap-1 cursor-pointer transition-all hover:-translate-y-0.5 hover:brightness-105 hover:shadow-md border border-black/5 ${editingDate === date ? 'ring-2 ring-[#0079bf] ring-offset-1' : ''}`}
                   style={{
                     backgroundColor: mood ? getColorForScore(mood.score) : '#ffffff',
                     borderStyle: mood ? 'solid' : 'dashed',
