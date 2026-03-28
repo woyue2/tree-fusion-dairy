@@ -13,6 +13,10 @@
 - **Integration**: Automated counting of `done` tasks from `fusion-todo` merged with manual Pomodoro increments.
 - **Architecture**: Extended Lexie schema with `pomodoros` table; introduced `useFrogStore` for cross-module statistics extraction.
 
+## 变动  日记图片上传 + ImgURL Bearer 修复 + 新 Supabase 迁移 + 旧数据导入
+### 原因  图片按钮为空壳；ImgURL API 改为 Bearer 认证；旧 Supabase 项目废弃；历史数据需迁移
+### 影响  lib/utils.ts 新增 img:url 渲染和 stripImageLines；DiaryEditor 接通 uploadImageAction；DiaryViewer 改用 renderMarkdown；.env.local 更新新 Supabase 连接；scripts/ 新增迁移脚本，74 tasks / 27 diaries / 5 tree docs 已导入新 Supabase
+
 ## 变动 青蛙明细日志系统上线
 ### 原因 日记需求要求表格右侧有可滚动明细 div，记录每次番茄增减历史（含自动任务联动）
 ### 影响 新增 LocalFrogLog 接口与 frogLogs Dexie 表 (version 2)；useFrogStore 新增 loadLogs/addTaskLog；FrogContainer 右侧增加 256px 明细面板，点击行切换日期实时刷新
