@@ -1,3 +1,9 @@
+<!--
+[INPUT]:    Daily commit logs and major refactor summaries
+[OUTPUT]:   Chronological project evolution record
+[POS]:      docs/evolution.md - Project history and decision log
+[PROTOCOL]: Update this log after every /git_commit
+-->
 # Evolution Log
 
 # 2026-03-17

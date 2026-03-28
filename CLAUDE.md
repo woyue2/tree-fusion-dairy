@@ -48,6 +48,9 @@ anti-huihuan-kaifa/
 │       └── ...                     ← todo, stats, settings
 │
 ├── components/                     ← 公共 UI 组件（跨路由复用）
+│   ├── diary/                      ← 日记域视图组件
+│   ├── stats/                      ← 统计域与情绪板组件
+│   ├── tree/                       ← 知识树大纲组件
 │   └── ui/                         ← 原子组件（Button, Input, Modal...）
 │
 ├── hooks/                          ← 自定义 React Hooks
