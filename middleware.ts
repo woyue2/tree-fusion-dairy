@@ -20,15 +20,16 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // ── 公开路径直接放行 ──────────────────────────────────
-  if (PUBLIC_PATHS.has(pathname)) {
+  // ── 登录页直接放行 ────────────────────────────────────
+  if (pathname === AUTH_ROUTES.LOGIN || PUBLIC_PATHS.has(pathname)) {
     return NextResponse.next()
   }
 
-  // ── TODO: 接入 Supabase session 验证 ─────────────────
-  // 安装 @supabase/ssr 后，在此处 createServerClient + getSession
-  // 若 session 不存在，重定向到 /login：
-  // return NextResponse.redirect(new URL(AUTH_ROUTES.LOGIN, req.url))
+  // ── 单密码保护：检查 app-auth cookie ─────────────────
+  const authed = req.cookies.get('app-auth')?.value === '1'
+  if (!authed) {
+    return NextResponse.redirect(new URL(AUTH_ROUTES.LOGIN, req.url))
+  }
 
   return NextResponse.next()
 }
