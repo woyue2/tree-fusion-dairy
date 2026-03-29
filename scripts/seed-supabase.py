@@ -9,8 +9,8 @@ import urllib.request
 import urllib.error
 import os
 
-SUPABASE_URL = 'https://jlllzqrcmhbjhxqstvxz.supabase.co'
-SERVICE_KEY  = '***REMOVED***'
+SUPABASE_URL = os.environ.get('NEXT_PUBLIC_SUPABASE_URL', '')
+SERVICE_KEY  = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
 BUNDLE_PATH  = '/home/aa/Park/tree-fusion-dairy/old-data/import-bundle.json'
 
 HEADERS = {
