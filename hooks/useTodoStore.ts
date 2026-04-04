@@ -31,7 +31,7 @@ interface TodoState {
   updateTask: (id: string, updates: Partial<TodoTask>) => Promise<void>
   deleteTask: (id: string) => Promise<void>
   
-  moveTask: (taskId: string, newStatusId: TodoStatusId, newContextId: string, newIndex: number) => Promise<void>
+  moveTasks: (tasks: TodoTask[]) => Promise<void>
   updateColumnCollapsed: (id: string, viewMode: 'status' | 'context' | 'date', collapsed: boolean) => Promise<void>
   updateColumnBelowOf: (id: string, viewMode: 'status' | 'context' | 'date', belowOf: string | null) => Promise<void>
   updateColumn: (id: string, viewMode: 'status' | 'context' | 'date', title: string) => Promise<void>
@@ -62,7 +62,10 @@ export const useTodoStore = create<TodoState>((set, get) => ({
       db.statuses.where('userId').equals('default-user').toArray(),
       db.contexts.where('userId').equals('default-user').toArray()
     ])
-    
+    const sortedTasks = [...tasks].sort((a, b) => (a.orderIndex ?? Number.MAX_SAFE_INTEGER) - (b.orderIndex ?? Number.MAX_SAFE_INTEGER))
+    const sortedStatuses = [...statuses].sort((a, b) => (a.orderIndex ?? Number.MAX_SAFE_INTEGER) - (b.orderIndex ?? Number.MAX_SAFE_INTEGER))
+    const sortedContexts = [...contexts].sort((a, b) => (a.orderIndex ?? Number.MAX_SAFE_INTEGER) - (b.orderIndex ?? Number.MAX_SAFE_INTEGER))
+
     // Seed default statuses/contexts if empty
     if (statuses.length === 0) {
       const defaults: any[] = [
@@ -73,7 +76,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
       await db.statuses.bulkPut(defaults) // [FIX] 根因: 使用 bulkPut 避免 userId 变更后语义化 ID 冲突
       set({ statuses: defaults })
     } else {
-      set({ statuses: statuses as any })
+      set({ statuses: sortedStatuses as any })
     }
 
     if (contexts.length === 0) {
@@ -84,10 +87,10 @@ export const useTodoStore = create<TodoState>((set, get) => ({
       await db.contexts.bulkPut(defaults) // [FIX] 根因: 使用 bulkPut 避免 userId 变更后语义化 ID 冲突
       set({ contexts: defaults })
     } else {
-      set({ contexts: contexts as any })
+      set({ contexts: sortedContexts as any })
     }
 
-    set({ tasks: tasks as any, isLoading: false })
+    set({ tasks: sortedTasks as any, isLoading: false })
   },
 
   pullAll: async () => {
@@ -172,14 +175,15 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     await get().loadAll()
   },
 
-  moveTask: async (taskId, newStatusId, newContextId, newIndex) => {
-    await db.tasks.update(taskId, { 
-      statusId: newStatusId, 
-      contextId: newContextId, 
-      orderIndex: newIndex,
-      updatedAt: new Date().toISOString(),
-      _dirty: 1 
-    })
+  moveTasks: async (tasks) => {
+    const updatedAt = new Date().toISOString()
+    await db.tasks.bulkPut(tasks.map((task, index) => ({
+      ...task,
+      userId: get().userId,
+      orderIndex: index,
+      updatedAt,
+      _dirty: 1
+    })) as any)
     await get().loadAll()
   },
 

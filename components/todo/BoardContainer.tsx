@@ -339,9 +339,6 @@ export default function BoardContainer() {
     }
 
     if (active.data.current?.type === 'Task') {
-      const finalTask = optimisticTasks.find(t => t.id === active.id)
-      if (!finalTask) return
-
       const oldIdx = optimisticTasks.findIndex(t => t.id === active.id)
       const newIdx = optimisticTasks.findIndex(t => t.id === over.id)
 
@@ -355,13 +352,8 @@ export default function BoardContainer() {
           setTasks(reordered)
         })
 
-        // Persist column change + order
-        useTodoStore.getState().moveTask(
-          finalTask.id,
-          finalTask.statusId,
-          finalTask.contextId,
-          newIdx !== -1 ? newIdx : oldIdx
-        )
+        // Persist final task order + container changes as a full snapshot
+        useTodoStore.getState().moveTasks(reordered)
       }
     }
   }
