@@ -51,6 +51,7 @@ anti-huihuan-kaifa/
 ├── components/                     ← 公共 UI 组件（跨路由复用）
 │   ├── diary/                      ← 日记域视图组件
 │   ├── stats/                      ← 统计域与情绪板组件
+│   ├── todo/                       ← Todo 看板组件（任务卡片 / 列 / 弹窗 / 拖拽）
 │   ├── tree/                       ← 知识树大纲组件
 │   └── ui/                         ← 原子组件（Button, Input, Modal...）
 │
@@ -138,4 +139,4 @@ Client Component（用户操作）
 
 ---
 
-_Last updated: 2026-03-08 (架构重建：混合架构 fusion-todo 数据流 + tree-index Supabase 分层，移除 FastAPI 后端)_
+_Last updated: 2026-04-05 (补充 components/todo L2；Todo 看板拖拽改为整份任务快照持久化；任务卡片颜色保留低饱和+高饱和双方案)_
