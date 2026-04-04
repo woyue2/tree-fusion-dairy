@@ -5,7 +5,21 @@
 [PROTOCOL]: Update this log after every /git_commit
 -->
 # Evolution Log
- 
+
+# 2026-04-05
+
+## 变动  修复 Todo 拖拽持久化
+### 原因  任务卡片拖拽后只更新单卡索引，导致顺序在重载后不稳定，用户体感像无法拖动。
+### 影响  `useTodoStore` 改为按整份任务快照持久化并在读取时按 `orderIndex` 排序，`BoardContainer` 的拖拽收尾逻辑同步调整。
+
+## 变动  扩展任务卡片配色
+### 原因  需要保留当前高饱和配色，同时补回 fusion-todo 原有的低饱和淡色背景选项。
+### 影响  `TaskModal` 新增两套颜色可选，`app/globals.css` 补充淡色 token；现有鲜艳色方案保持不变。
+
+## 变动  同步 Todo 模块 GEB 文档
+### 原因  代码变更后需要保持 L1/L2/L3 文档与模块结构同构，避免文档黑洞。
+### 影响  新增 `components/todo/CLAUDE.md`，更新根 `CLAUDE.md` 和相关文件头部说明。
+
 ## 2026-03-29
 ### [FEATURE] 青蛙没关系 (Frog Tracker) & Mood UI Refinement
 - **Mood Heatmap**: Redesigned to exactly match prototype aesthetics (Vivid colors, aspect-ratio 1:1, dashed placeholders). Added rolling averages (7d, 30d, 60d, 180d).
