@@ -1,3 +1,9 @@
+/**
+ * [INPUT]:    TodoTask (optional), defaultContextId, defaultStatusId
+ * [OUTPUT]:   Task creation/edit modal with color picker
+ * [POS]:      components/todo/TaskModal.tsx - Todo task modal
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -13,8 +19,16 @@ interface TaskModalProps {
   defaultStatusId?: string
 }
 
+// Card colors: Low-saturation (淡色) + High-saturation (鲜艳)
 const CARD_COLORS = [
-  { name: 'None', hex: '#ffffff' },
+  { name: 'Default', hex: '#ffffff' },
+  // Low-saturation (极淡色系，接近白色背景)
+  { name: 'Light Red', hex: '#fff0f0' },
+  { name: 'Light Yellow', hex: '#fffacd' },
+  { name: 'Light Cyan', hex: '#e0ffff' },
+  { name: 'Light Green', hex: '#f0fff0' },
+  { name: 'Light Purple', hex: '#e6e6fa' },
+  // High-saturation (高饱和度鲜艳色)
   { name: 'Red', hex: '#ff5630' },
   { name: 'Orange', hex: '#ff991f' },
   { name: 'Yellow', hex: '#fadc19' },

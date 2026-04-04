@@ -1,8 +1,8 @@
 /*
- * [INPUT]: Tailwind directive, CSS variables
- * [OUTPUT]: Global styles for the app
+ * [INPUT]: Tailwind directives, CSS variables, app-wide design tokens
+ * [OUTPUT]: Global styles and shared visual tokens for the app
  * [POS]: app/globals.css - Root style definitions
- * [PROTOCOL]: Update this header when root tokens change
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 @tailwind base;
 @tailwind components;
@@ -27,6 +27,14 @@
   --status-doing: #0079bf;
   --status-done: #61bd4f;
   --status-whenfree: #9e9e9e;
+
+  /* Task Card Background Colors (Low Saturation from fusion-todo) */
+  --card-color-default: #ffffff;
+  --card-color-red: #fff0f0;
+  --card-color-yellow: #fffacd;
+  --card-color-cyan: #e0ffff;
+  --card-color-green: #f0fff0;
+  --card-color-purple: #e6e6fa;
   
   /* Accent Colors (Contrast Fixed) */
   --accent: #0079bf;
