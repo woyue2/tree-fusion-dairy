@@ -11,6 +11,7 @@
 | 框架     | Next.js (App Router) · TypeScript |
 | 样式     | TailwindCSS v4 |
 | 数据库   | Supabase (PostgreSQL · Auth · Storage) |
+| 媒体     | ImgURL 外链图片上传 + Next/Image 远程图片渲染 |
 | 服务端   | Next.js Server Actions + Route Handlers（无独立后端） |
 | 状态管理 | Zustand（按业务域拆分为 `hooks/use{Domain}Store.ts`） |
 | 验证     | Zod |

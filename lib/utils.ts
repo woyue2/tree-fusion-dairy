@@ -1,6 +1,6 @@
 /**
  * [INPUT]:    text strings
- * [OUTPUT]:   sanitized HTML for safe rendering; stripImageLines for AI pre-processing
+ * [OUTPUT]:   sanitized HTML for safe rendering
  * [POS]:      lib/utils.ts - Markdown rendering utilities
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -43,10 +43,3 @@ export function renderMarkdown(text: string): string {
   return sanitizeHTML(html);
 }
 
-export function stripImageLines(content: string): string {
-  return content
-    .split('\n')
-    .filter(line => !line.trim().startsWith('img:'))
-    .join('\n')
-    .trim();
-}

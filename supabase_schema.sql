@@ -74,6 +74,7 @@ create table if not exists diaries (
   title text,
   content jsonb default '{}'::jsonb, -- 包含 original, structured, final 等版本
   images text[],
+  footer_images text[],
   analysis jsonb,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),

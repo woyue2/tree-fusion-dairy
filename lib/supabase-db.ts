@@ -154,6 +154,7 @@ export const supabaseDb = {
         title: diary.title,
         content: diary.content,
         images: diary.images,
+        footer_images: diary.footerImages,
         analysis: diary.aiAnalysis,
         updated_at: new Date(diary.updatedAt || Date.now()).toISOString(),
         deleted_at: diary.deletedAt

@@ -10,7 +10,7 @@
 |---|---|---|
 | `syncEngine.ts` | 同步中枢 | 编排 Initial Pull 与周期性 Background Push |
 | `useAppStore.ts` | 基础设施状态 | 管理 `isOnline` 和 `syncStatus` |
-| `useDiaryStore.ts` | 日记领域 Store | 维护日记 CRUD 状态、AI 中间态及同步标记 |
+| `useDiaryStore.ts` | 日记领域 Store | 维护结构化图片字段、旧 `img:` 行迁移、Dexie 持久化与云端回拉归一化 |
 | `useMoodStore.ts` | 情绪领域 Store | 记录情绪分数、计算滚动平均、处理云端同步 |
 | `useTodoStore.ts` | 任务领域 Store | 看板配置（Status/Context）与任务项的联合管理 |
 | `useTreeStore.ts` | 知识树 Store | 层次化文档结构、节点移动、undo/redo 历史栈、离线变更追踪 |

@@ -1,12 +1,10 @@
 /**
- * [INPUT]:    AI Prompts, ZHIPU_AI_API_KEY, stripImageLines
- * [OUTPUT]:   Server-side AI analysis & structure optimization（图片行预处理后送 AI）
+ * [INPUT]:    AI Prompts, ZHIPU_AI_API_KEY, diary content text
+ * [OUTPUT]:   Server-side AI analysis & structure optimization（仅消费正文文本）
  * [POS]:      app/actions/ai.ts - AI Logic Layer
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 'use server'
-
-import { stripImageLines } from '@/lib/utils'
 
 const ZHIPU_API_KEY = process.env.ZHIPU_AI_API_KEY
 const BASE_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
@@ -73,12 +71,10 @@ export async function analyzeDiaryAction(content: string) {
 - 标题要有诗意，可以用比喻、意象等手法
 - 分句是最重要的步骤：每个句子应该完整表达一个意思，长度适中
 - 即使原文是连在一起的一大段，也要拆分成多个独立句子
-- rewritten_version应该尽量保持原文长度和结构
-- 遇到形如 img:...png 的图片标记文本时，请保持原样，不要改写或删除`
+- rewritten_version应该尽量保持原文长度和结构`
 
   try {
-    const cleaned = stripImageLines(content)
-    const result = await callZhipuAI(systemPrompt, cleaned)
+    const result = await callZhipuAI(systemPrompt, content)
     return JSON.parse(result)
   } catch (error: any) {
     console.error('AI Analysis Error:', error)
@@ -114,8 +110,7 @@ export async function optimizeStructureAction(content: string) {
 仅输出以上三部分内容，不要包含JSON或代码块。`
 
   try {
-    const cleaned = stripImageLines(content)
-    return await callZhipuAI(systemPrompt, cleaned)
+    return await callZhipuAI(systemPrompt, content)
   } catch (error: any) {
     console.error('AI Structure Error:', error)
     throw new Error(error.message)
