@@ -39,6 +39,14 @@ export default function TodoColumn({
   const [isActionOpen, setIsActionOpen] = useState(false)
   const headerStyle = viewMode === 'context' && color ? { borderTop: `4px solid ${color}` } : undefined
   const actionRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [title])
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -60,14 +68,34 @@ export default function TodoColumn({
         <div 
           style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}
         >
-          <input 
-            type="text" 
+          <textarea 
+            ref={textareaRef}
             className="col-title-input" 
             defaultValue={title} 
+            rows={1}
             onBlur={(e) => useTodoStore.getState().updateColumn(id, viewMode, e.target.value)}
             onPointerDown={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-            style={{ width: '100%', textOverflow: 'ellipsis' }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.currentTarget.blur();
+              }
+              e.stopPropagation();
+            }}
+            onInput={(e) => {
+              const target = e.currentTarget;
+              target.style.height = 'auto';
+              target.style.height = `${target.scrollHeight}px`;
+            }}
+            style={{ 
+              width: '100%', 
+              resize: 'none', 
+              overflow: 'hidden',
+              minHeight: '1.5em',
+              lineHeight: '1.2',
+              display: 'block',
+              wordBreak: 'break-word'
+            }}
           />
         </div>
         
